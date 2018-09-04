@@ -7,3 +7,27 @@ Depends: R (>= 3.5.0)
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
+Imports:
+    tmle3,
+    delayed,
+    data.table,
+    assertthat,
+    origami,
+    R6,
+    uuid,
+    methods,
+    tableone,
+    ggplot2,
+    stats
+Suggests:
+    testthat,
+    knitr,
+    gentmle2,
+    speedglm,
+    rmarkdown,
+    nnls,
+    condensier,
+    tmle
+Remotes:
+    github::tlverse/tmle3@cv-tmle
+RoxygenNote: 6.0.1

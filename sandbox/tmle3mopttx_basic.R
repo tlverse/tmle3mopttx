@@ -113,7 +113,26 @@ initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task, learner_list)
 #This will generate full predictions for all samples for each fold-specific fit (split_preds)
 #Combine one dataset where predictions are from times each sample was a validation sample (val_preds)
 #TO DO: There is an error with combining results, address this
+debugonce(tmle_spec$make_split_specific)
 tmle_spec$make_split_specific(initial_likelihood, tmle_task)
+
+# define likelihood
+initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task, learner_list)
+
+opt_rule <- Optimal_Rule$new(tmle_task, initial_likelihood, -1)
+opt_rule$fit_blip() # todo: do on construction
+rule <- opt_rule$rule(tmle_task)
+lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
+tsm_rule <- Param_TSM$new(likelihood, lf_rule)
+
+updater <- tmle3_cv_Update$new()
+
+targeted_likelihood <- Targeted_Likelihood$new(initial_likelihood, updater)
+
+updater$tmle_params <- tsm_rule
+
+tmle_fit <- fit_tmle3(tmle_task, targeted_likelihood, list(tsm_rule), updater)
+
 
 #Estimate rule
 tmle_spec$learn_rule(tmle_task, learner_list)

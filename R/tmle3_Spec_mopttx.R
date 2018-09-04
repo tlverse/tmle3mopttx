@@ -70,11 +70,13 @@ tmle3_Spec_mopttx <- R6Class(
       private$.val_preds<-val_preds
     },
     
-    pred_all_Q = function(v, newdata, covars, outcome, A_vals,new_folds) {
+    pred_all_Q = function(v, tmle_task, A_vals) {
       sapply(A_vals, function(A_val) {
-        newdata[,"A"] <- A_val
-        task<-sl3::make_sl3_Task(newdata, covariates = covars, outcome = outcome, folds=new_folds)
-        pred<-initial_likelihood$factor_list$Y$learner$predict_fold(task, fold=v)
+        newdata <- data.table(A=A_val)
+        cf_task <- tmle_task$generate_counterfactual_task(UUIDgenerate(), newdata)
+        pred <- initial_likelihood$get_likelihood(cf_task, "Y", cv_fold=v)
+        # task<-sl3::make_sl3_Task(newdata, covariates = covars, outcome = outcome, folds=new_folds)
+        # pred<-initial_likelihood$factor_list$Y$learner$predict_fold(task, fold=v)
         pred
       })
       
@@ -89,14 +91,15 @@ tmle3_Spec_mopttx <- R6Class(
       A_vals<-self$vals_from_factor(A)
       
       #QaW:
-      QaW<-self$pred_all_Q(v=v, newdata=data, covars=names(tY$X), outcome="Y", A_vals=A_vals, 
-                      new_folds=new_folds)
+      QaW<-self$pred_all_Q(v=v, tmle_task, A_vals=A_vals)
       colnames(QaW)<-paste0("level A=", A_vals)
       
       #pA:
-      task<-sl3::make_sl3_Task(data, covariates = names(tA$X), outcome = "A", folds=new_folds)
-      pA <- do.call("rbind", initial_likelihood$factor_list$A$learner$predict_fold(task, fold=v))
-      pA <- do.call("rbind", pA)
+      pA_packed <- initial_likelihood$factor_list[["A"]]$get_mean(tmle_task, cv_fold=v)
+      pA <- unpack_predictions(pA_packed)
+      # task<-sl3::make_sl3_Task(data, covariates = names(tA$X), outcome = "A", folds=new_folds)
+      # pA <- do.call("rbind", initial_likelihood$factor_list$A$learner$predict_fold(task, fold=v))
+      # pA <- do.call("rbind", pA)
       pA[pA < 0.05] <- 0.05
       colnames(pA)<-paste0("level A=", A_vals)
       
