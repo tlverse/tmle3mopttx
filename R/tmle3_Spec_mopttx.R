@@ -111,21 +111,42 @@ tmle3_Spec_mopttx <- R6Class(
     },
 
     learn_rule = function(tmle_task, learner_list){
+
+      #Grab V:
+      V<-private$.options$V
       
-      cv_rule<-cross_validate(self$cv_rule, self$folds, learner_list, tmle_task)
+      #Learn rule:
+      cv_rule<-cross_validate(self$cv_rule, tmle_task$folds, learner_list=learner_list, 
+                              tmle_task=tmle_task, V=V, .combine=F)
       
+      pred<-matrix(nrow = nrow(tmle_task$data), ncol = cv_rule$lev[[1]])
+
+      #Construct SL for the rule:
+      for(i in 1:cv_rule$lev[[1]]){
+        
+        #Grab i contrast:
+        y<-do.call(rbind, cv_rule$DR)[,i]
+
+        #Grab i predicted contrast:
+        inter<-lapply(cv_rule$cvPred, '[[',i)
+        x<-do.call(rbind, inter)
+        
+        fit_coef <- stats::coef(nnls::nnls(as.matrix(x), as.matrix(y)))
+        fit_coef <- fit_coef/sum(fit_coef)
+        
+        pred[,i]<-as.matrix(x) %*% fit_coef
+      }
       
-
-
-
-
+      optA<-max.col(pred)
+      
+      private$.optA<-optA
     },
     
-    cv_rule = function(fold, learner_list, tmle_task){
+    cv_rule = function(fold, learner_list, tmle_task, V){
       
-      #TO DO: Add option to use just split-specific
-      #Use full for now
       v<-fold_index()
+      
+      #Use DR and pA fit on !v folds, predicted on all:
       DR <- private$.split_preds$DR[[v]]
       pA <- private$.split_preds$pA[[v]]
       
@@ -145,19 +166,31 @@ tmle3_Spec_mopttx <- R6Class(
         y <- DR
       }
       
-      #Predict for each category?
+      #Predict for each category, for now
+      #TO DO: multivariate SL
+      res<-list()
+      for(i in 1:ncol(y)){
+        
+        new_data<-cbind.data.frame(Y=y[,i], tmle_task$data[,V,with=FALSE])
+        new_data_v<-new_data[fold$validation_set,]
+        
+        cov<-names(new_data)[-1]
+        outcome<-names(new_data)[1]
+  
+        #Regress by creating a new tmle task:
+        blip_tmle_task <- sl3::make_sl3_Task(new_data, covariates=cov,
+                                                   outcome=outcome, folds=tmle_task$folds)
+        sl_fit<-learner_list$B$train(blip_tmle_task)
+        
+        #Grab fold-specific fit and predict on validation samples (for each learner):
+        val_task<-make_sl3_Task(new_data_v, covariates=cov, 
+                                outcome=outcome, folds=fold)
+        res[[i]]<-sl_fit$fit_object$cv_fit$fit_object$fold_fits[[v]]$predict(val_task)
+        row.names(res[[i]])<-fold$validation_set
+
+      }
       
-      new_data<-as.data.table(cbind(Y=DR, tmle_task$data[,-c("A","Y")]))
-      #Regress by creating a new tmle task:
-      blip_tmle_task <- tmle_spec$make_tmle_task()
-      
-      # define likelihood, and train on all
-      #initial_likelihood is object of Likelihood now
-      initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task, learner_list)
-      
-      
-      
-      
+      return(list(cvPred=res, valSet=fold$validation_set, DR=y[fold$validation_set,], lev=ncol(y)))
     },
 
     make_params = function(tmle_task, likelihood) {
@@ -178,7 +211,8 @@ tmle3_Spec_mopttx <- R6Class(
   active = list(),
   private = list(
     .split_preds=list(),
-    .val_preds=list()
+    .val_preds=list(),
+    .optA=list()
   )
 )
 

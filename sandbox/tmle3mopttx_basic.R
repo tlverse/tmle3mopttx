@@ -100,7 +100,7 @@ b_learner <- make_learner(Lrnr_sl, blib, metalearner)
 learner_list <- list(Y = Q_learner, A = g_learner, B=b_learner)
 
 #Initialize the tmle3_Spec functions with a list of covariates the rule might depend on.
-tmle_spec <- tmle3_mopttx(V=c("W1","W2","W3","W4","W5"), type="blip1")
+tmle_spec <- tmle3_mopttx(V=c("W1","W2","W3","W4","W5"), type="blip2")
 
 # define data
 tmle_task <- tmle_spec$make_tmle_task(data, node_list)
@@ -117,6 +117,7 @@ tmle_spec$make_split_specific(initial_likelihood, tmle_task)
 
 #Estimate rule
 tmle_spec$learn_rule(tmle_task, learner_list)
+
 
 
 
