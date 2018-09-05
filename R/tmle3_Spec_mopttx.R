@@ -192,6 +192,10 @@ tmle3_Spec_mopttx <- R6Class(
       
       return(list(cvPred=res, valSet=fold$validation_set, DR=y[fold$validation_set,], lev=ncol(y)))
     },
+    
+    get_rule = function(){
+      return(private$.optA)
+    },
 
     make_params = function(tmle_task, likelihood) {
       baseline_level <- self$options$baseline_level

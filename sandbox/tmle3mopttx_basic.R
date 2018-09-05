@@ -115,8 +115,19 @@ initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task, learner_list)
 #TO DO: There is an error with combining results, address this
 tmle_spec$make_split_specific(initial_likelihood, tmle_task)
 
-#Estimate rule
+#Estimate rule:
 tmle_spec$learn_rule(tmle_task, learner_list)
+
+#Define update method (submodel + loss function)
+updater <- tmle3_Update$new()
+
+#Initial likelihood should contain validation sets from make_split_specific, 
+#not actual initial likelihood
+targeted_likelihood <- Targeted_Likelihood$new(initial_likelihood, updater)
+
+#Hm, cf_values will repeat the value multiple times.
+intervention <- define_lf(LF_static, "A", value = tmle_spec$get_rule())
+
 
 
 
