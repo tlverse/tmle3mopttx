@@ -14,15 +14,7 @@ tmle3_Spec_mopttx <- R6Class(
       options <- list(V = V, type=type)
       do.call(super$initialize, options)
     },
-    
-    factor_to_indicators = function(x) {
-      x_vals <- vals_from_factor(x)
-      ind_mat <- sapply(x_vals, function(x_val) as.numeric(x_val == x))
-      colnames(ind_mat) <- x_vals
-      
-      return(ind_mat)
-    },
-    
+  
     vals_from_factor = function(x) {
       sort(unique(x))
     },
@@ -132,7 +124,7 @@ tmle3_Spec_mopttx <- R6Class(
 
         #Grab i predicted contrast:
         inter<-lapply(cv_rule$cvPred, '[[',i)
-        x<-do.call(rbind, inter)
+        x<-do.call(rbind, inter) 
         
         fit_coef <- stats::coef(nnls::nnls(as.matrix(x), as.matrix(y)))
         fit_coef <- fit_coef/sum(fit_coef)

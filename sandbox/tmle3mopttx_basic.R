@@ -3,6 +3,10 @@ library(origami)
 library(tmle3)
 library(data.table)
 library(R6)
+library(devtools)
+library(uuid)
+
+load_all()
 
 #Functions necessary for the simulation:
 normalize_rows <- function(x) {
@@ -68,18 +72,20 @@ data$A<-as.numeric(levels(data$A))[data$A]
 #Convert data to a data-table for tmle3:
 data<-as.data.table(data)
 
+#Define nodes:
 node_list <- list(
   W = c("W1","W2","W3","W4","W5"),
   A = "A",
   Y = "Y"
 )
 
+#Define sl3 library and metalearners:
 qlib <- make_learner_stack(
   "Lrnr_mean",
   "Lrnr_glm_fast"
 )
 
-sl3_list_learners(c("categorical"))
+#sl3_list_learners(c("categorical"))
 glib <- make_learner_stack(
   "Lrnr_mean",
   "Lrnr_glmnet",
@@ -99,29 +105,20 @@ g_learner <- make_learner(Lrnr_sl, glib, mn_metalearner)
 b_learner <- make_learner(Lrnr_sl, blib, metalearner)
 learner_list <- list(Y = Q_learner, A = g_learner, B=b_learner)
 
-#Initialize the tmle3_Spec functions with a list of covariates the rule might depend on.
+#Specify the list of covariates the rule might depend on and the type of contrast for the blip
 tmle_spec <- tmle3_mopttx(V=c("W1","W2","W3","W4","W5"), type="blip2")
 
-# define data
+#Define data
 tmle_task <- tmle_spec$make_tmle_task(data, node_list)
 
 # define likelihood, and train on all
-#initial_likelihood is object of Likelihood now
 initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task, learner_list)
 
-#Generating split-specific predictions:
-#This will generate full predictions for all samples for each fold-specific fit (split_preds)
-#Combine one dataset where predictions are from times each sample was a validation sample (val_preds)
-#TO DO: There is an error with combining results, address this
-debugonce(tmle_spec$make_split_specific)
-tmle_spec$make_split_specific(initial_likelihood, tmle_task)
-
-# define likelihood
-initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task, learner_list)
-
-opt_rule <- Optimal_Rule$new(tmle_task, initial_likelihood, -1)
-opt_rule$fit_blip() # todo: do on construction
+#Learn the rule:
+opt_rule <- Optimal_Rule$new(tmle_task, initial_likelihood, "split-specific", blip_library=learner_list$B)
+opt_rule$fit_blip()
 rule <- opt_rule$rule(tmle_task)
+
 lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
 tsm_rule <- Param_TSM$new(likelihood, lf_rule)
 
