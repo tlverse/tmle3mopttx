@@ -99,14 +99,16 @@ Optimal_Rule <- R6Class(
       })
       private$.blip_fits <- blip_fits
     },
-    
+
     rule = function(tmle_task){
       #TO DO: think about revere here
       blip_tmle_task <- sl3::make_sl3_Task(self$V_data(tmle_task), covariates=self$V,
                                            outcome=NULL, folds=tmle_task$folds)
       blip_fits <- self$blip_fits
+      blip_sl<-vector("list",length(tmle_task$folds) )
       
-      blip_sl<-lapply(1:length(tmle_task$folds), function(v){
+      for(v in 1:length(tmle_task$folds)){
+        
         temp<-lapply(1:length(blip_fits[[v]]), function(j){
           #Predict on all:
           blip_all<-blip_fits[[v]][[j]]$fit_object$cv_fit$fit_object$fold_fits[[v]]$predict(blip_tmle_task)
@@ -124,12 +126,14 @@ Optimal_Rule <- R6Class(
           }
           as.matrix(blip_val) %*% fit_coef
         })
-        do.call(cbind,temp)
-      })
+        
+        blip_sl[[v]]<-do.call(cbind,temp)
+      }
       
       #Combine all the sl validation samples:
       blip_preds<-do.call(rbind, blip_sl)
       rule <- max.col(blip_preds)
+      rule
     }
     
   ),
@@ -152,6 +156,9 @@ Optimal_Rule <- R6Class(
     blip_fits = function(){
       return(private$.blip_fits)
     },
+    blip_fits_sl = function(){
+      return(private$.blip_fits_sl)
+    },
     blip_library = function(){
       return(private$.blip_library)
     }
@@ -163,6 +170,7 @@ Optimal_Rule <- R6Class(
     .V = NULL,
     .blip_type = NULL,
     .blip_fits = NULL,
+    .blip_fits_sl = NULL,
     .blip_library = NULL
   )
 )

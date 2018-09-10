@@ -121,7 +121,6 @@ opt_rule$fit_blip()
 #Define a dynamic Likelihood factor:
 lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
 
-#This needs work...
 tsm_rule <- Param_TSM$new(initial_likelihood, lf_rule)
 
 updater <- tmle3_cv_Update$new()
