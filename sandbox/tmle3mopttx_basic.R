@@ -114,25 +114,27 @@ tmle_task <- tmle_spec$make_tmle_task(data, node_list)
 # define likelihood, and train on all
 initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task, learner_list)
 
-#Learn the rule:
+#Learn parts necessary for the rule:
 opt_rule <- Optimal_Rule$new(tmle_task, initial_likelihood, "split-specific", blip_library=learner_list$B)
 opt_rule$fit_blip()
-rule <- opt_rule$rule(tmle_task)
 
+#Define a dynamic Likelihood factor:
 lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
-tsm_rule <- Param_TSM$new(likelihood, lf_rule)
+
+#This needs work...
+tsm_rule <- Param_TSM$new(initial_likelihood, lf_rule)
 
 updater <- tmle3_cv_Update$new()
-
 targeted_likelihood <- Targeted_Likelihood$new(initial_likelihood, updater)
 
 updater$tmle_params <- tsm_rule
 
 tmle_fit <- fit_tmle3(tmle_task, targeted_likelihood, list(tsm_rule), updater)
 
-
-#Estimate rule
-tmle_spec$learn_rule(tmle_task, learner_list)
+# extract results
+tmle3_psi <- tmle_fit$summary$tmle_est
+tmle3_se <- tmle_fit$summary$se
+tmle3_epsilon <- updater$epsilons[[1]]$Y
 
 
 

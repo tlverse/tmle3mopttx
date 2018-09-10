@@ -40,7 +40,6 @@ LF_rule <- R6Class(
     initialize = function(name, type = "density", rule_fun, ...) {
       super$initialize(name, ..., type = type)
       private$.rule_fun <- rule_fun
-      private$.variable_type <- variable_type("constant", value)
     },
     get_mean = function(tmle_task, cv_fold) {
       return(self$rule_fun(tmle_task))
