@@ -1,5 +1,6 @@
 ---
-output: github_document
+output:
+  rmarkdown::github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -43,11 +44,7 @@ devtools::install_github("tlverse/tmle3mopttx")
 ---
 
 ## License
-&copy; 2017 Ivana Malenica and Wenjing Zheng
 
-The contents of this repository are distributed under the MIT license. See
-below for details:
-```
 
 The contents of this repository are distributed under the GPL-3 license. See
 file `LICENSE` for details.
