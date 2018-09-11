@@ -49,3 +49,6 @@ tmle3_Spec_mopttx <- R6Class(
 tmle3_mopttx <- function(V, type) {
   tmle3_Spec_mopttx$new(V=V, type=type)
 }
+
+#' @import data.table
+NULL
