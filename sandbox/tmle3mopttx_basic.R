@@ -118,12 +118,8 @@ initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task, learner_list)
 opt_rule <- Optimal_Rule$new(tmle_task, initial_likelihood, "split-specific", blip_library=learner_list$B)
 opt_rule$fit_blip()
 
-# debugonce(opt_rule$rule)
-# opt_rule$rule(tmle_task)
 #Define a dynamic Likelihood factor:
 lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
-
-
 
 updater <- tmle3_cv_Update$new()
 targeted_likelihood <- Targeted_Likelihood$new(initial_likelihood, updater)

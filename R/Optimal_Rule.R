@@ -16,6 +16,7 @@ Optimal_Rule <- R6Class(
       private$.cv_fold <- cv_fold
       private$.blip_type <- blip_type
       private$.blip_library <- blip_library
+      
       if(missing(V)){
         V <- tmle_task$npsem$W$variables
         private$.V <- V
@@ -27,8 +28,16 @@ Optimal_Rule <- R6Class(
       colnames(ind_mat) <- x_vals
       return(ind_mat)
     },
-    V_data = function(tmle_task){
-      tmle_task$data[,self$V,with=FALSE]
+    V_data = function(tmle_task, fold=NULL){
+      if(is.null(fold)){
+        tmle_task$data[,self$V,with=FALSE]
+      }else{
+        tmle_task$data[,self$V,with=FALSE][tmle_task$folds[[fold]]$training_set,] 
+      }
+    },
+    DR_full = function(v,indx){
+      DR<-private$.DR_full[[v]]
+      return(DR[indx,])
     },
     fit_blip = function(){
       tmle_task <- self$tmle_task
@@ -54,17 +63,25 @@ Optimal_Rule <- R6Class(
       if(cv_fold=="split-specific"){
         #Split-specific results:
         n_fold<-length(tmle_task$folds)
-        Q_vals <- lapply(1:n_fold, function(cv_fd) sapply(cf_tasks, likelihood$get_likelihood, "Y", cv_fd))
-        g_vals <- lapply(1:n_fold, function(cv_fd) sapply(cf_tasks, likelihood$get_likelihood, "A", cv_fd))  
+        
+        #Grab split-specific predictions for all the samples:
+        Q_vals_full <- lapply(1:n_fold, function(cv_fd) sapply(cf_tasks, likelihood$get_likelihood, "Y", cv_fd))
+        g_vals_full <- lapply(1:n_fold, function(cv_fd) sapply(cf_tasks, likelihood$get_likelihood, "A", cv_fd))
+        
+        #Grab split-specific predictions for training samples only:
+        Q_vals <- lapply(1:n_fold, function(cv_fd) sapply(cf_tasks, likelihood$get_likelihood, "Y", cv_fd)[tmle_task$folds[[cv_fd]]$training_set,] )
+        g_vals <- lapply(1:n_fold, function(cv_fd) sapply(cf_tasks, likelihood$get_likelihood, "A", cv_fd)[tmle_task$folds[[cv_fd]]$training_set,] )
+
       }else{
         #Full or just one fold results:
         n_fold<-1
-        Q_vals <- list(sapply(cf_tasks, likelihood$get_likelihood, "Y", cv_fold))
-        g_vals <- list(sapply(cf_tasks, likelihood$get_likelihood, "A", cv_fold))
+        Q_vals_full <- list(sapply(cf_tasks, likelihood$get_likelihood, "Y", cv_fold))
+        g_vals_full <- list(sapply(cf_tasks, likelihood$get_likelihood, "A", cv_fold))
       }
       
       #List for split-specific
-      DR <- lapply(1:n_fold,function(i) (A_ind/g_vals[[i]]) * (Y_mat - Q_vals[[i]]) + Q_vals[[i]]) 
+      DR_full <- lapply(1:n_fold,function(i) (A_ind/g_vals_full[[i]]) * (Y_mat - Q_vals_full[[i]]) + Q_vals_full[[i]]) 
+      DR <- lapply(1:n_fold,function(i) (A_ind[tmle_task$folds[[i]]$training_set,]/g_vals[[i]]) * (Y_mat[tmle_task$folds[[i]]$training_set,] - Q_vals[[i]]) + Q_vals[[i]]) 
 
       ######################
       # set up task for blip
@@ -90,49 +107,53 @@ Optimal_Rule <- R6Class(
       #TO DO: multivariate SL
       blip_fits<-lapply(1:n_fold, function(i){
         lapply(1:ncol(blip_outcome[[i]]), function(j) {
-          new_data<-cbind.data.frame(blip_outcome=blip_outcome[[i]][,j], self$V_data(tmle_task))
-          #TO DO: think about revere here
-          blip_tmle_task <- sl3::make_sl3_Task(new_data, covariates=self$V,
-                                               outcome="blip_outcome", folds=tmle_task$folds)
+          new_data<-cbind.data.frame(blip_outcome=blip_outcome[[i]][,j], self$V_data(tmle_task,i))
+          blip_tmle_task <- sl3::make_sl3_Task(new_data, covariates=self$V, outcome="blip_outcome")
           self$blip_library$train(blip_tmle_task)
         })
       })
       private$.blip_fits <- blip_fits
+      private$.DR_full<-DR_full
     },
 
     rule = function(tmle_task){
       #TO DO: think about revere here
-      blip_tmle_task <- sl3::make_sl3_Task(self$V_data(tmle_task), covariates=self$V,
-                                           outcome=NULL, folds=tmle_task$folds)
+      blip_tmle_task <- sl3::make_sl3_Task(self$V_data(tmle_task), covariates=self$V,outcome=NULL, folds=tmle_task$folds)
       blip_fits <- self$blip_fits
-      blip_sl<-vector("list",length(tmle_task$folds) )
-      
-      for(v in 1:length(tmle_task$folds)){
+      blip_fin<-matrix(nrow = nrow(blip_tmle_task$data),ncol = length(blip_fits[[1]]))
+
+      for(j in 1:length(blip_fits[[1]])){
         
-        temp<-lapply(1:length(blip_fits[[v]]), function(j){
-          #Predict on all:
-          blip_all<-blip_fits[[v]][[j]]$fit_object$cv_fit$fit_object$fold_fits[[v]]$predict(blip_tmle_task)
-          #Get validation samples:
-          valid_idx<-tmle_task$folds[[v]]$validation_set
-          blip_val<-blip_all[valid_idx]
-          Y<-blip_fits[[v]][[j]]$training_task$Y
-          Y<-Y[valid_idx]
-          #Create sl prediction (alpha from validation samples in split-specific Q/g):
-          fit_coef <- coef(nnls::nnls(as.matrix(blip_val), as.matrix(Y)))
-          if(sum(fit_coef)==0){
-            fit_coef<-fit_coef
-          }else{
-            fit_coef <- fit_coef/sum(fit_coef)
-          }
-          as.matrix(blip_val) %*% fit_coef
+        temp<-lapply(1:length(tmle_task$folds), function(v){
+          #Note: splits-specific fits used here are generated entirely from the training data
+          int<-lapply(1:10, function(fd) {blip_fits[[v]][[j]]$fit_object$cv_fit$fit_object$fold_fits[[fd]]$predict(blip_tmle_task)})
+          #Average over split-specific fits per algorithm
+          dat<-do.call(cbind,int)
+          blip_all<-t(apply(dat, 1, function(x) tapply(x, colnames(dat), mean)))
+          blip_all[tmle_task$folds[[v]]$validation_set,]
+        })
+        temp2<-lapply(1:length(tmle_task$folds), function(v){
+          self$DR_full(v,tmle_task$folds[[v]]$validation_set)[,j]
         })
         
-        blip_sl[[v]]<-do.call(cbind,temp)
+        #Average over split-specific fits per algorithm
+        blip_pred<-do.call(rbind,temp)
+        blip_y<-unlist(temp2)
+        
+        #Create sl prediction (alpha from validation samples in split-specific Q/g):
+        fit_coef <- coef(nnls::nnls(as.matrix(blip_pred), as.matrix(blip_y)))
+        
+        if(sum(fit_coef)==0){
+          fit_coef<-fit_coef
+        }else{
+          fit_coef <- fit_coef/sum(fit_coef)
+        }
+        
+        blip_fin[,j]<-as.matrix(blip_pred) %*% fit_coef
       }
       
       #Combine all the sl validation samples:
-      blip_preds<-do.call(rbind, blip_sl)
-      rule <- max.col(blip_preds)
+      rule <- max.col(blip_fin)
       rule
     }
     
@@ -171,6 +192,7 @@ Optimal_Rule <- R6Class(
     .blip_type = NULL,
     .blip_fits = NULL,
     .blip_fits_sl = NULL,
-    .blip_library = NULL
+    .blip_library = NULL,
+    .DR_full = NULL
   )
 )
