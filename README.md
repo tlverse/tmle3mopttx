@@ -8,7 +8,8 @@ R/`tmle3mopttx`
 Description
 -----------
 
-------------------------------------------------------------------------
+`tmle3mopttx` estimates the optimal individualized treatment rule for the categorical treatment using the modern implementation of the Super Learner algorithm ([sl3](https://github.com/tlverse/sl3)) and [tmle3](https://github.com/tlverse/tmle3) \[@vdl2007super\]. In order to avoid nesting cross-validation, it relies on split-specific estimates of *Q* (𝔼(*Y*|*A*, *W*)) and *g* ((*P*(*A*|*W*))) in order to estimate the rule as described by Coyle et al \[@jeremythesis\]. In addition, it provides the Targeted Maximum Likelihood estimates of the mean performance using CV-TMLE under the estimated rules. This is an adapter package for use with the `tmle3` framework and the tlverse software ecosystem for Targeted Learning.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Installation
 ------------
