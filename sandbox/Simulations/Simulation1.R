@@ -25,7 +25,7 @@ Qbar0 <- function(A, W) {
   W2 <- W[, 2]
   W3 <- W[, 3]
   
-  Qbar <- 1/2 *(plogis(5 * (A == 2) - 5 * (A == 3) * (W1)) )
+  Qbar <- 2/3 *(plogis(5 * (A == 2) + 2 * (A == 3) * (W1-0.2)) )
   return(Qbar)
 }
 
@@ -68,7 +68,7 @@ gen_data <- function(n = 1000, p = 4) {
 set.seed(11)
 
 #Generate truth:
-testdata <- gen_data(1e+06, 3)
+testdata <- gen_data(n=1e+06, p=3)
 truthn<-mean(testdata$Yd0)
 
 ###########################
@@ -175,3 +175,5 @@ for(i in 1:MC){
   cov[i,3]<-(tmle_fit$summary$lower<=truthn && tmle_fit$summary$upper>=truthn)
   
 }
+
+save.image(here("Simulation/Simulation_1a_res.RData"))

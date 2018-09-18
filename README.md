@@ -5,7 +5,7 @@ R/`tmle3mopttx`
 
 [![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 
-> Targeted Learning and Variable Importance with Optimal Individualized Categorical Treatment
+> Targeted Learning and Variable Importance under Optimal Individualized Categorical Treatment
 
 **Authors:** [Ivana Malenica](https://github.com/podTockom), [Jeremy R. Coyle](https://github.com/jeremyrcoyle) and [Mark J. van der Laan](https://vanderlaan-lab.org/)
 
