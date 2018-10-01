@@ -23,23 +23,16 @@ tmle3_Spec_mopttx <- R6Class(
       updater <- tmle3_cv_Update$new()
     },
     
-    make_targeted_likelihood = function(likelihood, updater){
-      
-      targeted_likelihood <- Targeted_Likelihood$new(likelihood, 
-                                                     updater)
-      return(c(targeted_likelihood, likelihood))
-    },
-    
     make_params = function(tmle_task, likelihood) {
       
       #Learn the rule
-      opt_rule <- Optimal_Rule$new(tmle_task, likelihood[[2]], "split-specific", 
+      opt_rule <- Optimal_Rule$new(tmle_task, likelihood, "split-specific", 
                                    blip_library=private$.options$b_learner)
       opt_rule$fit_blip()
       
       #Define a dynamic Likelihood factor:
       lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
-      tsm_rule <- Param_TSM$new(likelihood[[1]], lf_rule)
+      tsm_rule <- Param_TSM$new(likelihood, lf_rule)
 
       return(list(tsm_rule))
     }
