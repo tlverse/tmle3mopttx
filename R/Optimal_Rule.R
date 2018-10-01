@@ -155,11 +155,11 @@ Optimal_Rule <- R6Class(
         }
         
         #Rearrange:
-        pred<-data.frame(pred=as.matrix(blip_pred) %*% fit_coef, 
-                         val=unlist(lapply(1:length(tmle_task$folds), function(i) tmle_task$folds[[i]]$validation_set)))
-        pred <- pred[sort(pred$val),2]
+        pred<-data.frame(pred=as.matrix(blip_pred) %*% fit_coef)
+        row.names(pred)<-unlist(lapply(1:length(tmle_task$folds), function(i) tmle_task$folds[[i]]$validation_set))
+        pred <- pred[sort(row.names(pred)),]
 
-        blip_fin[,j]<-
+        blip_fin[,j]<-pred
       }
       
       if(length(blip_fits[[1]])==1){
