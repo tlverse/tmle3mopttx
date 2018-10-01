@@ -10,8 +10,8 @@ tmle3_Spec_mopttx <- R6Class(
   class = TRUE,
   inherit = tmle3_Spec,
   public = list(
-    initialize = function(V, type, ...) {
-      options <- list(V = V, type=type)
+    initialize = function(V, type, b_learner, ...) {
+      options <- list(V = V, type=type, b_learner=b_learner)
       do.call(super$initialize, options)
     },
   
@@ -19,17 +19,29 @@ tmle3_Spec_mopttx <- R6Class(
       sort(unique(x))
     },
     
+    make_updater = function(){
+      updater <- tmle3_cv_Update$new()
+    },
+    
+    make_targeted_likelihood = function(likelihood, updater){
+      
+      targeted_likelihood <- Targeted_Likelihood$new(likelihood, 
+                                                     updater)
+      return(c(targeted_likelihood, likelihood))
+    },
+    
     make_params = function(tmle_task, likelihood) {
-      baseline_level <- self$options$baseline_level
-      intervention <- define_lf(LF_static, "A", value = baseline_level)
-      tsm <- Param_TSM$new(likelihood, intervention)
-      mean_param <- Param_mean$new(likelihood)
-      par <- Param_delta$new(likelihood, delta_param_PAR, list(tsm, mean_param))
-      paf <- Param_delta$new(likelihood, delta_param_PAF, list(tsm, mean_param))
-      rr <- Param_delta$new(likelihood, delta_param_PAF, list(tsm, mean_param))
-      tmle_params <- list(tsm, mean_param, par, paf, rr)
+      
+      #Learn the rule
+      opt_rule <- Optimal_Rule$new(tmle_task, likelihood[[2]], "split-specific", 
+                                   blip_library=private$.options$b_learner)
+      opt_rule$fit_blip()
+      
+      #Define a dynamic Likelihood factor:
+      lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
+      tsm_rule <- Param_TSM$new(likelihood[[1]], lf_rule)
 
-      return(tmle_params)
+      return(list(tsm_rule))
     }
     
   ),
@@ -46,8 +58,8 @@ tmle3_Spec_mopttx <- R6Class(
 #' V=Covariates the rule depends on
 #' @importFrom sl3 make_learner Lrnr_mean
 #' @export
-tmle3_mopttx <- function(V, type) {
-  tmle3_Spec_mopttx$new(V=V, type=type)
+tmle3_mopttx <- function(V, type, b_learner) {
+  tmle3_Spec_mopttx$new(V=V, type=type, b_learner=b_learner)
 }
 
 #' @import data.table

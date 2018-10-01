@@ -23,7 +23,7 @@ Qbar0 <- function(A, W) {
   W2 <- W[, 2]
   W3 <- W[, 3]
   W4 <- W[, 4]
-  Qbar <- (1/2) * (plogis(-5 * (A == 2) * (W1 + 0.5) + 5 * (A == 3) * (W1 - 0.5)) + plogis(W2 * W3))
+  Qbar <- (2/3) * (plogis(-5 * (A == 2) * (W1 + 0.5) + 5 * (A == 3) * (W1 - 0.5)) + plogis(W2 * W3))
   return(Qbar)
 }
 

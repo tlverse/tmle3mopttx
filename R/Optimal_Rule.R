@@ -36,8 +36,8 @@ Optimal_Rule <- R6Class(
       }
     },
     DR_full = function(v,indx){
-      DR<-private$.DR_full[[v]]
-      return(DR[indx,])
+      DR<-data.frame(private$.DR_full[[v]])
+      return(data.frame(DR[indx,]))
     },
     fit_blip = function(){
       tmle_task <- self$tmle_task
@@ -93,12 +93,15 @@ Optimal_Rule <- R6Class(
       if (blip_type == "blip1") {
         #First category as a reference category:
         blip_outcome <- lapply(1:n_fold, function(i) DR[[i]][, -1] - DR[[i]][, 1])
+        blip_outcome_full <- lapply(1:n_fold, function(i) DR_full[[i]][, -1] - DR_full[[i]][, 1])
       } else if (blip_type == "blip2") {
         #Average of all categories as a reference category:
         blip_outcome <- lapply(1:n_fold, function(i) DR[[i]] - rowMeans(DR[[i]]))
+        blip_outcome_full <- lapply(1:n_fold, function(i) DR_full[[i]] - rowMeans(DR_full[[i]]))
       } else if (blip_type == "blip3") {
         #Weighted average of all categories as a reference category:
         blip_outcome <- lapply(1:n_fold, function(i) DR[[i]] - rowSums(DR[[i]] * g_vals[[i]]))
+        blip_outcome_full <- lapply(1:n_fold, function(i) DR_full[[i]] - rowSums(DR_full[[i]] * g_vals_full[[i]]))
       } else {
         blip_outcome <- DR
       }
@@ -106,24 +109,25 @@ Optimal_Rule <- R6Class(
       #Predict for each category, for now
       #TO DO: multivariate SL
       blip_fits<-lapply(1:n_fold, function(i){
-        lapply(1:ncol(blip_outcome[[i]]), function(j) {
-          new_data<-cbind.data.frame(blip_outcome=blip_outcome[[i]][,j], self$V_data(tmle_task,i))
+        lapply(1:ncol(data.frame(blip_outcome[[i]])), function(j) {
+          new_data<-cbind.data.frame(blip_outcome=data.frame(blip_outcome[[i]])[,j], self$V_data(tmle_task,i))
           blip_tmle_task <- sl3::make_sl3_Task(new_data, covariates=self$V, outcome="blip_outcome")
           self$blip_library$train(blip_tmle_task)
         })
       })
       private$.blip_fits <- blip_fits
-      private$.DR_full<-DR_full
+      private$.DR_full<-blip_outcome_full
     },
 
     rule = function(tmle_task){
       #TO DO: think about revere here
-      blip_tmle_task <- sl3::make_sl3_Task(self$V_data(tmle_task), covariates=self$V,outcome=NULL, folds=tmle_task$folds)
+      blip_tmle_task <- sl3::make_sl3_Task(self$V_data(tmle_task), covariates=self$V, outcome=NULL, folds=tmle_task$folds)
       blip_fits <- self$blip_fits
       blip_fin<-matrix(nrow = nrow(blip_tmle_task$data),ncol = length(blip_fits[[1]]))
 
       for(j in 1:length(blip_fits[[1]])){
         
+        #Fold-specific predictions:
         temp<-lapply(1:length(tmle_task$folds), function(v){
           #Note: splits-specific fits used here are generated entirely from the training data
           int<-lapply(1:10, function(fd) {blip_fits[[v]][[j]]$fit_object$cv_fit$fit_object$fold_fits[[fd]]$predict(blip_tmle_task)})
@@ -132,6 +136,7 @@ Optimal_Rule <- R6Class(
           blip_all<-t(apply(dat, 1, function(x) tapply(x, colnames(dat), mean)))
           blip_all[tmle_task$folds[[v]]$validation_set,]
         })
+        #Actual DR:
         temp2<-lapply(1:length(tmle_task$folds), function(v){
           self$DR_full(v,tmle_task$folds[[v]]$validation_set)[,j]
         })
@@ -149,11 +154,21 @@ Optimal_Rule <- R6Class(
           fit_coef <- fit_coef/sum(fit_coef)
         }
         
-        blip_fin[,j]<-as.matrix(blip_pred) %*% fit_coef
+        #Rearrange:
+        pred<-data.frame(pred=as.matrix(blip_pred) %*% fit_coef, 
+                         val=unlist(lapply(1:length(tmle_task$folds), function(i) tmle_task$folds[[i]]$validation_set)))
+        pred <- pred[sort(pred$val),2]
+
+        blip_fin[,j]<-
       }
       
-      #Combine all the sl validation samples:
-      rule <- max.col(blip_fin)
+      if(length(blip_fits[[1]])==1){
+        rule <- as.numeric(blip_fin > 0)
+      }else{
+        #Combine all the sl validation samples:
+        rule <- max.col(blip_fin)
+      }
+      
       rule
     }
     
