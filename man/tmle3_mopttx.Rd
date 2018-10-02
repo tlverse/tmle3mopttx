@@ -8,7 +8,7 @@ A=Treatment (binary or categorical)
 Y=Outcome (binary or bounded continuous)
 V=Covariates the rule depends on}
 \usage{
-tmle3_mopttx(V, type)
+tmle3_mopttx(V, type, b_learner)
 }
 \description{
 O=(W,A,Y)

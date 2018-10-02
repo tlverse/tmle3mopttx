@@ -23,7 +23,9 @@ __Authors:__ [Ivana Malenica](https://github.com/podTockom), [Jeremy R. Coyle](h
 
 ## Description
 
-`tmle3mopttx` estimates the optimal individualized treatment rule for the categorical treatment using the modern implementation of the Super Learner algorithm ([sl3](https://github.com/tlverse/sl3)) and [tmle3](https://github.com/tlverse/tmle3) [@vdl2007super]. In order to avoid nesting cross-validation, it relies on split-specific estimates of $Q$ ($\mathbb{E}(Y|A,W)$) and $g$ (($P(A|W)$)) in order to estimate the rule as described by Coyle et al [@jeremythesis]. In addition, it provides the Targeted Maximum Likelihood estimates of the mean performance using CV-TMLE under the estimated rules. This is an adapter package for use with the `tmle3` framework and the tlverse software ecosystem for Targeted Learning.
+`tmle3mopttx` is an adapter/extension R package in the `tlverse` ecosystem, that supports estimation of the optimal individualized treatment and the mean outcome under the estimated rule. In particular, it relies on the modern implementation of the Super Learner algorithm, [sl3](https://github.com/tlverse/sl3) and [tmle3](https://github.com/tlverse/tmle3) for the targeting step [@vdl2007super, @vdl2011targeted]. 
+
+In order to avoid nesting cross-validation, it relies on split-specific estimates of $\mathbb{E}(Y|A,W)$ and $P(A|W)$ in order to estimate the rule, as described by Coyle et al [@jeremythesis]. In addition, the targeted maximum likelihood estimates of the mean performance under the estimated rule are obtained using CV-TMLE [@cvtmle2010]. The implementation supports categorical treatments, providing three different versions for the rule estimation. The goal of this work is to build upon the tlverse framework and the estimation methodology implemented for a single mean counterfactual outcome in order to introduce an end-to-end methodology for variable importance analyses.
 
 ---
 

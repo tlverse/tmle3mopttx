@@ -1,4 +1,4 @@
-context("Test binary rule")
+context("Test categorical rule")
 
 if (FALSE) {
   setwd("..")
@@ -15,10 +15,19 @@ library(testthat)
 library(sl3)
 library(tmle3mopttx)
 library(tmle3)
+library(data.table)
 
 set.seed(1234)
 
-data("test_vim_data")
+data("test_vim_cat_data")
+data$A<-as.numeric(data$A)
+
+#Define nodes:
+node_list <- list(
+  W = c("W1","W2","W3","W4","W5"),
+  A = "A",
+  Y = "Y"
+)
 
 #Define sl3 library and metalearners:
 qlib <- make_learner_stack(
@@ -26,6 +35,7 @@ qlib <- make_learner_stack(
   "Lrnr_glm_fast"
 )
 
+#sl3_list_learners(c("categorical"))
 glib <- make_learner_stack(
   "Lrnr_mean",
   "Lrnr_glmnet",
@@ -38,17 +48,15 @@ blib <- make_learner_stack(
 )
 
 metalearner <- make_learner(Lrnr_nnls)
+mn_metalearner <- make_learner(Lrnr_solnp, loss_function = loss_loglik_multinomial, learner_function = metalearner_linear_multinomial)
 
 Q_learner <- make_learner(Lrnr_sl, qlib, metalearner)
-g_learner <- make_learner(Lrnr_sl, glib, metalearner)
+g_learner <- make_learner(Lrnr_sl, glib, mn_metalearner)
 b_learner <- make_learner(Lrnr_sl, blib, metalearner)
 learner_list <- list(Y = Q_learner, A = g_learner, B=b_learner)
 
 #Define spec:
-tmle_spec <- tmle3_mopttx(V=c("W01","W02","W03","W04"), type="blip1", b_learner=learner_list$B)
-
-#Define nodes:
-node_list <- list(W=node_list$W, A="A_bin01", Y=node_list$Y)
+tmle_spec <- tmle3_mopttx(V=c("W1","W2","W3","W4","W5"), type="blip2", b_learner = learner_list$B)
 
 #Define data:
 tmle_task <- tmle_spec$make_tmle_task(data, node_list)
@@ -81,13 +89,9 @@ tmle3_psi <- tmle_fit$summary$tmle_est
 tmle3_se <- tmle_fit$summary$se
 tmle3_epsilon <- updater$epsilons[[1]]$Y
 
-test_that("Mean under the optimal binary rule is correct", {
-
+test_that("Mean under the optimal categorical rule is correct", {
+  
   expect_equal(tmle3_psi, 0.7044482, tolerance = 0.1)
   
 })
-
-
-
-
 
