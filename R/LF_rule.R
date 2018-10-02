@@ -47,7 +47,7 @@ LF_rule <- R6Class(
     get_density = function(tmle_task, cv_fold) {
       observed <- tmle_task$get_tmle_node(self$name)
       likelihood <- as.numeric(self$rule_fun(tmle_task) == observed)
-      
+
       return(likelihood)
     },
     cf_values = function(tmle_task) {

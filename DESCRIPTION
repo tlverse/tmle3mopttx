@@ -1,6 +1,6 @@
 Package: tmle3mopttx
 Title: Targeted Maximum Likelihood Estimation of the Mean under Optimal Individualized Treatment
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: c(
     person("Ivana", "Malenica", email = "imalenica@berkeley.edu",
            role = c("aut", "cre"),
@@ -19,28 +19,23 @@ Depends: R (>= 3.5.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+LazyLoad: yes
 Imports:
-    tmle3,
-    sl3,
-    delayed,
     data.table,
     assertthat,
-    origami,
     R6,
     uuid,
     methods,
-    tableone,
-    ggplot2,
     stats
 Suggests:
     testthat,
     knitr,
-    gentmle2,
-    speedglm,
-    rmarkdown,
-    nnls,
-    condensier,
-    tmle
+    rmarkdown
 Remotes:
-    github::tlverse/tmle3
+    github::tlverse/tmle3,
+    github::tlverse/sl3,
+    github::tlverse/origami,
+    github::tlverse/delayed
+BugReports: https://github.com/tlverse/tmle3mopttx/issues
+VignetteBuilder: knitr
 RoxygenNote: 6.0.1
