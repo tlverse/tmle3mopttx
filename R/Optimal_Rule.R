@@ -1,6 +1,7 @@
 #' Learns the Optimal Rule given a tmle_task and likelihood
 #'
 #' @importFrom R6 R6Class
+#' @importFrom data.table data.table
 #'
 #' @export
 #

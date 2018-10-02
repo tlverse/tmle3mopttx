@@ -1,18 +1,8 @@
 context("Test binary rule")
 
-if (FALSE) {
-  setwd("..")
-  setwd("..")
-  getwd()
-  library("devtools")
-  document()
-  load_all("./")
-  setwd("..")
-  install("tstmle", build_vignettes = FALSE, dependencies = FALSE)
-}
-
 library(testthat)
 library(sl3)
+library(data.table)
 library(tmle3mopttx)
 library(tmle3)
 
@@ -84,5 +74,5 @@ tmle3_se <- tmle_fit$summary$se
 tmle3_epsilon <- updater$epsilons[[1]]$Y
 
 test_that("Mean under the optimal binary rule is correct", {
-  expect_equal(tmle3_psi, 0.7044482, tolerance = 0.1)
+  expect_equal(tmle3_psi, 0.704333, tolerance = 0.1)
 })

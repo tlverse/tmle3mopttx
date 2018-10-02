@@ -1,26 +1,16 @@
 context("Test categorical rule")
 
-if (FALSE) {
-  setwd("..")
-  setwd("..")
-  getwd()
-  library("devtools")
-  document()
-  load_all("./")
-  setwd("..")
-  install("tstmle", build_vignettes = FALSE, dependencies = FALSE)
-}
-
 library(testthat)
 library(sl3)
 library(tmle3mopttx)
 library(tmle3)
 library(data.table)
+library(here)
 
 set.seed(1234)
 
-data("test_vim_cat_data")
-data$A <- as.numeric(data$A)
+load(here("data/test_vim_cat_data.rda"))
+data<-test_vim_cat_data
 
 # Define nodes:
 node_list <- list(
@@ -88,9 +78,9 @@ tmle_fit <- fit_tmle3(tmle_task, targeted_likelihood, list(tsm_rule), updater)
 
 # extract results
 tmle3_psi <- tmle_fit$summary$tmle_est
-tmle3_se <- tmle_fit$summary$se
-tmle3_epsilon <- updater$epsilons[[1]]$Y
+#tmle3_se <- tmle_fit$summary$se
+#tmle3_epsilon <- updater$epsilons[[1]]$Y
 
 test_that("Mean under the optimal categorical rule is correct", {
-  expect_equal(tmle3_psi, 0.7044482, tolerance = 0.1)
+  expect_equal(tmle3_psi, 0.621474, tolerance = 0.1)
 })
