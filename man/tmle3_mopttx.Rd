@@ -2,18 +2,24 @@
 % Please edit documentation in R/tmle3_Spec_mopttx.R
 \name{tmle3_mopttx}
 \alias{tmle3_mopttx}
-\title{O=(W,A,Y)
-W=Covariates
-A=Treatment (binary or categorical)
-Y=Outcome (binary or bounded continuous)
-V=Covariates the rule depends on}
+\title{Mean under the Optimal Individualized Treatment Rule}
 \usage{
 tmle3_mopttx(V, type, b_learner)
+}
+\arguments{
+\item{V}{Covariates the rule depends on}
+
+\item{type}{One of three psudo-blip versions developed to accommodate categorical treatment. "Blip1" 
+corresponds to chosing a reference category, and defining the blip for all other categories relative to the
+specified reference. Note that in the case of binary treatment, "blip1" is just the usual blip.
+"Blip2$ corresponds to defining the blip relative to the average of all categories. Finally, 
+"Blip3" corresponds to defining the blip relative to the weighted average of all categories.}
+
+\item{b_learner}{Library for blip estimation.}
 }
 \description{
 O=(W,A,Y)
 W=Covariates
 A=Treatment (binary or categorical)
 Y=Outcome (binary or bounded continuous)
-V=Covariates the rule depends on
 }

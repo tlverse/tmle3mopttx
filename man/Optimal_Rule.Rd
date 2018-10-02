@@ -3,12 +3,12 @@
 \docType{data}
 \name{Optimal_Rule}
 \alias{Optimal_Rule}
-\title{Learns an optimal rule given a tmle_task and likelihood}
+\title{Learns the Optimal Rule given a tmle_task and likelihood}
 \format{An object of class \code{R6ClassGenerator} of length 24.}
 \usage{
 Optimal_Rule
 }
 \description{
-Learns an optimal rule given a tmle_task and likelihood
+Learns the Optimal Rule given a tmle_task and likelihood
 }
 \keyword{datasets}

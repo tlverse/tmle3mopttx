@@ -1,4 +1,4 @@
-#' Defines a tmle for the mean under the optimal individualized treatment with categorical treatment
+#' Defines a TMLE for the Mean Under the Optimal Individualized Rule with Categorical Treatment
 #'
 #' @importFrom R6 R6Class
 #'
@@ -43,17 +43,25 @@ tmle3_Spec_mopttx <- R6Class(
   )
 )
 
-#'
+#' Mean under the Optimal Individualized Treatment Rule
+#' 
 #' O=(W,A,Y)
 #' W=Covariates
 #' A=Treatment (binary or categorical)
 #' Y=Outcome (binary or bounded continuous)
-#' V=Covariates the rule depends on
+#' 
+#' @param V Covariates the rule depends on
+#' @param type One of three psudo-blip versions developed to accommodate categorical treatment. "Blip1" 
+#' corresponds to chosing a reference category, and defining the blip for all other categories relative to the
+#' specified reference. Note that in the case of binary treatment, "blip1" is just the usual blip.
+#' "Blip2$ corresponds to defining the blip relative to the average of all categories. Finally, 
+#' "Blip3" corresponds to defining the blip relative to the weighted average of all categories. 
+#' @param b_learner Library for blip estimation.
+#' 
 #' @importFrom sl3 make_learner Lrnr_mean
 #' @export
+#' 
+
 tmle3_mopttx <- function(V, type, b_learner) {
   tmle3_Spec_mopttx$new(V=V, type=type, b_learner=b_learner)
 }
-
-#' @import data.table
-NULL

@@ -1,4 +1,4 @@
-#' Learns an optimal rule given a tmle_task and likelihood
+#' Learns the Optimal Rule given a tmle_task and likelihood
 #'
 #' @importFrom R6 R6Class
 #'
