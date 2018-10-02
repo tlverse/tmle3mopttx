@@ -108,10 +108,13 @@ Optimal_Rule <- R6Class(
       
       #Predict for each category, for now
       #TO DO: multivariate SL
+      #(use only training data)
       blip_fits<-lapply(1:n_fold, function(i){
+        #Note that "blip1" will always have one less task here
         lapply(1:ncol(data.frame(blip_outcome[[i]])), function(j) {
           new_data<-cbind.data.frame(blip_outcome=data.frame(blip_outcome[[i]])[,j], self$V_data(tmle_task,i))
-          blip_tmle_task <- sl3::make_sl3_Task(new_data, covariates=self$V, outcome="blip_outcome")
+          flds<-origami::make_folds(new_data, V=5)
+          blip_tmle_task <- sl3::make_sl3_Task(new_data, covariates=self$V, outcome="blip_outcome", folds = flds)
           self$blip_library$train(blip_tmle_task)
         })
       })
@@ -120,7 +123,6 @@ Optimal_Rule <- R6Class(
     },
 
     rule = function(tmle_task){
-      #TO DO: think about revere here
       blip_tmle_task <- sl3::make_sl3_Task(self$V_data(tmle_task), covariates=self$V, outcome=NULL, folds=tmle_task$folds)
       blip_fits <- self$blip_fits
       blip_fin<-matrix(nrow = nrow(blip_tmle_task$data),ncol = length(blip_fits[[1]]))
@@ -130,7 +132,7 @@ Optimal_Rule <- R6Class(
         #Fold-specific predictions:
         temp<-lapply(1:length(tmle_task$folds), function(v){
           #Note: splits-specific fits used here are generated entirely from the training data
-          int<-lapply(1:10, function(fd) {blip_fits[[v]][[j]]$fit_object$cv_fit$fit_object$fold_fits[[fd]]$predict(blip_tmle_task)})
+          int<-lapply(1:5, function(fd) {blip_fits[[v]][[j]]$fit_object$cv_fit$fit_object$fold_fits[[fd]]$predict(blip_tmle_task)})
           #Average over split-specific fits per algorithm
           dat<-do.call(cbind,int)
           blip_all<-t(apply(dat, 1, function(x) tapply(x, colnames(dat), mean)))
@@ -162,6 +164,7 @@ Optimal_Rule <- R6Class(
         blip_fin[,j]<-pred
       }
       
+      #TO DO: blip2 for binary? Is max.col ok?
       if(length(blip_fits[[1]])==1){
         rule <- as.numeric(blip_fin > 0)
       }else{
