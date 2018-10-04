@@ -38,4 +38,4 @@ Remotes:
     github::tlverse/delayed
 BugReports: https://github.com/tlverse/tmle3mopttx/issues
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0

@@ -11,17 +11,19 @@ Optimal_Rule <- R6Class(
   class = TRUE,
   inherit = tmle3_Spec,
   public = list(
-    initialize = function(tmle_task, likelihood, cv_fold = "split-specific", V = NULL, blip_type = "blip2", blip_library) {
+    initialize = function(tmle_task, likelihood, cv_fold = "split-specific", V = NULL, blip_type = "blip2", blip_library, maximize = TRUE) {
       private$.tmle_task <- tmle_task
       private$.likelihood <- likelihood
       private$.cv_fold <- cv_fold
       private$.blip_type <- blip_type
       private$.blip_library <- blip_library
-
+      private$.maximize <- maximize
       if (missing(V)) {
         V <- tmle_task$npsem$W$variables
-        private$.V <- V
       }
+      
+      private$.V <- V
+      
       private$.cv_fold <- cv_fold
     },
     factor_to_indicators = function(x, x_vals) {
@@ -80,9 +82,11 @@ Optimal_Rule <- R6Class(
       }
 
       # List for split-specific
-      DR_full <- lapply(1:n_fold, function(i) (A_ind / g_vals_full[[i]]) * (Y_mat - Q_vals_full[[i]]) + Q_vals_full[[i]])
-      DR <- lapply(1:n_fold, function(i) (A_ind[tmle_task$folds[[i]]$training_set, ] / g_vals[[i]]) * (Y_mat[tmle_task$folds[[i]]$training_set, ] - Q_vals[[i]]) + Q_vals[[i]])
-
+      # DR_full <- lapply(1:n_fold, function(i) (A_ind / g_vals_full[[i]]) * (Y_mat - Q_vals_full[[i]]) + Q_vals_full[[i]])
+      # DR <- lapply(1:n_fold, function(i) (A_ind[tmle_task$folds[[i]]$training_set, ] / g_vals[[i]]) * (Y_mat[tmle_task$folds[[i]]$training_set, ] - Q_vals[[i]]) + Q_vals[[i]])
+      
+      DR_full <- lapply(1:n_fold, function(i) (Q_vals_full[[i]]))
+      DR <- lapply(1:n_fold, function(i) (Q_vals[[i]]))
       ######################
       # set up task for blip
       ######################
@@ -171,7 +175,11 @@ Optimal_Rule <- R6Class(
         rule <- as.numeric(blip_fin > 0)
       } else {
         # Combine all the sl validation samples:
-        rule <- max.col(blip_fin)
+        if(private$.maximize){
+          rule <- max.col(blip_fin)
+        } else {
+          rule <- max.col(-1 * blip_fin)
+        }
       }
 
       rule
@@ -212,6 +220,7 @@ Optimal_Rule <- R6Class(
     .blip_fits = NULL,
     .blip_fits_sl = NULL,
     .blip_library = NULL,
-    .DR_full = NULL
+    .DR_full = NULL,
+    .maximize = NULL
   )
 )
