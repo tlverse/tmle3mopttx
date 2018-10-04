@@ -13,7 +13,7 @@ Optimal_Rule_Q_learning <- R6Class(
   public = list(
     initialize = function(tmle_task, likelihood, cv_fold = "split-specific", V = NULL, blip_type = "blip2", blip_library, maximize = TRUE) {
       private$.tmle_task <- tmle_task
-      private$.likelihood <- likelihood
+      private$.likelihood <- likelihood$initial_likelihood
       private$.cv_fold <- cv_fold
       private$.blip_type <- blip_type
       private$.blip_library <- blip_library
@@ -48,14 +48,8 @@ Optimal_Rule_Q_learning <- R6Class(
       cv_fold <- self$cv_fold
 
       # todo: function
-      A_vals <- tmle_task$npsem$A$variable_type$levels
-      if (is.factor(A_vals)) {
-        A_levels <- levels(A_vals)
-        A_levels <- factor(A_levels, A_levels)
-      } else {
-        A_levels <- sort(unique(A_vals))
-      }
-
+      A_levels <- tmle_task$npsem$A$variable_type$levels
+      A_levels <- factor(A_levels, A_levels)
       # Generate counterfactual tasks for each value of A:
       cf_tasks <- lapply(A_levels, function(A_level) {
         newdata <- data.table(A = A_level)
@@ -67,11 +61,8 @@ Optimal_Rule_Q_learning <- R6Class(
     },
 
     rule = function(tmle_task) {
-      blip_fin <- sapply(private$.cf_tasks, likelihood$get_likelihood, "Y",-1)
+      blip_fin <- sapply(private$.cf_tasks, private$.likelihood$get_likelihood, "Y",-1)
 
-      # TO DO: blip2 for binary? Is max.col ok?
-    
-      # Combine all the sl validation samples:
       if(private$.maximize){
         rule_index <- max.col(blip_fin)
       } else {
@@ -79,13 +70,8 @@ Optimal_Rule_Q_learning <- R6Class(
       }
 
       # todo: only if factor
-      A_vals <- tmle_task$npsem$A$variable_type$levels
-      if (is.factor(A_vals)) {
-        A_levels <- levels(A_vals)
-        A_levels <- factor(A_levels, A_levels)
-      } else {
-        A_levels <- sort(unique(A_vals))
-      }
+      A_levels <- tmle_task$npsem$A$variable_type$levels
+      A_levels <- factor(A_levels, A_levels)
       
       rule <- A_levels[rule_index]
       return(rule)
