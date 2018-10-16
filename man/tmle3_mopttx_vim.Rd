@@ -4,7 +4,7 @@
 \alias{tmle3_mopttx_vim}
 \title{Mean under the Optimal Individualized Treatment Rule}
 \usage{
-tmle3_mopttx_vim(V, type, b_learner)
+tmle3_mopttx_vim(V, type, b_learner, contrast, maximize)
 }
 \arguments{
 \item{V}{Covariates the rule depends on}

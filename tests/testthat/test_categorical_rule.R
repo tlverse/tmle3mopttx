@@ -9,7 +9,7 @@ library(here)
 
 set.seed(1234)
 
-load(here("data/test_vim_cat_data.rda"))
+data(test_vim_cat_data)
 data<-test_vim_cat_data
 
 # Define nodes:
