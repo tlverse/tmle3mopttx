@@ -95,7 +95,7 @@ tmle3_Spec_mopttx_vim <- R6Class(
                                                 maximize = private$.options$maximize)
       }else if(method=="SL"){
         #Learn the rule using split-specific methodology:
-        opt_rule <- Optimal_Rule$new(tmle_task, likelihood, "split-specific",
+        opt_rule <- Optimal_Rule$new(tmle_task, likelihood, cv_fold = "split-specific",
                                      V = private$.options$V,         
                                      blip_library = private$.options$b_learner,
                                      maximize = private$.options$maximize

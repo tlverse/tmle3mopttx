@@ -46,7 +46,8 @@ b_learner <- make_learner(Lrnr_sl, blib, metalearner)
 learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
 
 # Define spec:
-tmle_spec <- tmle3_mopttx(V = c("W1", "W2", "W3", "W4", "W5"), type = "blip1", b_learner = learner_list$B)
+tmle_spec <- tmle3_mopttx_blip(V = c("W1", "W2", "W3", "W4", "W5"), type = "blip1", 
+                               b_learner = learner_list$B, max)
 
 # Define data:
 tmle_task <- tmle_spec$make_tmle_task(data, node_list)
@@ -56,6 +57,20 @@ initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task, learner_list)
 
 # Shortcut:
 # fit <- tmle3(tmle_spec, data, node_list, learner_list)
+
+#Define an updater and define targeted likelihood:
+updater <- tmle_spec$make_updater()
+targeted_likelihood <- tmle_spec$make_targeted_likelihood(initial_likelihood, updater)
+
+tmle_params <- tmle_spec$make_params(tmle_task, targeted_likelihood)
+
+
+
+
+
+
+
+
 
 # Learn the rule:
 opt_rule <- Optimal_Rule$new(tmle_task, initial_likelihood, "split-specific",

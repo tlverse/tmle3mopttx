@@ -10,8 +10,8 @@ tmle3_Spec_mopttx_blip <- R6Class(
   class = TRUE,
   inherit = tmle3_Spec,
   public = list(
-    initialize = function(V, type, b_learner, ...) {
-      options <- list(V = V, type = type, b_learner = b_learner)
+    initialize = function(V, type, b_learner, maximize=TRUE, ...) {
+      options <- list(V = V, type = type, b_learner = b_learner, maximize=maximize)
       do.call(super$initialize, options)
     },
 
@@ -26,8 +26,8 @@ tmle3_Spec_mopttx_blip <- R6Class(
     make_params = function(tmle_task, likelihood) {
 
       # Learn the rule
-      opt_rule <- Optimal_Rule$new(tmle_task, likelihood, "split-specific",
-        blip_library = private$.options$b_learner
+      opt_rule <- Optimal_Rule$new(tmle_task, likelihood, "split-specific", V=private$.options$V,
+        blip_library = private$.options$b_learner, maximize = private$.options
       )
       opt_rule$fit_blip()
 

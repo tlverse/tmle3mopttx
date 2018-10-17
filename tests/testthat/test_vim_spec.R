@@ -74,8 +74,9 @@ tmle_spec <- tmle3_mopttx_vim(V=node_list$W, b_learner = learner_list$B, type="b
                               maximize = FALSE, 
                               method="SL")
 
+#TO DO: Check this
 #Fast way of doing it:
-fit_opttx <- tmle3(tmle_spec, data, node_list, learner_list)
+#fit_opttx <- tmle3(tmle_spec, data, node_list, learner_list)
 
 
 

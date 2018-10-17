@@ -11,7 +11,8 @@ Optimal_Rule <- R6Class(
   class = TRUE,
   inherit = tmle3_Spec,
   public = list(
-    initialize = function(tmle_task, likelihood, cv_fold = "split-specific", V = NULL, blip_type = "blip2", blip_library, maximize = TRUE) {
+    initialize = function(tmle_task, likelihood, cv_fold = "split-specific", 
+                          V = NULL, blip_type = "blip2", blip_library, maximize = TRUE) {
       private$.tmle_task <- tmle_task
       private$.likelihood <- likelihood
       private$.cv_fold <- cv_fold
@@ -23,7 +24,6 @@ Optimal_Rule <- R6Class(
       }
       
       private$.V <- V
-      
       private$.cv_fold <- cv_fold
     },
     factor_to_indicators = function(x, x_vals) {
@@ -177,7 +177,6 @@ Optimal_Rule <- R6Class(
         blip_fin[, j] <- pred
       }
 
-      # TO DO: blip2 for binary? Is max.col ok?
       if (length(blip_fits[[1]]) == 1) {
         rule <- as.numeric(blip_fin > 0)
       } else {
