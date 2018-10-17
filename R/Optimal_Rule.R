@@ -47,7 +47,7 @@ Optimal_Rule <- R6Class(
       likelihood <- self$likelihood
       cv_fold <- self$cv_fold
 
-      A_vals <- tmle_task$npsem$A$variable_type$levels
+      A_vals <- as.factor(tmle_task$npsem$A$variable_type$levels)
 
       # Generate counterfactual tasks for each value of A:
       cf_tasks <- lapply(A_vals, function(A_val) {
