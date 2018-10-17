@@ -1,5 +1,6 @@
 #Data-generating distribution for the categorical example:
 library(devtools)
+library(data.table)
 
 normalize_rows <- function(x) {
   sweep(x, 1, rowSums(x), "/")
@@ -60,7 +61,7 @@ gen_data <- function(n = 1000, p = 4) {
 set.seed(11)
 testdata <- gen_data(1e+05, 5)
 test_vim_cat_data <- gen_data(1000, 5)
-test_vim_cat_data<-test_vim_cat_data[,1:7]
+test_vim_cat_data<-data.table(test_vim_cat_data[,1:7])
 rm(vals_from_factor,Qbar0,normalize_rows,gen_data,g0,testdata)
 devtools::use_data(test_vim_cat_data)
 
