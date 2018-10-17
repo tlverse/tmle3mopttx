@@ -1,0 +1,315 @@
+---
+title: "Variable Importance with the Optimal Individualized Categorical Treatment"
+author: "[Ivana Malenica](https://github.com/podTockom), [Jeremy R.
+  Coyle](https://github.com/jeremyrcoyle)"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: vignette-refs.bib
+vignette: >
+  %\VignetteIndexEntry{Variable Importance with Optimal Individualized Categorical Treatment}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r options, echo=FALSE, eval=FALSE}
+options(scipen=999)
+```
+
+## Introduction
+
+Suppose one wishes to assess the importance of each observed covariate, in terms of maximizing (or minimizing) the population mean of an outcome under an optimal individualized treatment regime. First, we remind that such a treatment strategy is termed individualized treatment regime (ITR), and the (counterfactual) population mean outcome under an ITR is the value of the ITR. An ITR with the maximal (or minimal) value is referred to as an optimal ITR or the optimal rule, whereas the value of an optimal ITR is termed the optimal value. Under such paradigm, a covariate that maximizes (or minimizes) the population mean outcome the most under an optimal ITR out of all other considered covariates might be considered "more important" with respect to the said criteria. 
+
+Estimation-wise, we consider estimation of the mean outcome under the optimal rule, where the candidate rules are restricted to depend only on user-supplied subset of the baseline covariates. The estimation problem is addressed in a statistical model for the data distribution that is nonparametric, and at most places restrictions on the probability of a patient receiving treatment given covariates. For additional background on Targeted Learning and previous work on optimal individualized treatment regimes, please consider consulting @vdl2011targeted,
+@vdl2018targeted, @vanderLaanLuedtke15 and @luedtke2016super.   
+
+To start, let's load the packages we'll use and set a seed for simulation:
+
+```{r setup, message=FALSE, warning=FALSE}
+#Load packages:
+library(data.table)
+library(sl3)
+library(tmle3)
+library(tmle3mopttx)
+
+#Set random seed:
+set.seed(111)
+```
+
+---
+
+## Data and Notation
+
+Suppose we observe $n$ i.i.d. observations of $O=(W,A,Y) \sim P_0$. We denote $A$ as treatment, where $A \in \{0,1\}$ and $Y$ is the final outcome. Note that we treat $W$ as all of our collected baseline covariates. We emphasize that we make no assumptions about the distribution of $P_0$, so that $P_0 \in \mathcal{M}$, where $\mathcal{M}$ is the fully nonparametric model. This is in contrast to much of the current literature that relies on parametric assumptions. We can break the data generating distribution $P_0$ into the following parts:
+
+$$P_0(O) = P_0(Y|A,W)P_0(A|W)P_0(W) = Q_0(Y|A,W)g_0(A|W)Q_{W,0}(W)$$
+In addition, we also define $\bar{Q}_{Y,0}(A,W) \equiv E_0[Y|A,W]$ such that $E_0(Y_a) = E_{0,W}(\bar{Q}_{Y,0}(A=a,W))$.
+
+### Simulated Data
+
+First, we load the simulated data. In particular, here our data consists of four baseline covariates $W$ which are continuous, and a binary outcome $Y$ whose mean we want to maximize. In addition, we look at 
+ten continous and categorical covariates we want to assess importance of in terms of their ability to maximize (or minimize) the population mean of the outcome, if each was assigned (possibly contrary to the fact) according to the optimal individualized treatment rule. 
+
+```{r load sim_data}
+#Load data:
+data("test_vim_data")
+
+#Expore the data:
+head(data)
+
+```
+
+The above composes our observed data structure $O = (W, A, Y)$. To formally
+express this fact using the `tlverse` grammar introduced by the `tmle3` package,
+we create a single data object and specify the functional relationships between
+the nodes in the _directed acyclic graph_ (DAG) via _nonparametric structural
+equation models_ (NPSEMs), reflected in the node list that we set up:
+
+```{r data_nodes}
+# Organize data and nodes for tmle3
+node_list
+
+# Subset to discrete nodes:
+node_list_discrete <- list(W=node_list$W, A=node_list$A_discrete, Y=node_list$Y)
+```
+
+We now have an observed data structure (`data`) and a specification of the role
+that each variable in the data set plays as the nodes in a DAG. Note that this 
+methodology only applies to discrete variables, hence we subset out nodes to only 
+discrete $A$s.
+
+---
+
+## Methodology
+
+Many methods for learning an optimal rule from data have been developed. Here, we focus on the methods developed in @luedtke2016super and @vanderLaanLuedtke15; however `tmle3mopttx` also supports the widely used Q-learning approach, based on generating an estimate of $\bar{Q}_{Y,0}(A,W)$ @Sutton1998. We cover how to use the Q-learning approach in the later implementation of the vignette. 
+
+However, we focus on the methodology outlined in @luedtke2016super and @vanderLaanLuedtke15, where we learn the optimal ITR using Super Learner @vdl2007super, and estimate its value using the cross-validated Targeted Minimum Loss-based Estimation (CV-TMLE) @cvtmle2010. Luedtke and van der Laan present three different appraches for learning the optimal rule, but `tmle3mopttx` relies on using the Super Learner to estimate the blip function (or "pseudo-blip" for categorical treatment). 
+
+In great generality, we first need to estimate an individual treatment regime which corresponds to dynamic treatment rule ($d(V)$) that takes a subset of covariates $V \in W$ and assigns treatment. As specified in the introduction, we are also interested in the value of such a dynamic rule: $$E_0[Y_{d(V)}] = E_{0,W}[\bar{Q}_{Y,0}(A=d(V),W)]$$ which, under causal assumptions, can be interpreted as the mean outcome if (possibly contrary to fact), treatment was assigned according to the rule. The optimal rule is the rule with the maximal value: $$d_0 \equiv \text{argmax}_{d \in \mathcal{D}} E_0[Y_{d(V)}] $$
+where $\mathcal{D}$ represents the set of possible rules, $d$. We note that minimization is completely ok as well, depending on the problem in hand. 
+
+### Binary treatment
+
+In the case of a binary treatment, a key quantity for optimal ITR is the blip function. In particular, one can show that any optimal ITR assigns treatment to individuals falling in strata in which the stratum specific average treatment effect, the blip function, is positive and does not assign treatment to individuals for which this quantity is negative. Therefore for a binary treatment, we define a blip function as $$E_0[Y_1-Y_0|V] \equiv E_0[\bar{Q}_{Y,0}(1,W) - \bar{Q}_{Y,0}(0,W) | V] $$
+The note that the rule can now be derived as $d_0(V) = I(\bar{Q}_0(V) > 0)$.
+
+In particular, we will:
+
+1. Estimate $\bar{Q}_{Y,0}(A,W)$ and $g_0(A|W)$ using `sl3`.
+
+2. Apply the doubly robust A-IPW transform to our outcome, where we define:
+
+$$D_{\bar{Q},g,a}(O) \equiv \frac{I(A=a)}{g(A|W)} (Y-\bar{Q}_Y(A,W)) + \bar{Q}_Y(A=a,W),$$
+$$E(D_{\bar{Q},g,a}(O) | V) = E(Y^a|V).$$
+Using this transform, we can define the following contrast:
+$D_{\bar{Q},g}(O) = D_{\bar{Q},g,a=1}(O) - D_{\bar{Q},g,a=0}(O)$
+
+We estimate the blip function (\bar{Q}_{0,a}(V)) by regressing $D_{\bar{Q},g}(O)$ on $V$ using `sl3`.
+
+3. Our estimated rule is $d(V) = \text{argmax}_{a \in \mathcal{A}} \bar{Q}_{0,a}(V)$.
+
+4. Obtain inference for the mean outcome under the optimal rule using CV-TMLE.
+
+### Categorical treatment
+
+In line with the approach considered for binary treatment, we extend the blip function apprach to allow for categorical treatment by estimating "pseudo-blips". We define pseudo-blips as vector valued entities where the output for a given $V$ is a vector of length equal to the number of treatment categories. As such, we define it as:
+$$\bar{Q}_0^{pblip}(V) = \{\bar{Q}_{0,a}^{pblip}(V): a \in \mathcal{A} \}$$
+We implement three different pseudo-blips in `tmle3mopttx`. 
+
+1. "Blip1" corresponds to choosing a reference category of treatment, and defining the blip for all other categories relative to the specified reference. Hence we have that: $$\bar{Q}_{0,a}^{pblip-ref}(V) \equiv E_0(Y_a-Y-0|V)$$ where $Y_0$ is the specified reference category. Note that, for the case of binary treatment, this strategy reduces to the apparoach described in the previous section.
+
+2. "Blip2" approach corresponds to defining the blip relative to the average of all categories. As such, we can define $\bar{Q}_{0,a}^{pblip-avg}(V)$ as:
+$$\bar{Q}_{0,a}^{pblip-avg}(V) \equiv E_0(Y_a- \frac{1}{n_A} \sum_{a^{'} \in \mathcal{A}} Y_{a^{'}}|V)$$
+3. "Blip3" reflects an extension of "Blip2", where the average is now a weighted average. 
+$$\bar{Q}_{0,a}^{pblip-wavg}(V) \equiv E_0(Y_a- \frac{1}{n_A} \sum_{a^{'} \in \mathcal{A}} P(A=a^{'}|V)
+Y_{a^{'}}|V)$$
+
+Just like in the binary case, pseudo-blips are estimated by regressing contrasts composed using the A-IPW transform on $V$. 
+
+### Computational Considerations
+
+We use the estimation approach outlined in @luedtke2016super and @vanderLaanLuedtke15, which makes frequent use of cross-validation for both model selection and CV-TMLE based parameter estimation @cvtmle2010. In order to avoid nesting cross-validation, `tmle3mopptx` relies on Split-Specific Super Learner in order to estimate the rule, as described by Coyle et al [@jeremythesis].
+
+### _Interlude:_ Constructing Optimal Stacked Regressions with `sl3`
+
+To easily incorporate ensemble machine learning into the estimation procedure,
+we rely on the facilities provided in the [`sl3` R
+package](https://sl3.tlverse.org). For a complete guide on using the `sl3` R
+package, consider consulting https://sl3.tlverse.org, or https://tlverse.org for
+the [`tlverse` ecosystem](https://github.com/tlverse), of which `sl3` is a major
+part.
+
+Using the framework provided by the [`sl3` package](https://sl3.tlverse.org),
+the nuisance parameters of the TML estimator may be fit with ensemble learning,
+using the cross-validation framework of the Super Learner algorithm of
+@vdl2007super.
+
+```{r sl3_lrnrs}
+
+#Define sl3 library and metalearners:
+qlib <- make_learner_stack(
+  "Lrnr_mean",
+  "Lrnr_glm_fast"
+)
+
+glib <- make_learner_stack(
+  "Lrnr_mean",
+  "Lrnr_glmnet",
+  "Lrnr_xgboost"
+)
+
+blib <- make_learner_stack(
+  "Lrnr_mean",
+  "Lrnr_glm_fast"
+)
+
+metalearner <- make_learner(Lrnr_nnls)
+mn_metalearner <- make_learner(Lrnr_solnp, loss_function = loss_loglik_multinomial, learner_function = metalearner_linear_multinomial)
+
+Q_learner <- make_learner(Lrnr_sl, qlib, metalearner)
+g_learner <- make_learner(Lrnr_sl, glib, mn_metalearner)
+b_learner <- make_learner(Lrnr_sl, blib, metalearner)
+
+```
+
+As seen above, we generate three different ensemble learners that must be fit, corresponding to the learners for the outcome regression, propensity score, and the blip function. 
+
+We make the above explicit with respect to standard notation by bundling the
+ensemble learners into a list object below:
+
+```{r make_lrnr_list}
+# specify outcome and treatment regressions and create learner list
+learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
+```
+
+The `learner_list` object above specifies the role that each of the ensemble
+learners we've generated is to play in computing initial estimators to be used
+in building a TMLE for the parameter of interest. In particular, it makes
+explicit the fact that our `Y` is used in fitting the outcome regression
+while our `A` is used in fitting our treatment mechanism regression, and finally `B` is used in fitting the blip function.
+
+### Initializing `tmle3mopttx` through its `tmle3_Spec`
+
+To start, we will initialize a specification for the TMLE of our parameter of
+interest (called a `tmle3_Spec` in the `tlverse` nomenclature) simply by calling
+`tmle3_mopttx_vim`. First, we indicate the method used for learning the optimal individualized 
+treatment by specifying the `method` argument of `tmle3_mopttx_vim`. If `method="Q"`, then 
+we will be using Q-learning for rule estimation, and we do not need to specify `V`, `type` and
+`b_learner` arguments in the spec, since they are not important for Q-learning. However, 
+if `method="SL"`, which corresponds to learning the optimal individualized treatment using the 
+above outlined methodology, then we need to specify the type of pseudo-blip we will use in this 
+estimation problem and the list of learners used to estimate the blip function. Finally, for 
+`method="SL"` we also need to communicate that we're interested in learning a rule dependent on 
+`V` covariates by speciflying the `V` argument. For both `method="Q"` and `method="SL"`, we 
+need to indicate whether we want to maximize or minimize the mean under the optimal inidvidualized 
+rule. Finally, we also need to specify whether the final comparison of the mean under the
+optimal individualized rule and the mean under the observed outcome should be on the 
+multiplicative scale (risk ratio) or linear (similar to average treatment effect).
+
+```{r spec_init}
+# initialize a tmle specification
+tmle_spec <-  tmle3_mopttx_vim(V = c("W01", "W02", "W03", "W04"),
+                               type = "blip1",
+                               b_learner = learner_list$B,
+                               contrast = "multiplicative",
+                               maximize = FALSE,
+                               method="Q")
+```
+
+As seen above, the `tmle_mopttx` specification object (like all `tmle3_Spec`
+objects) does _not_ store the data for our specific analysis of interest. Later,
+we'll see that passing a data object directly to the `tmle3` wrapper function,
+alongside the instantiated `tmle_spec`, will serve to construct a `tmle3_Task`
+object internally (see the `tmle3` documentation for details).
+
+### Targeted Estimation of the Mean under the Optimal Individualized Treatment Regime
+
+One may walk through the step-by-step procedure for assessing the contrast between the 
+mean under the optimal individualized rule and the mean under the observed outcome for a
+single covariate. By doing this step-by-step, we dive into the machinery exposed by the [`tmle3` R package](https://tmle3.tlverse.org/). This step can be easily avoided, as demonstrated by the
+following passage. 
+
+```{r fit_tmle_manual_singleA, eval=FALSE}
+# NOT RUN -- SEE NEXT CODE CHUNK!
+
+# As an example, we look at the result for a single interesting treatment, "A_bin01":
+node_list <- list(W = node_list$W, A = "A_bin01", Y = node_list$Y)
+
+#Generate tmle task:
+tmle_task <- tmle_spec$make_tmle_task(data, node_list)
+
+#Generate initial likelihood using the specified learners:
+initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task,learner_list)
+
+#Define the updater:
+updater <- tmle_spec$make_updater()
+
+#Define targeted likelihood:
+targeted_likelihood <- tmle_spec$make_targeted_likelihood(initial_likelihood, updater)
+
+#Define the parameter:
+#Note that this step does the actual rule learning!
+tmle_params <- tmle_spec$make_params(tmle_task, targeted_likelihood)
+
+updater$tmle_params <- tmle_params
+
+#Targeting step:
+fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, updater)
+fit
+```
+
+Instead, one may invoke the `tmle3` convenience function to fit the series of
+TML estimators in a single function call:
+
+```{r fit_tmle_auto, eval=TRUE}
+#Repeat all the steps from above in one step:
+fit <- tmle3(tmle_spec, data, node_list, learner_list)
+fit
+```
+
+_Remark_: The `print` method of the resultant `fit` object conveniently
+displays the results from computing our TML estimator. In particular, we can we type of 
+our target parameter, the initial and targeted estimate, standard error, and the 
+associated confidence interval.
+
+### Variable Importance using the Targeted Estimation of the Mean under the Optimal ITR 
+
+Now that we have seen how to obtain a contrast between the 
+mean under the optimal individualized rule and the mean under the observed outcome for a 
+single covariate, we are ready to run the variable importance analysis for all of our 
+observed covariates. In order to run the variable importance analysis, we first need 
+to initialize a specification for the TMLE of our parameter of interest as we have done 
+before. In addition, we need to specifly the data and the corresponding list of nodes, as 
+well as the appropriate learners for the outcome regression, propensity score, and the blip
+function. Finally, we need to specifly whether we should adjust for all the other covariates 
+we are assessing variable importance for. Note that we are able to assess importance of only
+categorical covariates- hence all continous baseline covariates $W$ will not be included in the 
+variable importance loop, only $A$ terms. However, we will adjust for all $W$s in our analysis, and
+if `adjust_for_other_A=TRUE`, also for all $A$ covariates that are not treated as exposure in the 
+variable importance loop. For computational reasons, we set `adjust_for_other_A=FALSE` below.
+
+```{r vim_categorical}
+vim_results <- tmle3_vim(tmle_spec, data, node_list=node_list_discrete, learner_list,
+                         adjust_for_other_A = FALSE)
+vim_results
+```
+
+The final result of `tmle3_vim` with the `tmle3mopttx` spec is an ordered list of mean outcomes under the optimal individualized treatment for all categorical covariates in our dataset. 
+
+### Variable Importance using Q-learning
+
+We can also perform variable importance with the optimal individualized treatment estimated by Q-learning. In order to do that, we need to initialize our `tmle3` spec with `method="Q"`, then run as in the above section.
+
+```{r vim_Q_learning}
+# initialize a tmle specification:
+tmle_spec_Q <-  tmle3_mopttx_vim(contrast = "multiplicative",
+                               maximize = FALSE,
+                               method="Q")
+
+vim_results_Q <- tmle3_vim(tmle_spec_Q, data, node_list=node_list_discrete, learner_list,
+                         adjust_for_other_A = FALSE)
+vim_results_Q
+```
+
+
+## References
