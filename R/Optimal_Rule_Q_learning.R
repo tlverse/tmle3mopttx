@@ -1,51 +1,29 @@
-#' Learns the Optimal Rule given a tmle_task and likelihood
+#' Learns the Optimal Rule given a tmle_task and likelihood, using Q learning.
 #'
 #' @importFrom R6 R6Class
 #' @importFrom data.table data.table
+#' 
+#' @param tmle_task \code{tmle3} object, makes the tmle task. 
+#' @param likelihood \code{Targeted_Likelihood} object, contains estimates of all relevant parts of the likelihood.
+#' @param maximize Specify whether we want to maximize or minimize the mean of the final outcome. 
 #'
 #' @export
 #
+
 Optimal_Rule_Q_learning <- R6Class(
   classname = "Optimal_Rule_Q_learning",
   portable = TRUE,
   class = TRUE,
   inherit = tmle3_Spec,
   public = list(
-    initialize = function(tmle_task, likelihood, cv_fold = "split-specific", V = NULL, blip_type = "blip2", blip_library, maximize = TRUE) {
+    initialize = function(tmle_task, likelihood, maximize = TRUE) {
       private$.tmle_task <- tmle_task
       private$.likelihood <- likelihood$initial_likelihood
-      private$.cv_fold <- cv_fold
-      private$.blip_type <- blip_type
-      private$.blip_library <- blip_library
       private$.maximize <- maximize
-      if (missing(V)) {
-        V <- tmle_task$npsem$W$variables
-      }
-      
-      private$.V <- V
-      
-      private$.cv_fold <- cv_fold
     },
-    factor_to_indicators = function(x, x_vals) {
-      ind_mat <- sapply(x_vals, function(x_val) as.numeric(x_val == x))
-      colnames(ind_mat) <- x_vals
-      return(ind_mat)
-    },
-    V_data = function(tmle_task, fold = NULL) {
-      if (is.null(fold)) {
-        tmle_task$data[, self$V, with = FALSE]
-      } else {
-        tmle_task$data[, self$V, with = FALSE][tmle_task$folds[[fold]]$training_set, ]
-      }
-    },
-    DR_full = function(v, indx) {
-      DR <- data.frame(private$.DR_full[[v]])
-      return(data.frame(DR[indx, ]))
-    },
+    
     fit_blip = function() {
       tmle_task <- self$tmle_task
-      likelihood <- self$likelihood
-      cv_fold <- self$cv_fold
 
       # todo: function
       A_levels <- tmle_task$npsem$A$variable_type$levels
@@ -61,6 +39,7 @@ Optimal_Rule_Q_learning <- R6Class(
     },
 
     rule = function(tmle_task) {
+      #Get Q(a,W) for each level of A, all folds
       blip_fin <- sapply(private$.cf_tasks, private$.likelihood$get_likelihood, "Y",-1)
 
       if(private$.maximize){
@@ -83,34 +62,11 @@ Optimal_Rule_Q_learning <- R6Class(
     },
     likelihood = function() {
       return(private$.likelihood)
-    },
-    cv_fold = function() {
-      return(private$.cv_fold)
-    },
-    V = function() {
-      return(private$.V)
-    },
-    blip_type = function() {
-      return(private$.blip_type)
-    },
-    blip_fits = function() {
-      return(private$.blip_fits)
-    },
-    blip_fits_sl = function() {
-      return(private$.blip_fits_sl)
-    },
-    blip_library = function() {
-      return(private$.blip_library)
     }
   ),
   private = list(
     .tmle_task = NULL,
     .likelihood = NULL,
-    .cv_fold = NULL,
-    .V = NULL,
-    .blip_type = NULL,
-    .blip_library = NULL,
-    .DR_full = NULL,
     .cf_tasks = NULL,
     .maximize = NULL
   )

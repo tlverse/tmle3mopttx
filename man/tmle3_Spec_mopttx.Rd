@@ -3,12 +3,16 @@
 \docType{data}
 \name{tmle3_Spec_mopttx}
 \alias{tmle3_Spec_mopttx}
-\title{Defines a TMLE for the Mean Under the Optimal Individualized Rule with Categorical Treatment}
+\title{Defines a TMLE for the Mean Under the Optimal Individualized Rule with Categorical Treatment. 
+This implementation also compares the mean under the estimated optimal individualized rule with all 
+possible realistic static rules, and returns the mean under the either estimated rule or possible static intervention.}
 \format{An object of class \code{R6ClassGenerator} of length 24.}
 \usage{
 tmle3_Spec_mopttx
 }
 \description{
-Defines a TMLE for the Mean Under the Optimal Individualized Rule with Categorical Treatment
+Defines a TMLE for the Mean Under the Optimal Individualized Rule with Categorical Treatment. 
+This implementation also compares the mean under the estimated optimal individualized rule with all 
+possible realistic static rules, and returns the mean under the either estimated rule or possible static intervention.
 }
 \keyword{datasets}

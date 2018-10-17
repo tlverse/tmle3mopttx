@@ -4,10 +4,11 @@
 \alias{tmle3_mopttx_vim}
 \title{Mean under the Optimal Individualized Treatment Rule}
 \usage{
-tmle3_mopttx_vim(V, type, b_learner, contrast, maximize)
+tmle3_mopttx_vim(V = NULL, type = "blip2", method = "SL",
+  b_learner = NULL, contrast = "linear", maximize = TRUE)
 }
 \arguments{
-\item{V}{Covariates the rule depends on}
+\item{V}{Covariates the rule depends on.}
 
 \item{type}{One of three psudo-blip versions developed to accommodate categorical treatment. "Blip1"
 corresponds to chosing a reference category, and defining the blip for all other categories relative to the
@@ -15,7 +16,12 @@ specified reference. Note that in the case of binary treatment, "blip1" is just 
 "Blip2$ corresponds to defining the blip relative to the average of all categories. Finally,
 "Blip3" corresponds to defining the blip relative to the weighted average of all categories.}
 
+\item{method}{Specifies which methodology to use for learning the rule. Options are "Q" for Q-learning, and 
+"SL" for the Super-Learner approach using split-specific estimates.}
+
 \item{b_learner}{Library for blip estimation.}
+
+\item{maximize}{Specify whether we want to maximize or minimize the mean of the final outcome.}
 }
 \description{
 O=(W,A,Y)

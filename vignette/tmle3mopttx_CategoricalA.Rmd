@@ -1,12 +1,12 @@
 ---
-title: "Variable Importance with Optimal Individualized Categorical Treatment"
+title: "Mean under the Optimal Individualized Categorical Treatment"
 author: "[Ivana Malenica](https://github.com/podTockom), [Jeremy R.
   Coyle](https://github.com/jeremyrcoyle)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: vignette-refs.bib
 vignette: >
-  %\VignetteIndexEntry{Variable Importance with Grids of Stochastic Interventions}
+  %\VignetteIndexEntry{Mean under the Optimal Individualized Categorical Treatment}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -75,12 +75,12 @@ that each variable in the data set plays as the nodes in a DAG.
 
 ## Methodology
 
-Many methods for learning an optimal rule from data have been developed. Here, we focus on the methods developed in @luedtke2016super and @vanderLaanLuedtke15; however `tmle3mopttx` also supports the widely used Q-learning approach, based on generating an estimate of $\bar{Q}_{Y,0}(A,W)$ @Sutton1998.
+Many methods for learning an optimal rule from data have been developed. Here, we focus on the methods developed in @luedtke2016super and @vanderLaanLuedtke15; however `tmle3mopttx` also supports the widely used Q-learning approach, based on generating an estimate of $\bar{Q}_{Y,0}(A,W)$ @Sutton1998. We cover how to use the Q-learning approach in the later implementation of the vignette. 
 
-In particular, @luedtke2016super and @vanderLaanLuedtke15 outline a methodology for learning an optimal ITR using Super Learner @vdl2007super, and estimating its value using the cross-validated Targeted Minimum Loss-based Estimation (CV-TMLE) @cvtmle2010. Luedtke and van der Laan present three different appraches for leaning optimal rule, but `tmle3mopttx` relies on using the Super Learner to estimate the blip function (or "pseudo-blip" for categorical treatment). 
+However, we focus on the methodology outlined in @luedtke2016super and @vanderLaanLuedtke15, where we learn the optimal ITR using Super Learner @vdl2007super, and estimate its value using the cross-validated Targeted Minimum Loss-based Estimation (CV-TMLE) @cvtmle2010. Luedtke and van der Laan present three different appraches for learning the optimal rule, but `tmle3mopttx` relies on using the Super Learner to estimate the blip function (or "pseudo-blip" for categorical treatment). 
 
 In great generality, we first need to estimate an individual treatment regime which corresponds to dynamic treatment rule ($d(V)$) that takes a subset of covariates $V \in W$ and assigns treatment. As specified in the introduction, we are also interested in the value of such a dynamic rule: $$E_0[Y_{d(V)}] = E_{0,W}[\bar{Q}_{Y,0}(A=d(V),W)]$$ which, under causal assumptions, can be interpreted as the mean outcome if (possibly contrary to fact), treatment was assigned according to the rule. The optimal rule is the rule with the maximal value: $$d_0 \equiv \text{argmax}_{d \in \mathcal{D}} E_0[Y_{d(V)}] $$
-where $\mathcal{D}$ represents the set of possible rules, $d$. 
+where $\mathcal{D}$ represents the set of possible rules, $d$. We note that minimization is completely ok as well, depending on the problem in hand. 
 
 ### Binary treatment
 
@@ -102,7 +102,7 @@ We estimate the blip function (\bar{Q}_{0,a}(V)) by regressing $D_{\bar{Q},g}(O)
 
 3. Our estimated rule is $d(V) = \text{argmax}_{a \in \mathcal{A}} \bar{Q}_{0,a}(V)$.
 
-4. Inference for the mean outcome under the optimal rule using CV-TMLE.
+4. Obtain inference for the mean outcome under the optimal rule using CV-TMLE.
 
 ### Categorical treatment
 
@@ -182,7 +182,7 @@ learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
 
 The `learner_list` object above specifies the role that each of the ensemble
 learners we've generated is to play in computing initial estimators to be used
-in building a TMLE for the parameter of interest here. In particular, it makes
+in building a TMLE for the parameter of interest. In particular, it makes
 explicit the fact that our `Y` is used in fitting the outcome regression
 while our `A` is used in fitting our treatment mechanism regression, and finally `B` is used in fitting the blip function.
 
@@ -190,13 +190,13 @@ while our `A` is used in fitting our treatment mechanism regression, and finally
 
 To start, we will initialize a specification for the TMLE of our parameter of
 interest (called a `tmle3_Spec` in the `tlverse` nomenclature) simply by calling
-`tmle3_mopttx`. We specify the argument `shift_grid = seq(-0.5, 0.5, by = 0.5)`
-when initializing the `tmle3_Spec` object to communicate that we're interested
-in assessing the mean counterfactual outcome over a grid of shifts `r seq(-0.5,
-0.5, by = 0.5)` on the scale of the treatment $A$ (note that the numerical
-choice of shift is an arbitrarily chosen set of values for this example).
+`tmle3_mopttx`. We specify the argument `V = c("W1", "W2", "W3", "W4", "W5")`
+when initializing the `tmle3_Spec` object in order to communicate that we're interested
+in learning a rule dependent on `V` covariates. We also need to specify the type of 
+pseudo-blip we will use in this estimation problem, and finally the list of learners 
+used to estimate the blip function.
 
-```{r vim_spec_init}
+```{r spec_init}
 # initialize a tmle specification
 tmle_spec <- tmle3_mopttx(V = c("W1", "W2", "W3", "W4", "W5"), type = "blip2", b_learner = learner_list$B)
 ```
@@ -208,11 +208,11 @@ alongside the instantiated `tmle_spec`, will serve to construct a `tmle3_Task`
 object internally (see the `tmle3` documentation for details).
 
 In initializing the specification for the TMLE of our parameter of
-interest, we have specified the set of covariates the rule depends on ($V$), the type of pseudo-blip to use ("type"), and the learners used for estimating the pseudo-blip.
+interest, we have specified the set of covariates the rule depends on ($V$), the type of pseudo-blip to use ("type"), and the learners used for estimating the pseudo-blip. This is all we need in order to initialize the spec. 
 
-### Targeted Estimation of the Mean under the optimal ITR
+### Targeted Estimation of the Mean under the Optimal ITR with Categorical Treatment
 
-One may walk through the step-by-step procedure for  fitting the TML estimator
+One may walk through the step-by-step procedure for fitting the TML estimator
 of the mean counterfactual outcome under the optimal ITR, using the
 machinery exposed by the [`tmle3` R package](https://tmle3.tlverse.org/) (see
 below); however, the step-by-step procedure is often not of interest.
@@ -260,6 +260,17 @@ fit
 
 _Remark_: The `print` method of the resultant `tmle_fit` object conveniently
 displays the results from computing our TML estimator.
+
+### Learning the Mean Outcome under the Optimal Rule with Q-learning
+
+Here we outline how to use `tmle3mopttx` package in order to estimate the mean under the ITR using Q-learning. As demonstrated in the previous sections, we first need to initialize a specification for the TMLE of our parameter of interest. As opposed to the previous section however, we will now use `tmle3_mopttx_Q` instead of `tmle3_mopttx` in order to indicate that we want to use Q-learning instead of TMLE. 
+
+```{r spec_init_Qlearning}
+
+```
+
+
+
 
 ## References
 

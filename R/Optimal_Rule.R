@@ -85,8 +85,13 @@ Optimal_Rule <- R6Class(
       # DR_full <- lapply(1:n_fold, function(i) (A_ind / g_vals_full[[i]]) * (Y_mat - Q_vals_full[[i]]) + Q_vals_full[[i]])
       # DR <- lapply(1:n_fold, function(i) (A_ind[tmle_task$folds[[i]]$training_set, ] / g_vals[[i]]) * (Y_mat[tmle_task$folds[[i]]$training_set, ] - Q_vals[[i]]) + Q_vals[[i]])
       
+      #TO DO: add different methods for learning the rule
+      #1) offset (different way of learning the blip)
+      #2) weighted classification
+      
       DR_full <- lapply(1:n_fold, function(i) (Q_vals_full[[i]]))
       DR <- lapply(1:n_fold, function(i) (Q_vals[[i]]))
+      
       ######################
       # set up task for blip
       ######################
@@ -109,7 +114,7 @@ Optimal_Rule <- R6Class(
       } else {
         blip_outcome <- DR
       }
-
+      
       # Predict for each category, for now
       # TO DO: multivariate SL
       # (use only training data)
@@ -122,6 +127,7 @@ Optimal_Rule <- R6Class(
           self$blip_library$train(blip_tmle_task)
         })
       })
+
       private$.blip_fits <- blip_fits
       private$.DR_full <- blip_outcome_full
     },
@@ -134,6 +140,7 @@ Optimal_Rule <- R6Class(
       for (j in 1:length(blip_fits[[1]])) {
 
         # Fold-specific predictions:
+        # (learner specific prediction on validation samples for outcome j)
         temp <- lapply(1:length(tmle_task$folds), function(v) {
           # Note: splits-specific fits used here are generated entirely from the training data
           int <- lapply(1:5, function(fd) {
