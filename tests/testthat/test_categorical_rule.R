@@ -47,7 +47,7 @@ learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
 
 # Define spec:
 tmle_spec <- tmle3_mopttx_blip(V = c("W1", "W2", "W3", "W4", "W5"), type = "blip1", 
-                               b_learner = learner_list$B, max)
+                               b_learner = learner_list$B, maximize=TRUE)
 
 # Define data:
 tmle_task <- tmle_spec$make_tmle_task(data, node_list)
@@ -63,38 +63,12 @@ updater <- tmle_spec$make_updater()
 targeted_likelihood <- tmle_spec$make_targeted_likelihood(initial_likelihood, updater)
 
 tmle_params <- tmle_spec$make_params(tmle_task, targeted_likelihood)
+updater$tmle_params <- tmle_params
 
-
-
-
-
-
-
-
-
-# Learn the rule:
-opt_rule <- Optimal_Rule$new(tmle_task, initial_likelihood, "split-specific",
-  blip_library = learner_list$B,
-  blip_type = tmle_spec$options$type
-)
-opt_rule$fit_blip()
-
-# Define a dynamic likelihood factor:
-lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
-
-# Define updater and targeted likelihood:
-updater <- tmle3_cv_Update$new()
-targeted_likelihood <- Targeted_Likelihood$new(initial_likelihood, updater)
-
-tsm_rule <- Param_TSM$new(targeted_likelihood, lf_rule)
-
-updater$tmle_params <- tsm_rule
-tmle_fit <- fit_tmle3(tmle_task, targeted_likelihood, list(tsm_rule), updater)
+fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, updater)
 
 # extract results
-tmle3_psi <- tmle_fit$summary$tmle_est
-#tmle3_se <- tmle_fit$summary$se
-#tmle3_epsilon <- updater$epsilons[[1]]$Y
+tmle3_psi <- fit$summary$tmle_est
 
 test_that("Mean under the optimal categorical rule is correct", {
   expect_equal(tmle3_psi, 0.621474, tolerance = 0.1)
