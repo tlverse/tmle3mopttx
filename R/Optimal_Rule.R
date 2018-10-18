@@ -11,8 +11,8 @@ Optimal_Rule <- R6Class(
   class = TRUE,
   inherit = tmle3_Spec,
   public = list(
-    initialize = function(tmle_task, likelihood, cv_fold = "split-specific", 
-                          V = NULL, blip_type = "blip2", blip_library, maximize = TRUE) {
+    initialize = function(tmle_task, likelihood, cv_fold = "split-specific",
+                              V = NULL, blip_type = "blip2", blip_library, maximize = TRUE) {
       private$.tmle_task <- tmle_task
       private$.likelihood <- likelihood
       private$.cv_fold <- cv_fold
@@ -22,7 +22,7 @@ Optimal_Rule <- R6Class(
       if (missing(V)) {
         V <- tmle_task$npsem$W$variables
       }
-      
+
       private$.V <- V
       private$.cv_fold <- cv_fold
     },
@@ -47,7 +47,8 @@ Optimal_Rule <- R6Class(
       likelihood <- self$likelihood
       cv_fold <- self$cv_fold
 
-      A_vals <- as.factor(tmle_task$npsem$A$variable_type$levels)
+      # A_vals <- as.factor(tmle_task$npsem$A$variable_type$levels)
+      A_vals <- tmle_task$npsem$A$variable_type$levels
 
       # Generate counterfactual tasks for each value of A:
       cf_tasks <- lapply(A_vals, function(A_val) {
@@ -84,14 +85,14 @@ Optimal_Rule <- R6Class(
       # List for split-specific
       # DR_full <- lapply(1:n_fold, function(i) (A_ind / g_vals_full[[i]]) * (Y_mat - Q_vals_full[[i]]) + Q_vals_full[[i]])
       # DR <- lapply(1:n_fold, function(i) (A_ind[tmle_task$folds[[i]]$training_set, ] / g_vals[[i]]) * (Y_mat[tmle_task$folds[[i]]$training_set, ] - Q_vals[[i]]) + Q_vals[[i]])
-      
-      #TO DO: add different methods for learning the rule
-      #1) offset (different way of learning the blip)
-      #2) weighted classification
-      
+
+      # TO DO: add different methods for learning the rule
+      # 1) offset (different way of learning the blip)
+      # 2) weighted classification
+
       DR_full <- lapply(1:n_fold, function(i) (Q_vals_full[[i]]))
       DR <- lapply(1:n_fold, function(i) (Q_vals[[i]]))
-      
+
       ######################
       # set up task for blip
       ######################
@@ -114,7 +115,7 @@ Optimal_Rule <- R6Class(
       } else {
         blip_outcome <- DR
       }
-      
+
       # Predict for each category, for now
       # TO DO: multivariate SL
       # (use only training data)
@@ -133,9 +134,14 @@ Optimal_Rule <- R6Class(
     },
 
     rule = function(tmle_task) {
-      blip_tmle_task <- make_sl3_Task(self$V_data(tmle_task), covariates = self$V, outcome = NULL, folds = tmle_task$folds)
+      blip_tmle_task <- make_sl3_Task(self$V_data(tmle_task),
+        covariates = self$V,
+        outcome = NULL, folds = tmle_task$folds
+      )
       blip_fits <- self$blip_fits
       blip_fin <- matrix(nrow = nrow(blip_tmle_task$data), ncol = length(blip_fits[[1]]))
+
+      blip_type <- self$blip_type
 
       for (j in 1:length(blip_fits[[1]])) {
 
@@ -172,7 +178,7 @@ Optimal_Rule <- R6Class(
         # Rearrange:
         pred <- data.frame(pred = as.matrix(blip_pred) %*% fit_coef)
         row.names(pred) <- unlist(lapply(1:length(tmle_task$folds), function(i) tmle_task$folds[[i]]$validation_set))
-        pred <- pred[sort(row.names(pred)), ]
+        pred <- pred[order(as.numeric(row.names(pred))), ]
 
         blip_fin[, j] <- pred
       }
@@ -181,13 +187,20 @@ Optimal_Rule <- R6Class(
         rule <- as.numeric(blip_fin > 0)
       } else {
         # Combine all the sl validation samples:
-        if(private$.maximize){
-          rule <- max.col(blip_fin)
+        if (private$.maximize) {
+          if (blip_type == "blip1") {
+            rule <- max.col(blip_fin) + 1
+          } else {
+            rule <- max.col(blip_fin)
+          }
         } else {
-          rule <- max.col(-1 * blip_fin)
+          if (blip_type == "blip1") {
+            rule <- max.col(-1 * blip_fin) + 1
+          } else {
+            rule <- max.col(-1 * blip_fin)
+          }
         }
       }
-
       rule
     }
   ),

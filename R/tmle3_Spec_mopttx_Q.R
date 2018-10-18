@@ -1,4 +1,4 @@
-#' Defines the Mean Under the Optimal Individualized Rule with Categorical Treatment, estimated using Q learning. 
+#' Defines the Mean Under the Optimal Individualized Rule with Categorical Treatment, estimated using Q learning.
 #'
 #' @importFrom R6 R6Class
 #'
@@ -14,27 +14,27 @@ tmle3_Spec_mopttx_Q <- R6Class(
       options <- list(V = V, type = type, b_learner = b_learner)
       do.call(super$initialize, options)
     },
-    
+
     vals_from_factor = function(x) {
       sort(unique(x))
     },
-    
+
     make_updater = function() {
       updater <- tmle3_cv_Update$new()
     },
-    
+
     make_params = function(tmle_task, likelihood) {
-      
+
       # Learn the rule
       opt_rule <- Optimal_Rule$new(tmle_task, likelihood, "split-specific",
-                                   blip_library = private$.options$b_learner
+        blip_library = private$.options$b_learner
       )
       opt_rule$fit_blip()
-      
+
       # Define a dynamic Likelihood factor:
       lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
       tsm_rule <- Param_TSM$new(likelihood, lf_rule)
-      
+
       return(list(tsm_rule))
     }
   ),

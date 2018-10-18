@@ -51,8 +51,8 @@ initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task, learner_list)
 
 # Learn the rule:
 opt_rule <- Optimal_Rule$new(tmle_task, initial_likelihood, "split-specific",
-                             blip_library = learner_list$B,
-                             blip_type = tmle_spec$options$type
+  blip_library = learner_list$B,
+  blip_type = tmle_spec$options$type
 )
 opt_rule$fit_blip()
 

@@ -35,8 +35,10 @@ b_learner <- make_learner(Lrnr_sl, blib, metalearner)
 learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
 
 # Define spec:
-tmle_spec <- tmle3_mopttx_blip(V = c("W01", "W02", "W03", "W04"), type = "blip1", 
-                               b_learner = learner_list$B, maximize=TRUE)
+tmle_spec <- tmle3_mopttx_blip(
+  V = c("W01", "W02", "W03", "W04"), type = "blip1",
+  b_learner = learner_list$B, maximize = TRUE
+)
 
 # Define nodes:
 node_list <- list(W = node_list$W, A = "A_bin01", Y = node_list$Y)
@@ -51,7 +53,7 @@ initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task, learner_list)
 # fit <- tmle3(tmle_spec, data, node_list, learner_list)
 
 updater <- tmle_spec$make_updater()
-targeted_likelihood <- tmle_spec$make_targeted_likelihood(initial_likelihood,updater)
+targeted_likelihood <- tmle_spec$make_targeted_likelihood(initial_likelihood, updater)
 
 tmle_params <- tmle_spec$make_params(tmle_task, targeted_likelihood)
 

@@ -10,8 +10,8 @@ tmle3_Spec_mopttx_blip <- R6Class(
   class = TRUE,
   inherit = tmle3_Spec,
   public = list(
-    initialize = function(V, type, b_learner, maximize=TRUE, ...) {
-      options <- list(V = V, type = type, b_learner = b_learner, maximize=TRUE)
+    initialize = function(V, type, b_learner, maximize = TRUE, ...) {
+      options <- list(V = V, type = type, b_learner = b_learner, maximize = TRUE)
       do.call(super$initialize, options)
     },
 
@@ -26,9 +26,11 @@ tmle3_Spec_mopttx_blip <- R6Class(
     make_params = function(tmle_task, likelihood) {
 
       # Learn the rule
-      opt_rule <- Optimal_Rule$new(tmle_task, likelihood, "split-specific", V=private$.options$V,
-        blip_library = private$.options$b_learner, maximize = private$.options$maximize)
-      
+      opt_rule <- Optimal_Rule$new(tmle_task, likelihood, "split-specific",
+        V = private$.options$V, blip_type = private$.options$type,
+        blip_library = private$.options$b_learner, maximize = private$.options$maximize
+      )
+
       opt_rule$fit_blip()
 
       # Define a dynamic Likelihood factor:
@@ -56,11 +58,11 @@ tmle3_Spec_mopttx_blip <- R6Class(
 #' "Blip2$ corresponds to defining the blip relative to the average of all categories. Finally,
 #' "Blip3" corresponds to defining the blip relative to the weighted average of all categories.
 #' @param b_learner Library for blip estimation.
-#' @param maximize Specify whether we want to maximize or minimize the mean of the final outcome. 
+#' @param maximize Specify whether we want to maximize or minimize the mean of the final outcome.
 #'
 #' @export
 #'
 
 tmle3_mopttx_blip <- function(V, type, b_learner, maximize) {
-  tmle3_Spec_mopttx_blip$new(V = V, type = type, b_learner = b_learner, maximize=maximize)
+  tmle3_Spec_mopttx_blip$new(V = V, type = type, b_learner = b_learner, maximize = maximize)
 }

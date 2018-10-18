@@ -20,7 +20,7 @@ specified reference. Note that in the case of binary treatment, "blip1" is just 
 
 \item{b_learner}{Library for blip estimation.}
 
-\item{method}{Specifies which methodology to use for learning the rule. Options are "Q" for Q-learning, and 
+\item{method}{Specifies which methodology to use for learning the rule. Options are "Q" for Q-learning, and
 "SL" for the Super-Learner approach using split-specific estimates.}
 
 \item{maximize}{Specify whether we want to maximize or minimize the mean of the final outcome.}

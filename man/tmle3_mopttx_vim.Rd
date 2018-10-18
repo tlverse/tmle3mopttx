@@ -16,7 +16,7 @@ specified reference. Note that in the case of binary treatment, "blip1" is just 
 "Blip2$ corresponds to defining the blip relative to the average of all categories. Finally,
 "Blip3" corresponds to defining the blip relative to the weighted average of all categories.}
 
-\item{method}{Specifies which methodology to use for learning the rule. Options are "Q" for Q-learning, and 
+\item{method}{Specifies which methodology to use for learning the rule. Options are "Q" for Q-learning, and
 "SL" for the Super-Learner approach using split-specific estimates.}
 
 \item{b_learner}{Library for blip estimation.}

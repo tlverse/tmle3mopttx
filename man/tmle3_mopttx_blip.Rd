@@ -4,7 +4,7 @@
 \alias{tmle3_mopttx_blip}
 \title{Mean under the Optimal Individualized Treatment Rule}
 \usage{
-tmle3_mopttx_blip(V, type, b_learner)
+tmle3_mopttx_blip(V, type, b_learner, maximize)
 }
 \arguments{
 \item{V}{Covariates the rule depends on}
@@ -16,6 +16,8 @@ specified reference. Note that in the case of binary treatment, "blip1" is just 
 "Blip3" corresponds to defining the blip relative to the weighted average of all categories.}
 
 \item{b_learner}{Library for blip estimation.}
+
+\item{maximize}{Specify whether we want to maximize or minimize the mean of the final outcome.}
 }
 \description{
 O=(W,A,Y)
