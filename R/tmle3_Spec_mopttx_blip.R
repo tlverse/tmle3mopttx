@@ -37,7 +37,17 @@ tmle3_Spec_mopttx_blip <- R6Class(
       lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
       tsm_rule <- Param_TSM$new(likelihood, lf_rule)
 
-      return(list(tsm_rule))
+      # Define a static intervention for each level of A:
+      A_vals <- tmle_task$npsem$A$variable_type$levels
+
+      interventions <- lapply(A_vals, function(A_val) {
+        intervention <- define_lf(LF_static, "A", value = A_val)
+        tsm <- define_param(Param_TSM, likelihood, intervention)
+      })
+
+      intervens <- c(tsm_rule, interventions)
+
+      return(intervens)
     }
   ),
   active = list(),
