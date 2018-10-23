@@ -38,7 +38,7 @@ learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
 # Define spec:
 tmle_spec <- tmle3_mopttx_blip(
   V = c("W4", "W1", "W2", "W3"), type = "blip1",
-  b_learner = learner_list$B, maximize = TRUE
+  b_learner = learner_list$B, maximize = TRUE, complex = FALSE
 )
 
 # Define nodes:

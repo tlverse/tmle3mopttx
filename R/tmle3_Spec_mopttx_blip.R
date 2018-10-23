@@ -10,8 +10,8 @@ tmle3_Spec_mopttx_blip <- R6Class(
   class = TRUE,
   inherit = tmle3_Spec,
   public = list(
-    initialize = function(V, type, b_learner, maximize = TRUE, ...) {
-      options <- list(V = V, type = type, b_learner = b_learner, maximize = TRUE)
+    initialize = function(V, type, b_learner, maximize = TRUE, complex = TRUE, ...) {
+      options <- list(V = V, type = type, b_learner = b_learner, maximize = maximize, complex = complex)
       do.call(super$initialize, options)
     },
 
@@ -23,19 +23,62 @@ tmle3_Spec_mopttx_blip <- R6Class(
       updater <- tmle3_cv_Update$new()
     },
 
+    make_rules = function(V) {
+
+      # TO DO: Add a variable importance here;
+      # right now it naively respects the ordering
+
+      # TO DO: Alternativly re-code this
+      V_sub <- list()
+      V_sub <- c(list(V))
+
+      for (i in 2:length(V)) {
+        V_sub <- c(V_sub, list(V[-1]))
+        V <- V[-1]
+      }
+
+      return(V_sub)
+    },
+
     make_params = function(tmle_task, likelihood) {
+      V <- private$.options$V
+      complex <- private$.options$complex
 
-      # Learn the rule
-      opt_rule <- Optimal_Rule$new(tmle_task, likelihood, "split-specific",
-        V = private$.options$V, blip_type = private$.options$type,
-        blip_library = private$.options$b_learner, maximize = private$.options$maximize
-      )
+      if (complex) {
+        # Learn the rule
+        opt_rule <- Optimal_Rule$new(tmle_task, likelihood, "split-specific",
+          V = V, blip_type = private$.options$type,
+          blip_library = private$.options$b_learner, maximize = private$.options$maximize
+        )
 
-      opt_rule$fit_blip()
+        opt_rule$fit_blip()
 
-      # Define a dynamic Likelihood factor:
-      lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
-      tsm_rule <- Param_TSM$new(likelihood, lf_rule)
+        # Define a dynamic Likelihood factor:
+        lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
+        tsm_rule <- Param_TSM$new(likelihood, lf_rule)
+      } else if (!complex) {
+        # TO DO: Order covarates in order of importance
+        # Right now naively respects the order
+
+        if (length(V) < 2) {
+          stop("This is a simple rule, should be run with complex=TRUE.")
+        } else {
+          V_sub <- self$make_rules(V)
+
+          tsm_rule <- lapply(V_sub, function(v) {
+            opt_rule <- Optimal_Rule$new(tmle_task, likelihood, "split-specific",
+              V = v, blip_type = private$.options$type,
+              blip_library = private$.options$b_learner,
+              maximize = private$.options$maximize
+            )
+            opt_rule$fit_blip()
+
+            # Define a dynamic Likelihood factor:
+            lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
+            Param_TSM$new(likelihood, lf_rule)
+          })
+        }
+      }
 
       # Define a static intervention for each level of A:
       A_vals <- tmle_task$npsem$A$variable_type$levels
@@ -61,7 +104,7 @@ tmle3_Spec_mopttx_blip <- R6Class(
 #' A=Treatment (binary or categorical)
 #' Y=Outcome (binary or bounded continuous)
 #'
-#' @param V Covariates the rule depends on
+#' @param V Covariates the rule depends on.
 #' @param type One of three psudo-blip versions developed to accommodate categorical treatment. "Blip1"
 #' corresponds to chosing a reference category, and defining the blip for all other categories relative to the
 #' specified reference. Note that in the case of binary treatment, "blip1" is just the usual blip.
@@ -69,10 +112,12 @@ tmle3_Spec_mopttx_blip <- R6Class(
 #' "Blip3" corresponds to defining the blip relative to the weighted average of all categories.
 #' @param b_learner Library for blip estimation.
 #' @param maximize Specify whether we want to maximize or minimize the mean of the final outcome.
+#' @param complex If \code{TRUE}, learn the rule using the specified covariates \code{V}. If
+#' \code{FALSE},  check if a less complex rule is better.
 #'
 #' @export
 #'
 
-tmle3_mopttx_blip <- function(V, type, b_learner, maximize) {
-  tmle3_Spec_mopttx_blip$new(V = V, type = type, b_learner = b_learner, maximize = maximize)
+tmle3_mopttx_blip <- function(V, type, b_learner, maximize, complex) {
+  tmle3_Spec_mopttx_blip$new(V = V, type = type, b_learner = b_learner, maximize = maximize, complex = complex)
 }
