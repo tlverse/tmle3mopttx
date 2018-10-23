@@ -61,9 +61,10 @@ tmle_params <- tmle_spec$make_params(tmle_task, targeted_likelihood)
 fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, updater)
 fit
 
+#TO DO: Need to add a function that now tests the difference between these parameters, sequentially
+
 # Check the used rule:
 table(fit$tmle_params[[1]]$cf_likelihood$intervention_list$A$rule_fun(tmle_task))
-
 
 # extract results
 tmle3_psi <- fit$summary$tmle_est

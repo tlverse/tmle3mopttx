@@ -113,11 +113,11 @@ tmle3_Spec_mopttx_blip <- R6Class(
 #' @param b_learner Library for blip estimation.
 #' @param maximize Specify whether we want to maximize or minimize the mean of the final outcome.
 #' @param complex If \code{TRUE}, learn the rule using the specified covariates \code{V}. If
-#' \code{FALSE},  check if a less complex rule is better.
+#' \code{FALSE}, check if a less complex rule is better.
 #'
 #' @export
 #'
 
-tmle3_mopttx_blip <- function(V, type, b_learner, maximize, complex) {
+tmle3_mopttx_blip <- function(V, type="blip1", b_learner, maximize=TRUE, complex=TRUE) {
   tmle3_Spec_mopttx_blip$new(V = V, type = type, b_learner = b_learner, maximize = maximize, complex = complex)
 }
