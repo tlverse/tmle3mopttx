@@ -18,7 +18,7 @@ Suppose one wishes to maximize (or minimize) the population mean of an outcome u
 
 In order to avoid nested cross-validation, `tmle3mopttx` relies on split-specific estimates of 𝔼(*Y*|*A*, *W*) and *P*(*A*|*W*) in order to estimate the rule, as described by Coyle et al. In addition, the targeted maximum likelihood estimates of the mean performance under the estimated rule are obtained using CV-TMLE. The implementation supports categorical treatments, providing three different versions for the rule estimation, as well as Q-learning.
 
-For additional background on Targeted Learning and previous work on optimal individualized treatment regimes, please consider consulting van der Laan, Polley, and Hubbard (2007), Zheng and van der Laan (2010), van der Laan and Rose (2011), van der Laan and Luedtke (2015), Luedtke and van der Laan (2016), R. (2017) and van der Laan and Rose (2018).
+For additional background on Targeted Learning and previous work on optimal individualized treatment regimes, please consider consulting van der Laan, Polley, and Hubbard (2007), Zheng and van der Laan (2010), van der Laan and Rose (2011), van der Laan and Luedtke (2015), Luedtke and van der Laan (2016), Coyle (2017) and van der Laan and Rose (2018).
 
 ------------------------------------------------------------------------
 
@@ -50,9 +50,9 @@ The contents of this repository are distributed under the GPL-3 license. See fil
 References
 ----------
 
-Luedtke, A., and M. J van der Laan. 2016. “Super-Learning of an Optimal Dynamic Treatment Rule.” *International Journal of Biostatistics* 12 (1): 305–32.
+Coyle, J R. 2017. “Computational Considerations for Targeted Learning.” PhD thesis, U.C. Berkeley.
 
-R., Coyle J. 2017. “Computational Considerations for Targeted Learning.” PhD thesis, U.C. Berkeley.
+Luedtke, A., and M. J van der Laan. 2016. “Super-Learning of an Optimal Dynamic Treatment Rule.” *International Journal of Biostatistics* 12 (1): 305–32.
 
 van der Laan, M. J, and A. Luedtke. 2015. “Targeted Learning of the Mean Outcome Under an Optimal Dynamic Treatment Rule.” *Journal of Causal Inference* 3 (1): 61–95.
 

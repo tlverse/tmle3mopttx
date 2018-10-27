@@ -40,10 +40,49 @@ tmle3_Spec_mopttx_blip <- R6Class(
       return(V_sub)
     },
 
+    make_est_fin = function(fit, p.value = 0.05) {
+
+      # Order estimates:
+      summary <- fit$summary
+      summary <- summary[order(summary$tmle_est, decreasing = TRUE), ]
+
+      psi <- summary$tmle_est
+      se_psi <- summary$se
+      n <- length(fit$estimates[[1]]$IC)
+
+      for (i in 1:length(psi)) {
+        if (i + 1 <= length(psi)) {
+          # Welch's t-test
+          t <- (psi[i] - psi[i + 1]) / (sqrt(se_psi[i]^2 + se_psi[i + 1]^2))
+          p <- pt(-abs(t), df = n - 1)
+
+          if (p <= p.value) {
+            # res<-summary[i,]
+            res <- i
+            break
+          } else if ((i + 1) == length(psi)) {
+            # Return the larger static rule:
+            # all estimates are non-significantly different.
+            names <- summary$param
+            stp <- data.frame(data.frame(do.call("rbind", strsplit(as.character(names), "=", fixed = TRUE)))[, 2])
+            stp <- data.frame(do.call("rbind", strsplit(as.character(stp[, 1]), "}", fixed = TRUE)))[, 1]
+
+            ind <- min(which(!is.na(suppressWarnings(as.numeric(levels(stp)))[stp]) == TRUE))
+
+            res <- match(summary[ind, ]$param, fit$summary$param)
+
+            # res<-summary[ind,]
+          }
+        }
+      }
+      return(res)
+    },
+
     make_params = function(tmle_task, likelihood) {
       V <- private$.options$V
       complex <- private$.options$complex
 
+      # If complex=TRUE, it will return JUST the learned E[Yd]
       if (complex) {
         # Learn the rule
         opt_rule <- Optimal_Rule$new(tmle_task, likelihood, "split-specific",
@@ -55,7 +94,7 @@ tmle3_Spec_mopttx_blip <- R6Class(
 
         # Define a dynamic Likelihood factor:
         lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
-        tsm_rule <- Param_TSM$new(likelihood, lf_rule)
+        intervens <- Param_TSM$new(likelihood, lf_rule)
       } else if (!complex) {
         # TO DO: Order covarates in order of importance
         # Right now naively respects the order
@@ -78,17 +117,21 @@ tmle3_Spec_mopttx_blip <- R6Class(
             Param_TSM$new(likelihood, lf_rule)
           })
         }
+
+        # Define a static intervention for each level of A:
+        A_vals <- tmle_task$npsem$A$variable_type$levels
+
+        interventions <- lapply(A_vals, function(A_val) {
+          intervention <- define_lf(LF_static, "A", value = A_val)
+          tsm <- define_param(Param_TSM, likelihood, intervention)
+        })
+
+        intervens <- c(tsm_rule, interventions)
+
+        # TO DO: There has to be a better way of doing this
+        fit <- fit_tmle3(tmle_task, likelihood, intervens, self$make_updater())
+        intervens <- intervens[[self$make_est_fin(fit)]]
       }
-
-      # Define a static intervention for each level of A:
-      A_vals <- tmle_task$npsem$A$variable_type$levels
-
-      interventions <- lapply(A_vals, function(A_val) {
-        intervention <- define_lf(LF_static, "A", value = A_val)
-        tsm <- define_param(Param_TSM, likelihood, intervention)
-      })
-
-      intervens <- c(tsm_rule, interventions)
 
       return(intervens)
     }
@@ -118,6 +161,6 @@ tmle3_Spec_mopttx_blip <- R6Class(
 #' @export
 #'
 
-tmle3_mopttx_blip <- function(V, type="blip1", b_learner, maximize=TRUE, complex=TRUE) {
+tmle3_mopttx_blip <- function(V, type = "blip1", b_learner, maximize = TRUE, complex = TRUE) {
   tmle3_Spec_mopttx_blip$new(V = V, type = type, b_learner = b_learner, maximize = maximize, complex = complex)
 }
