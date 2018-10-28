@@ -42,6 +42,13 @@ Optimal_Rule <- R6Class(
       DR <- data.frame(private$.DR_full[[v]])
       return(data.frame(DR[indx, ]))
     },
+
+    bound = function(cv_g) {
+      cv_g[cv_g < 0.01] <- 0.01
+      cv_g[cv_g > 0.99] <- 0.99
+      return(cv_g)
+    },
+
     fit_blip = function() {
       tmle_task <- self$tmle_task
       likelihood <- self$likelihood
@@ -63,7 +70,6 @@ Optimal_Rule <- R6Class(
       A_ind <- self$factor_to_indicators(A, A_vals)
       Y_mat <- replicate(length(A_vals), Y)
 
-      # TO DO: Add safety net for very small values of g
       if (cv_fold == "split-specific") {
         # Split-specific results:
         n_fold <- length(tmle_task$folds)
@@ -75,11 +81,16 @@ Optimal_Rule <- R6Class(
         # Grab split-specific predictions for training samples only:
         Q_vals <- lapply(1:n_fold, function(cv_fd) sapply(cf_tasks, likelihood$get_likelihood, "Y", cv_fd)[tmle_task$folds[[cv_fd]]$training_set, ])
         g_vals <- lapply(1:n_fold, function(cv_fd) sapply(cf_tasks, likelihood$get_likelihood, "A", cv_fd)[tmle_task$folds[[cv_fd]]$training_set, ])
+
+        g_vals <- lapply(1:n_fold, function(cv_fd) self$bound(g_vals[[cv_fd]]))
+        g_vals_full <- lapply(1:n_fold, function(cv_fd) self$bound(g_vals_full[[cv_fd]]))
       } else {
         # Full or just one fold results:
         n_fold <- 1
         Q_vals_full <- list(sapply(cf_tasks, likelihood$get_likelihood, "Y", cv_fold))
         g_vals_full <- list(sapply(cf_tasks, likelihood$get_likelihood, "A", cv_fold))
+
+        g_vals_full <- lapply(1:n_fold, function(cv_fd) self$bound(g_vals_full[[cv_fd]]))
       }
 
       # List for split-specific
