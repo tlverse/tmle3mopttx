@@ -40,11 +40,23 @@ tmle3_Spec_mopttx_blip <- R6Class(
       return(V_sub)
     },
 
-    make_est_fin = function(fit, p.value = 0.05) {
+    make_est_fin = function(fit, max, p.value = 0.05) {
 
-      # Order estimates:
-      summary <- fit$summary
-      summary <- summary[order(summary$tmle_est, decreasing = TRUE), ]
+      # Goal: pick the simplest rule, that is significant
+      summary_all <- fit$summary
+
+      # Separate static rules:
+      lev <- length(fit$tmle_task$npsem$A$variable_type$levels)
+      summary_static <- summary_all[((nrow(summary_all) - lev + 1):nrow(summary_all)), ]
+
+      if (max) {
+        summary_static <- summary_static[order(summary_static$tmle_est, decreasing = TRUE), ]
+      } else {
+        summary_static <- summary_static[order(summary_static$tmle_est, decreasing = FALSE), ]
+      }
+
+      summary <- summary_all[(1:(nrow(summary_all) - lev)), ]
+      summary <- rbind.data.frame(summary, summary_static)
 
       psi <- summary$tmle_est
       se_psi <- summary$se
@@ -57,21 +69,19 @@ tmle3_Spec_mopttx_blip <- R6Class(
           p <- pt(-abs(t), df = n - 1)
 
           if (p <= p.value) {
-            # res<-summary[i,]
-            res <- i
+            res <- summary[i, ]
+            # res <- i
             break
           } else if ((i + 1) == length(psi)) {
-            # Return the larger static rule:
             # all estimates are non-significantly different.
-            names <- summary$param
-            stp <- data.frame(data.frame(do.call("rbind", strsplit(as.character(names), "=", fixed = TRUE)))[, 2])
-            stp <- data.frame(do.call("rbind", strsplit(as.character(stp[, 1]), "}", fixed = TRUE)))[, 1]
+            # names <- summary$param
+            # stp <- data.frame(data.frame(do.call("rbind", strsplit(as.character(names), "=", fixed = TRUE)))[, 2])
+            # stp <- data.frame(do.call("rbind", strsplit(as.character(stp[, 1]), "}", fixed = TRUE)))[, 1]
+            # ind <- min(which(!is.na(suppressWarnings(as.numeric(levels(stp)))[stp]) == TRUE))
+            # res <- match(summary[ind, ]$param, fit$summary$param)
 
-            ind <- min(which(!is.na(suppressWarnings(as.numeric(levels(stp)))[stp]) == TRUE))
-
-            res <- match(summary[ind, ]$param, fit$summary$param)
-
-            # res<-summary[ind,]
+            # Return the better static rule:
+            res <- summary_static[1, ]
           }
         }
       }
@@ -81,6 +91,7 @@ tmle3_Spec_mopttx_blip <- R6Class(
     make_params = function(tmle_task, likelihood) {
       V <- private$.options$V
       complex <- private$.options$complex
+      max <- private$.options$maximize
 
       # If complex=TRUE, it will return JUST the learned E[Yd]
       if (complex) {
@@ -114,7 +125,7 @@ tmle3_Spec_mopttx_blip <- R6Class(
 
             # Define a dynamic Likelihood factor:
             lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
-            Param_TSM$new(likelihood, lf_rule)
+            Param_TSM2$new(likelihood, v = v, lf_rule)
           })
         }
 
@@ -128,9 +139,11 @@ tmle3_Spec_mopttx_blip <- R6Class(
 
         intervens <- c(tsm_rule, interventions)
 
+        # updater <- self$make_updater()
+
         # TO DO: There has to be a better way of doing this
-        fit <- fit_tmle3(tmle_task, likelihood, intervens, self$make_updater())
-        intervens <- intervens[[self$make_est_fin(fit)]]
+        # fit <- fit_tmle3(tmle_task, targeted_likelihood, intervens, updater)
+        # intervens <- intervens[[self$make_est_fin(fit)]]
       }
 
       return(intervens)

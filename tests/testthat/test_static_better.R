@@ -38,7 +38,7 @@ learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
 # Define spec:
 tmle_spec <- tmle3_mopttx_blip(
   V = c("W4", "W1", "W2", "W3"), type = "blip1",
-  b_learner = learner_list$B, maximize = TRUE, complex = TRUE
+  b_learner = learner_list$B, maximize = TRUE, complex = FALSE
 )
 
 # Define nodes:
@@ -60,8 +60,6 @@ tmle_params <- tmle_spec$make_params(tmle_task, targeted_likelihood)
 
 fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, updater)
 fit
-
-# TO DO: Need to add a function that now tests the difference between these parameters, sequentially
 
 # Check the used rule:
 table(fit$tmle_params[[1]]$cf_likelihood$intervention_list$A$rule_fun(tmle_task))

@@ -83,15 +83,15 @@ Optimal_Rule <- R6Class(
       }
 
       # List for split-specific
-      DR_full <- lapply(1:n_fold, function(i) (A_ind / g_vals_full[[i]]) * (Y_mat - Q_vals_full[[i]]) + Q_vals_full[[i]])
-      DR <- lapply(1:n_fold, function(i) (A_ind[tmle_task$folds[[i]]$training_set, ] / g_vals[[i]]) * (Y_mat[tmle_task$folds[[i]]$training_set, ] - Q_vals[[i]]) + Q_vals[[i]])
+      # DR_full <- lapply(1:n_fold, function(i) (A_ind / g_vals_full[[i]]) * (Y_mat - Q_vals_full[[i]]) + Q_vals_full[[i]])
+      # DR <- lapply(1:n_fold, function(i) (A_ind[tmle_task$folds[[i]]$training_set, ] / g_vals[[i]]) * (Y_mat[tmle_task$folds[[i]]$training_set, ] - Q_vals[[i]]) + Q_vals[[i]])
 
       # TO DO: add different methods for learning the rule
       # 1) offset (different way of learning the blip)
       # 2) weighted classification
 
-      # DR_full <- lapply(1:n_fold, function(i) (Q_vals_full[[i]]))
-      # DR <- lapply(1:n_fold, function(i) (Q_vals[[i]]))
+      DR_full <- lapply(1:n_fold, function(i) (Q_vals_full[[i]]))
+      DR <- lapply(1:n_fold, function(i) (Q_vals[[i]]))
 
       ######################
       # set up task for blip

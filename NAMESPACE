@@ -3,6 +3,7 @@
 export(LF_rule)
 export(Optimal_Rule)
 export(Optimal_Rule_Q_learning)
+export(Param_TSM2)
 export(tmle3_Spec_mopttx_Q)
 export(tmle3_Spec_mopttx_blip)
 export(tmle3_Spec_mopttx_vim)
