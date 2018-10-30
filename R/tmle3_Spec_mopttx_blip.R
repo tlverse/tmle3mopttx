@@ -87,6 +87,14 @@ tmle3_Spec_mopttx_blip <- R6Class(
       }
       return(res)
     },
+    
+    set_B_rule = function(opt){
+      private$B_rule<-opt
+    },
+    
+    return_rule = function(){
+      return(private$B_rule)
+    },
 
     make_params = function(tmle_task, likelihood) {
       V <- private$.options$V
@@ -102,6 +110,7 @@ tmle3_Spec_mopttx_blip <- R6Class(
         )
 
         opt_rule$fit_blip()
+        self$set_B_rule(opt_rule)
 
         # Define a dynamic Likelihood factor:
         lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
@@ -122,6 +131,7 @@ tmle3_Spec_mopttx_blip <- R6Class(
               maximize = private$.options$maximize
             )
             opt_rule$fit_blip()
+            self$set_B_rule(opt_rule)
 
             # Define a dynamic Likelihood factor:
             lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
@@ -150,7 +160,9 @@ tmle3_Spec_mopttx_blip <- R6Class(
     }
   ),
   active = list(),
-  private = list()
+  private = list(
+    B_rule=list()
+  )
 )
 
 #' Mean under the Optimal Individualized Treatment Rule

@@ -85,6 +85,10 @@ tmle3_Spec_mopttx_vim <- R6Class(
     make_updater = function() {
       updater <- tmle3_cv_Update$new()
     },
+    
+    set_B_rule = function(opt){
+      private$B_rule<-opt
+    },
 
     make_params = function(tmle_task, likelihood) {
       method <- private$.options$method
@@ -105,6 +109,7 @@ tmle3_Spec_mopttx_vim <- R6Class(
       }
 
       opt_rule$fit_blip()
+      self$set_B_rule(opt_rule)
 
       # Define a dynamic Likelihood factor:
       lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
@@ -125,7 +130,9 @@ tmle3_Spec_mopttx_vim <- R6Class(
     }
   ),
   active = list(),
-  private = list()
+  private = list(
+    B_rule=list()
+  )
 )
 
 #' Mean under the Optimal Individualized Treatment Rule
