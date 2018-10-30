@@ -10,6 +10,7 @@ Optimal_Rule <- R6Class(
   portable = TRUE,
   class = TRUE,
   inherit = tmle3_Spec,
+  lock_objects = FALSE,
   public = list(
     initialize = function(tmle_task, likelihood, cv_fold = "split-specific",
                               V = NULL, blip_type = "blip2", blip_library, maximize = TRUE) {
@@ -50,6 +51,7 @@ Optimal_Rule <- R6Class(
     },
 
     fit_blip = function() {
+
       tmle_task <- self$tmle_task
       likelihood <- self$likelihood
       cv_fold <- self$cv_fold
@@ -193,6 +195,8 @@ Optimal_Rule <- R6Class(
 
         blip_fin[, j] <- pred
       }
+      
+      private$.fit_coef<-fit_coef
 
       if (length(blip_fits[[1]]) == 1) {
         rule <- as.numeric(blip_fin > 0)
@@ -234,6 +238,9 @@ Optimal_Rule <- R6Class(
     blip_fits = function() {
       return(private$.blip_fits)
     },
+    coef_fits = function() {
+      return(private$.fit_coef)
+    },
     blip_fits_sl = function() {
       return(private$.blip_fits_sl)
     },
@@ -251,6 +258,7 @@ Optimal_Rule <- R6Class(
     .blip_fits_sl = NULL,
     .blip_library = NULL,
     .DR_full = NULL,
-    .maximize = NULL
+    .maximize = NULL,
+    .fit_coef=NULL
   )
 )
