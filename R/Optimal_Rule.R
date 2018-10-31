@@ -51,7 +51,6 @@ Optimal_Rule <- R6Class(
     },
 
     fit_blip = function() {
-
       tmle_task <- self$tmle_task
       likelihood <- self$likelihood
       cv_fold <- self$cv_fold
@@ -195,8 +194,8 @@ Optimal_Rule <- R6Class(
 
         blip_fin[, j] <- pred
       }
-      
-      private$.fit_coef<-fit_coef
+
+      private$.fit_coef <- fit_coef
 
       if (length(blip_fits[[1]]) == 1) {
         rule <- as.numeric(blip_fin > 0)
@@ -259,6 +258,6 @@ Optimal_Rule <- R6Class(
     .blip_library = NULL,
     .DR_full = NULL,
     .maximize = NULL,
-    .fit_coef=NULL
+    .fit_coef = NULL
   )
 )

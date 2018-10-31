@@ -85,9 +85,9 @@ tmle3_Spec_mopttx_vim <- R6Class(
     make_updater = function() {
       updater <- tmle3_cv_Update$new()
     },
-    
-    set_B_rule = function(opt){
-      private$B_rule<-opt
+
+    set_B_rule = function(opt) {
+      private$B_rule <- opt
     },
 
     make_params = function(tmle_task, likelihood) {
@@ -131,7 +131,7 @@ tmle3_Spec_mopttx_vim <- R6Class(
   ),
   active = list(),
   private = list(
-    B_rule=list()
+    B_rule = list()
   )
 )
 

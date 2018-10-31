@@ -69,8 +69,8 @@ tmle3_Spec_mopttx_blip <- R6Class(
           p <- pt(-abs(t), df = n - 1)
 
           if (p <= p.value) {
-            res <- summary[i, ]
-            # res <- i
+            # res <- summary[i, ]
+            res <- i
             break
           } else if ((i + 1) == length(psi)) {
             # all estimates are non-significantly different.
@@ -81,18 +81,19 @@ tmle3_Spec_mopttx_blip <- R6Class(
             # res <- match(summary[ind, ]$param, fit$summary$param)
 
             # Return the better static rule:
-            res <- summary_static[1, ]
+            # res <- summary_static[1, ]
+            res <- length(psi) - lev + 1
           }
         }
       }
       return(res)
     },
-    
-    set_B_rule = function(opt){
-      private$B_rule<-opt
+
+    set_B_rule = function(opt) {
+      private$B_rule <- opt
     },
-    
-    return_rule = function(){
+
+    return_rule = function() {
       return(private$B_rule)
     },
 
@@ -122,6 +123,9 @@ tmle3_Spec_mopttx_blip <- R6Class(
         if (length(V) < 2) {
           stop("This is a simple rule, should be run with complex=TRUE.")
         } else {
+          upd <- self$make_updater()
+          targ_likelihood <- Targeted_Likelihood$new(likelihood$initial_likelihood, upd)
+
           V_sub <- self$make_rules(V)
 
           tsm_rule <- lapply(V_sub, function(v) {
@@ -135,7 +139,7 @@ tmle3_Spec_mopttx_blip <- R6Class(
 
             # Define a dynamic Likelihood factor:
             lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
-            Param_TSM2$new(likelihood, v = v, lf_rule)
+            Param_TSM2$new(targ_likelihood, v = v, lf_rule)
           })
         }
 
@@ -144,16 +148,16 @@ tmle3_Spec_mopttx_blip <- R6Class(
 
         interventions <- lapply(A_vals, function(A_val) {
           intervention <- define_lf(LF_static, "A", value = A_val)
-          tsm <- define_param(Param_TSM, likelihood, intervention)
+          tsm <- define_param(Param_TSM, targ_likelihood, intervention)
         })
 
         intervens <- c(tsm_rule, interventions)
+        upd$tmle_params <- intervens
 
-        # updater <- self$make_updater()
+        fit <- fit_tmle3(tmle_task, targ_likelihood, intervens, upd)
+        best_interven <- intervens[[self$make_est_fin(fit, max = max)]]
 
-        # TO DO: There has to be a better way of doing this
-        # fit <- fit_tmle3(tmle_task, targeted_likelihood, intervens, updater)
-        # intervens <- intervens[[self$make_est_fin(fit)]]
+        intervens <- define_param(Param_TSM, likelihood, best_interven$intervention_list)
       }
 
       return(intervens)
@@ -161,7 +165,7 @@ tmle3_Spec_mopttx_blip <- R6Class(
   ),
   active = list(),
   private = list(
-    B_rule=list()
+    B_rule = list()
   )
 )
 
