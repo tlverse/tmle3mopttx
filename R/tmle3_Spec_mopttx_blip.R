@@ -155,9 +155,17 @@ tmle3_Spec_mopttx_blip <- R6Class(
         upd$tmle_params <- intervens
 
         fit <- fit_tmle3(tmle_task, targ_likelihood, intervens, upd)
-        best_interven <- intervens[[self$make_est_fin(fit, max = max)]]
+        ind <- self$make_est_fin(fit, max = max)
+        best_interven <- intervens[[ind]]
 
-        intervens <- define_param(Param_TSM, likelihood, best_interven$intervention_list)
+        lev <- tmle_task$npsem$A$variable_type$levels
+        V_sub_all <- c(V_sub, lev)
+        V_sub_all[[self$make_est_fin(fit, max = max)]]
+
+        intervens <- define_param(Param_TSM2, likelihood,
+          intervention_list = best_interven$intervention_list,
+          v = V_sub_all[[ind]]
+        )
       }
 
       return(intervens)
