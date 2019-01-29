@@ -72,9 +72,10 @@ Optimal_Rule <- R6Class(
       Y_mat <- replicate(length(A_vals), Y)
 
       if (cv_fold == "split-specific") {
-        # Split-specific results:
+        #SplitSpecific SL
         n_fold <- length(tmle_task$folds)
 
+        #Does this include the full alpha for the nuisance parameters?
         # Grab split-specific predictions for all the samples:
         Q_vals_full <- lapply(1:n_fold, function(cv_fd) sapply(cf_tasks, likelihood$get_likelihood, "Y", cv_fd))
         g_vals_full <- lapply(1:n_fold, function(cv_fd) sapply(cf_tasks, likelihood$get_likelihood, "A", cv_fd))
@@ -83,10 +84,11 @@ Optimal_Rule <- R6Class(
         Q_vals <- lapply(1:n_fold, function(cv_fd) sapply(cf_tasks, likelihood$get_likelihood, "Y", cv_fd)[tmle_task$folds[[cv_fd]]$training_set, ])
         g_vals <- lapply(1:n_fold, function(cv_fd) sapply(cf_tasks, likelihood$get_likelihood, "A", cv_fd)[tmle_task$folds[[cv_fd]]$training_set, ])
 
+        #Bound g predictions:
         g_vals <- lapply(1:n_fold, function(cv_fd) self$bound(g_vals[[cv_fd]]))
         g_vals_full <- lapply(1:n_fold, function(cv_fd) self$bound(g_vals_full[[cv_fd]]))
       } else {
-        # Full or just one fold results:
+        #Full-Sequential SL
         n_fold <- 1
         Q_vals_full <- list(sapply(cf_tasks, likelihood$get_likelihood, "Y", cv_fold))
         g_vals_full <- list(sapply(cf_tasks, likelihood$get_likelihood, "A", cv_fold))
@@ -95,15 +97,15 @@ Optimal_Rule <- R6Class(
       }
 
       # List for split-specific
-      # DR_full <- lapply(1:n_fold, function(i) (A_ind / g_vals_full[[i]]) * (Y_mat - Q_vals_full[[i]]) + Q_vals_full[[i]])
-      # DR <- lapply(1:n_fold, function(i) (A_ind[tmle_task$folds[[i]]$training_set, ] / g_vals[[i]]) * (Y_mat[tmle_task$folds[[i]]$training_set, ] - Q_vals[[i]]) + Q_vals[[i]])
+      DR_full <- lapply(1:n_fold, function(i) (A_ind / g_vals_full[[i]]) * (Y_mat - Q_vals_full[[i]]) + Q_vals_full[[i]])
+      DR <- lapply(1:n_fold, function(i) (A_ind[tmle_task$folds[[i]]$training_set, ] / g_vals[[i]]) * (Y_mat[tmle_task$folds[[i]]$training_set, ] - Q_vals[[i]]) + Q_vals[[i]])
 
       # TO DO: add different methods for learning the rule
       # 1) offset (different way of learning the blip)
       # 2) weighted classification
 
-      DR_full <- lapply(1:n_fold, function(i) (Q_vals_full[[i]]))
-      DR <- lapply(1:n_fold, function(i) (Q_vals[[i]]))
+      #DR_full <- lapply(1:n_fold, function(i) (Q_vals_full[[i]]))
+      #DR <- lapply(1:n_fold, function(i) (Q_vals[[i]]))
 
       ######################
       # set up task for blip
@@ -114,6 +116,7 @@ Optimal_Rule <- R6Class(
 
       if (blip_type == "blip1") {
         # First category as a reference category:
+        # For binary, A=1 vs. A=0
         blip_outcome <- lapply(1:n_fold, function(i) DR[[i]][, -1] - DR[[i]][, 1])
         blip_outcome_full <- lapply(1:n_fold, function(i) DR_full[[i]][, -1] - DR_full[[i]][, 1])
       } else if (blip_type == "blip2") {
@@ -135,7 +138,8 @@ Optimal_Rule <- R6Class(
         # Note that "blip1" will always have one less task here
         lapply(1:ncol(data.frame(blip_outcome[[i]])), function(j) {
           new_data <- cbind.data.frame(blip_outcome = data.frame(blip_outcome[[i]])[, j], self$V_data(tmle_task, i))
-          flds <- origami::make_folds(new_data, V = 5)
+          #flds <- origami::make_folds(new_data, V = 5)
+          flds <- origami::make_folds(new_data, fold_fun = origami::folds_resubstitution)
           blip_tmle_task <- make_sl3_Task(new_data, covariates = self$V, outcome = "blip_outcome", folds = flds)
           self$blip_library$train(blip_tmle_task)
         })
@@ -161,13 +165,18 @@ Optimal_Rule <- R6Class(
         # (learner specific prediction on validation samples for outcome j)
         temp <- lapply(1:length(tmle_task$folds), function(v) {
           # Note: splits-specific fits used here are generated entirely from the training data
-          int <- lapply(1:5, function(fd) {
-            blip_fits[[v]][[j]]$fit_object$cv_fit$fit_object$fold_fits[[fd]]$predict(blip_tmle_task)
-          })
+          #int <- lapply(1:5, function(fd) {
+          #  blip_fits[[v]][[j]]$fit_object$cv_fit$fit_object$fold_fits[[fd]]$predict(blip_tmle_task)
+          #})
           # Average over split-specific fits per algorithm
-          dat <- do.call(cbind, int)
-          blip_all <- t(apply(dat, 1, function(x) tapply(x, colnames(dat), mean)))
-          blip_all[tmle_task$folds[[v]]$validation_set, ]
+          #dat <- do.call(cbind, int)
+          #blip_all <- t(apply(dat, 1, function(x) tapply(x, colnames(dat), mean)))
+          #blip_all[tmle_task$folds[[v]]$validation_set, ]
+          
+          #On v fold we trained Q,g,regressed blip; return validation set
+          pred<-blip_fits[[v]][[j]]$fit_object$cv_fit$predict_fold(blip_tmle_task, fold_number = 1)
+          pred[tmle_task$folds[[v]]$validation_set, ]
+
         })
         # Actual DR:
         temp2 <- lapply(1:length(tmle_task$folds), function(v) {
