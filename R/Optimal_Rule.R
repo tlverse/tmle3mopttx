@@ -156,6 +156,7 @@ Optimal_Rule <- R6Class(
       )
       blip_fits <- self$blip_fits
       blip_fin <- matrix(nrow = nrow(blip_tmle_task$data), ncol = length(blip_fits[[1]]))
+      coef_all <- NULL
 
       blip_type <- self$blip_type
 
@@ -202,9 +203,10 @@ Optimal_Rule <- R6Class(
         pred <- pred[order(as.numeric(row.names(pred))), ]
 
         blip_fin[, j] <- pred
+        coef_all <- rbind(coef_all,fit_coef)
       }
 
-      private$.fit_coef <- fit_coef
+      private$.fit_coef <- coef_all
 
       if (length(blip_fits[[1]]) == 1) {
         rule <- as.numeric(blip_fin > 0)
