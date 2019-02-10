@@ -12,11 +12,11 @@ Optimal_Rule <- R6Class(
   inherit = tmle3_Spec,
   lock_objects = FALSE,
   public = list(
-    initialize = function(tmle_task, likelihood, cv_fold = "split-specific",
+    initialize = function(tmle_task, likelihood, fold_number = "split-specific",
                               V = NULL, blip_type = "blip2", blip_library, maximize = TRUE) {
       private$.tmle_task <- tmle_task
       private$.likelihood <- likelihood
-      private$.cv_fold <- cv_fold
+      private$.fold_number <- fold_number
       private$.blip_type <- blip_type
       private$.blip_library <- blip_library
       private$.maximize <- maximize
@@ -25,7 +25,7 @@ Optimal_Rule <- R6Class(
       }
 
       private$.V <- V
-      private$.cv_fold <- cv_fold
+      private$.fold_number <- fold_number
     },
     factor_to_indicators = function(x, x_vals) {
       ind_mat <- sapply(x_vals, function(x_val) as.numeric(x_val == x))
@@ -53,7 +53,7 @@ Optimal_Rule <- R6Class(
     fit_blip = function() {
       tmle_task <- self$tmle_task
       likelihood <- self$likelihood
-      cv_fold <- self$cv_fold
+      fold_number <- self$fold_number
 
       # A_vals <- as.factor(tmle_task$npsem$A$variable_type$levels)
       A_vals <- tmle_task$npsem$A$variable_type$levels
@@ -71,7 +71,7 @@ Optimal_Rule <- R6Class(
       A_ind <- self$factor_to_indicators(A, A_vals)
       Y_mat <- replicate(length(A_vals), Y)
 
-      if (cv_fold == "split-specific") {
+      if (fold_number == "split-specific") {
         #SplitSpecific SL
         n_fold <- length(tmle_task$folds)
 
@@ -90,8 +90,8 @@ Optimal_Rule <- R6Class(
       } else {
         #Full-Sequential SL
         n_fold <- 1
-        Q_vals_full <- list(sapply(cf_tasks, likelihood$get_likelihood, "Y", cv_fold))
-        g_vals_full <- list(sapply(cf_tasks, likelihood$get_likelihood, "A", cv_fold))
+        Q_vals_full <- list(sapply(cf_tasks, likelihood$get_likelihood, "Y", fold_number))
+        g_vals_full <- list(sapply(cf_tasks, likelihood$get_likelihood, "A", fold_number))
 
         g_vals_full <- lapply(1:n_fold, function(cv_fd) self$bound(g_vals_full[[cv_fd]]))
       }
@@ -236,8 +236,8 @@ Optimal_Rule <- R6Class(
     likelihood = function() {
       return(private$.likelihood)
     },
-    cv_fold = function() {
-      return(private$.cv_fold)
+    fold_number = function() {
+      return(private$.fold_number)
     },
     V = function() {
       return(private$.V)
@@ -261,7 +261,7 @@ Optimal_Rule <- R6Class(
   private = list(
     .tmle_task = NULL,
     .likelihood = NULL,
-    .cv_fold = NULL,
+    .fold_number = NULL,
     .V = NULL,
     .blip_type = NULL,
     .blip_fits = NULL,

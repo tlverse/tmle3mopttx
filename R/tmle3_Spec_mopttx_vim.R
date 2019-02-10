@@ -101,7 +101,7 @@ tmle3_Spec_mopttx_vim <- R6Class(
       } else if (method == "SL") {
         # Learn the rule using split-specific methodology:
         opt_rule <- Optimal_Rule$new(tmle_task, likelihood,
-          cv_fold = "split-specific",
+          fold_number = "split-specific",
           V = private$.options$V,
           blip_library = private$.options$b_learner,
           maximize = private$.options$maximize

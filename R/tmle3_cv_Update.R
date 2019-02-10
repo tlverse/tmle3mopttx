@@ -14,18 +14,18 @@ tmle3_cv_Update <- R6Class(
   class = TRUE,
   inherit = tmle3_Update_bound,
   public = list(
-    update_step = function(likelihood, tmle_task, cv_fold = 0) {
-      # cv_fold=0 -- validation sets
+    update_step = function(likelihood, tmle_task, fold_number = "validation") {
+      # fold_number=0 -- validation sets
       # so we estimate epsilon using validation sets
       
       # get new submodel fit
-      all_submodels <- self$generate_submodel_data(likelihood, tmle_task, cv_fold)
+      all_submodels <- self$generate_submodel_data(likelihood, tmle_task, fold_number)
       new_epsilons <- self$fit_submodels(all_submodels)
       
       # update likelihoods
       # todo: think more carefully about what folds to update
-      likelihood$update(new_epsilons, self$step_number, -1)
-      likelihood$update(new_epsilons, self$step_number, 0)
+      likelihood$update(new_epsilons, self$step_number, "full")
+      likelihood$update(new_epsilons, self$step_number, "validation")
       
       # increment step count
       private$.step_number <- private$.step_number + 1
@@ -35,7 +35,7 @@ tmle3_cv_Update <- R6Class(
       estimates <- lapply(
         self$tmle_params,
         function(tmle_param) {
-          tmle_param$estimates(tmle_task, cv_fold=0)
+          tmle_param$estimates(tmle_task, fold_number="validation")
         }
       )
       ICs <- sapply(estimates, `[[`, "IC")
