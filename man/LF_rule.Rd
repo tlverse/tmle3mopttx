@@ -37,4 +37,5 @@ Dynamic Likelihood Factor
     }
 }
 
+\concept{Likelihood objects}
 \keyword{data}
