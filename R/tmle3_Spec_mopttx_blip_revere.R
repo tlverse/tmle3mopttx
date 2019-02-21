@@ -99,6 +99,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
     },
 
     make_params = function(tmle_task, likelihood) {
+      
       V <- private$.options$V
       complex <- private$.options$complex
       max <- private$.options$maximize

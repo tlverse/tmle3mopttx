@@ -85,7 +85,8 @@ Optimal_Rule_Revere <- R6Class(
       
       V <- tmle_task$data[,self$V,with=FALSE]
       data <- data.table(V,blip=blip)
-      revere_task <- make_sl3_Task(data, outcome="blip", covariates=self$V, folds=tmle_task$folds)
+      outcomes <- grep("blip", names(data), value = TRUE)
+      revere_task <- make_sl3_Task(data, outcome=outcomes, covariates=self$V, folds=tmle_task$folds)
       
       return(revere_task)
     },
@@ -113,24 +114,20 @@ Optimal_Rule_Revere <- R6Class(
       blip_task <- self$blip_revere_function(tmle_task, fold_number)
       blip_preds <- self$blip_fit$predict_fold(blip_task, fold_number)
       
+      if(is.list(blip_preds)){
+        blip_preds <- unpack_predictions(blip_preds)
+      }
+      
       rule_preds <- NULL
       if (!private$.maximize) {
         blip_preds <- blip_preds * -1
       }
       
-      # TODO: reimplement multinomial
-      if (TRUE) {
-        # should be if blip_preds is 1-dimensional
+      if(blip_type == "blip1"){
         rule_preds <- as.numeric(blip_preds > 0)
-      
-      } else {
-        if (blip_type == "blip1") {
-          rule_preds <- max.col(blip_preds) + 1
-        } else {
-          rule_preds <- max.col(blip_preds)
-        }
+      }else{
+        rule_preds <- max.col(blip_preds) - 1
       }
-    
       
       return(rule_preds)
     }
