@@ -1,4 +1,5 @@
 #' Defines a TMLE for the Mean Under the Optimal Individualized Rule with Categorical Treatment
+#' under Revere CV-TMLE
 #'
 #' @importFrom R6 R6Class
 #'

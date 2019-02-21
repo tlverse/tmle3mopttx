@@ -47,8 +47,8 @@ Optimal_Rule_Revere <- R6Class(
     },
     
     blip_revere_function = function(tmle_task, fold_number){
-      likelihood <- self$likelihood
       
+      likelihood <- self$likelihood
       A_vals <- tmle_task$npsem$A$variable_type$levels
       
       # Generate counterfactual tasks for each value of A:
@@ -65,16 +65,27 @@ Optimal_Rule_Revere <- R6Class(
       A_ind <- self$factor_to_indicators(A,A_vals)
       Y_mat <- replicate(length(A_vals), Y)
       
+      #Use fold_number fits for Q and g:
       Q_vals <- sapply(cf_tasks, likelihood$get_likelihood, "Y", fold_number)
       g_vals <- sapply(cf_tasks, likelihood$get_likelihood, "A", fold_number)
       DR <- (A_ind / g_vals) * (Y_mat - Q_vals) + Q_vals
       
-      # todo: port other blip code
       # todo: support multivariate outcome
-      blip <- DR[,2] - DR[,1]
+      
+      # Type of pseudo-blip:
+      blip_type <- self$blip_type
+      
+      if(blip_type=="blip1"){
+        blip <- DR[,2] - DR[,1]
+      }else if(blip_type=="blip2"){
+        blip <- DR - rowMeans(DR)
+      }else if(blip_type=="blip3"){
+        blip <- DR - (rowMeans(DR) * g_vals)
+      }
+      
       V <- tmle_task$data[,self$V,with=FALSE]
       data <- data.table(V,blip=blip)
-      revere_task <- make_sl3_Task(data, outcome="blip",covariates=self$V, folds=tmle_task$folds)
+      revere_task <- make_sl3_Task(data, outcome="blip", covariates=self$V, folds=tmle_task$folds)
       
       return(revere_task)
     },
@@ -89,7 +100,7 @@ Optimal_Rule_Revere <- R6Class(
       tmle_task <- self$tmle_task
       likelihood <- self$likelihood
       fold_number <- self$fold_number
-      
+
       # TODO: swap arg order in sl3
       blip_revere_task <- sl3:::sl3_revere_Task$new(self$blip_revere_function, tmle_task)
       blip_fit <- self$blip_library$train(blip_revere_task)
