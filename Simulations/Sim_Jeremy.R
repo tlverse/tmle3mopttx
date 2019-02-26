@@ -3,6 +3,7 @@
 library(tmle3)
 library(sl3)
 library(devtools)
+library(here)
 load_all()
 
 Qbar0 <- function(A, W) {
@@ -73,27 +74,15 @@ g_learner <- Lrnr_sl$new(
   metalearner = Lrnr_nnls$new()
 )
 
-#Make multivariate learners for the blip:
-#mv_xgboost_100 <- make_learner(Lrnr_multivariate, xgboost_100)
-#mv_xgboost_1000 <- make_learner(Lrnr_multivariate, xgboost_1000)
-#mv_glm <- make_learner(Lrnr_multivariate, lrn2)
+#Make SL of multivariate learners:
+learners <- list(xgboost_50,xgboost_100,xgboost_500,lrn1,lrn2)
+b_learner <- create_mv_learners(learners = learners)
 
-b_learner <- Lrnr_sl$new(
-  #learners = list(mv_xgboost_100),
-  #learners = list(mv_xgboost_100,mv_glm,mv_xgboost_1000),
-  learners = list(xgboost_100,lrn2,xgboost_1000),
-  metalearner = Lrnr_nnls$new()
-)
-
-mv_b_learner <- make_learner(Lrnr_multivariate, b_learner)
-
-learner_list <- list(Y = Q_learner, A = g_learner, B = mv_b_learner)
+learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
 
 ##################
-n=1000
-
-sim <- function(i){
-  message(i)  
+sim <- function(i,n){
+  message(i) 
   # sim_learner_list <- nested_learner_list
   sim_learner_list <- learner_list
   #Generate data:
@@ -107,41 +96,39 @@ sim <- function(i){
   
   # Define nodes:
   node_list <- list(W = c("W1", "W2", "W3"), A = "A", Y = "Y")
-
+  
   fit <- tmle3(tmle_spec, data=data, node_list=node_list, learner_list=sim_learner_list)
   est <- fit$summary
   
-  # use validation fit for psi + IC
-  cv_estimates <- fit$tmle_params[[1]]$estimates(fit$tmle_task,"validation")
-  cv_est <- summary_from_estimates(fit$tmle_task,list(cv_estimates),"cv-tsm","cv_tsm")
-  
-  # combine ests
-  ests <- rbindlist(list(est, cv_est))
-  ests$coverage <- as.numeric(ests$lower_transformed<=psi & ests$upper_transformed >= psi)
+  #True parameter:
+  est$psi <- psi
+  est$coverage_d0 <- as.numeric(est$lower_transformed<=psi & est$upper_transformed >= psi)
   
   #True data-adaptive parameter:
-  opt<-tmle_spec$return_rule()
+  est$Edn <- tmle_spec$data_adapt_psi(data_tda, node_list, Qbar0)
+  est$coverage_dn <- as.numeric(est$lower_transformed<=est$Edn & est$upper_transformed >= est$Edn)
+
+  est$iteration <- i
+  est$n <- n
+  results <- est
   
-  tda_task <- tmle_spec$make_tmle_task(data_tda, node_list)
-  tda_tx <- opt$rule(tda_task, "full")
-  # tda_tx_bn <- sapply(1:10, function(fold_number)opt$rule(tda_task,fold_number))
-  tda_W <- tda_task$get_tmle_node("W")
-  Edn <- mean(Qbar0(tda_tx,as.matrix(tda_W)))
-  # Edn_bn <- mean(apply(tda_tx_bn,2,Qbar0,tda_W))
-  ests$Edn <- Edn
-  # ests$Edn_bn <- Edn_bn
-  ests$coverage_dn <- as.numeric(ests$lower_transformed<=Edn & ests$upper_transformed >= Edn)
-  ests$psi <- psi
-  ests$iteration <- i
-  # ests$coverage_dn_bn <- as.numeric(ests$lower_transformed<=Edn_bn & ests$upper_transformed >= Edn_bn)
-  names(ests)<-c("type","param","init_est","tmle_est","se","lower","upper",
-                 "psi_transformed","lower_transformed","upper_transformed","coverage", 
-                 "true data-adpative", "coverage data-adaptive","psi","iteration")
-  
-  results <- ests
-  
-  save(results, file=sprintf("sim1a_results/results%04d.rdata",i))
+  save(results, file=sprintf("Simulations/simJeremy_results/results%04d.rdata",i))
   return(results)
 }
 
+MC=2
+n=1000
 
+library(future)
+library(future.apply)
+library(data.table)
+library(foreach)
+library(doMC)
+registerDoMC(16)
+
+sim_results <- foreach(iter=seq_len(MC),.errorhandling = "remove")%dopar%{
+  return(sim(iter,n=n))
+}
+
+results <-rbindlist(sim_results)
+save(results, file="Simulations/simJeremy_results/simJeremy_results.rdata")

@@ -97,6 +97,20 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
     return_rule = function() {
       return(private$B_rule)
     },
+    
+    ### Simulation specific: Returns data-adaptive truth.
+    #Takes as input: data set with large n, node list, and true Q function.
+    data_adapt_psi = function(data_tda,node_list,Qbar0){
+      
+      opt<-self$return_rule()
+      tda_task <- self$make_tmle_task(data=data_tda, node_list=node_list)
+      tda_tx <- opt$rule(tda_task, "full")
+      
+      tda_W <- tda_task$get_tmle_node("W")
+      Edn <- mean(Qbar0(tda_tx,as.matrix(tda_W)))
+      
+      return(Edn=Edn)
+    },
 
     make_params = function(tmle_task, likelihood) {
       

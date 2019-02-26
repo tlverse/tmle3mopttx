@@ -69,9 +69,7 @@ Optimal_Rule_Revere <- R6Class(
       Q_vals <- sapply(cf_tasks, likelihood$get_likelihood, "Y", fold_number)
       g_vals <- sapply(cf_tasks, likelihood$get_likelihood, "A", fold_number)
       DR <- (A_ind / g_vals) * (Y_mat - Q_vals) + Q_vals
-      
-      # todo: support multivariate outcome
-      
+
       # Type of pseudo-blip:
       blip_type <- self$blip_type
       
@@ -83,11 +81,12 @@ Optimal_Rule_Revere <- R6Class(
         blip <- DR - (rowMeans(DR) * g_vals)
       }
       
+      #TO DO: Nicer solutions. Do it one by one, for now
       V <- tmle_task$data[,self$V,with=FALSE]
       data <- data.table(V,blip=blip)
       outcomes <- grep("blip", names(data), value = TRUE)
       revere_task <- make_sl3_Task(data, outcome=outcomes, covariates=self$V, folds=tmle_task$folds)
-      
+
       return(revere_task)
     },
     
@@ -113,6 +112,9 @@ Optimal_Rule_Revere <- R6Class(
       # TODO: when applying the rule, we actually only need the covariates
       blip_task <- self$blip_revere_function(tmle_task, fold_number)
       blip_preds <- self$blip_fit$predict_fold(blip_task, fold_number)
+      
+      # Type of pseudo-blip:
+      blip_type <- self$blip_type
       
       if(is.list(blip_preds)){
         blip_preds <- unpack_predictions(blip_preds)
