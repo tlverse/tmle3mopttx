@@ -53,6 +53,10 @@ Optimal_Rule_Revere <- R6Class(
       
       # Generate counterfactual tasks for each value of A:
       cf_tasks <- lapply(A_vals, function(A_val) {
+        if(is.character(A_val)){
+          A_val<-as.numeric(A_val)
+          #A_val<-as.factor(A_val)
+        }
         newdata <- data.table(A = A_val)
         cf_task <- tmle_task$generate_counterfactual_task(UUIDgenerate(), new_data = newdata)
         return(cf_task)
@@ -128,7 +132,11 @@ Optimal_Rule_Revere <- R6Class(
       if(blip_type == "blip1"){
         rule_preds <- as.numeric(blip_preds > 0)
       }else{
-        rule_preds <- max.col(blip_preds) - 1
+        if(dim(blip_preds)[2]<3){
+          rule_preds <- max.col(blip_preds) - 1
+        }else{
+          rule_preds <- max.col(blip_preds)
+        }
       }
       
       return(rule_preds)

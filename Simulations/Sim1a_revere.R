@@ -1,4 +1,5 @@
-#Simulation 1a: 
+#Simulation with Binary A (Sim1a): Observational Study
+
 #Rule dependent on single covariate
 #~50% A=1 and ~50% A=0 allocation is the optimal rule
 #When W4>0, optimal A=1
@@ -66,7 +67,6 @@ lrn1 <- Lrnr_mean$new()
 lrn2<-Lrnr_glm_fast$new()
 lrn3<-Lrnr_hal9001$new()
 
-
 chain_fun <- function(learner_fit, task){
   X <- task$X  
   X[,W4_bin:=W4>0]
@@ -103,7 +103,6 @@ nested_learner_list <- lapply(learner_list, function(learner)make_learner(Lrnr_c
 
 ##########################
 n=1000
-
 
 sim <- function(i){
   message(i)  
@@ -162,7 +161,7 @@ sim <- function(i){
 MC=500
 n=1000
 
-sl3_debug_mode()
+#sl3_debug_mode()
 library(future)
 library(future.apply)
 library(data.table)

@@ -12,3 +12,13 @@ create_mv_learners <- function(learners){
   b_learner <- make_learner(Lrnr_sl, mv_stack, mv_metalearner)
   return(mv_learner=b_learner)
 }
+
+#Normalize rows:
+normalize_rows <- function(x) {
+  sweep(x, 1, rowSums(x), "/")
+}
+
+#Get factors:
+vals_from_factor <- function(x) {
+  sort(unique(x))
+}

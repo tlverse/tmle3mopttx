@@ -1,4 +1,4 @@
-#' Treatment Specific Mean
+#' Treatment Specific Mean with names specifying the covariates the rule depends on
 #'
 #' Parameter definition for the Treatment Specific Mean (TSM): $E_W[E_{Y|A}(Y|A=a|W)|$. Currently supports multiple static intervention nodes.
 #' Does yet not support dynamic rule or stochastic interventions.
@@ -42,70 +42,59 @@
 #'     }
 #' }
 #' @export
+
 Param_TSM2 <- R6Class(
   classname = "Param_TSM2",
   portable = TRUE,
   class = TRUE,
   inherit = Param_base,
-  lock_objects = FALSE,
   public = list(
-    initialize = function(observed_likelihood, v, intervention_list, ..., outcome_node = "Y") {
+    initialize = function(observed_likelihood, intervention_list, ..., outcome_node = "Y") {
       super$initialize(observed_likelihood, ..., outcome_node = outcome_node)
       private$.cf_likelihood <- make_CF_Likelihood(observed_likelihood, intervention_list)
-      self$v <- v
     },
-    clever_covariates = function(tmle_task = NULL, fold_number = -1) {
+    clever_covariates = function(tmle_task = NULL, fold_number = "full") {
       if (is.null(tmle_task)) {
         tmle_task <- self$observed_likelihood$training_task
       }
       intervention_nodes <- names(self$intervention_list)
       pA <- self$observed_likelihood$get_likelihoods(tmle_task, intervention_nodes, fold_number)
       cf_pA <- self$cf_likelihood$get_likelihoods(tmle_task, intervention_nodes, fold_number)
-
+      
       HA <- cf_pA / pA
-
+      
       # collapse across multiple intervention nodes
       if (!is.null(ncol(HA)) && ncol(HA) > 1) {
         HA <- apply(HA, 1, prod)
       }
       return(list(Y = unlist(HA, use.names = FALSE)))
     },
-    estimates = function(tmle_task = NULL, fold_number = -1) {
+    estimates = function(tmle_task = NULL, fold_number = "full") {
       if (is.null(tmle_task)) {
         tmle_task <- self$observed_likelihood$training_task
       }
-
+      
       # todo: extend for stochastic
       cf_task <- self$cf_likelihood$cf_tasks[[1]]
-
-
+      
+      
       Y <- tmle_task$get_tmle_node(self$outcome_node)
-
-
+      
+      
       # clever_covariates happen here (for this param) only, but this is repeated computation
       HA <- self$clever_covariates(tmle_task, fold_number)[[self$outcome_node]]
-
+      
       # clever_covariates happen here (for all fit params), and this is repeated computation
       EYA <- unlist(self$observed_likelihood$get_likelihood(tmle_task, self$outcome_node, fold_number), use.names = FALSE)
-
+      
       # clever_covariates happen here (for all fit params), and this is repeated computation
       EY1 <- unlist(self$cf_likelihood$get_likelihood(cf_task, self$outcome_node, fold_number), use.names = FALSE)
-
-      # todo: integrate unbounding logic into likelihood class, or at least put it in a function
-      variable_type <- tmle_task$npsem[[self$outcome_node]]$variable_type
-      if ((variable_type$type == "continuous") && (!is.na(variable_type$bounds))) {
-        bounds <- variable_type$bounds
-        scale <- bounds[2] - bounds[1]
-        shift <- bounds[1]
-        EYA <- EYA * scale + shift
-        EY1 <- EY1 * scale + shift
-      }
-
+      
       # todo: separate out psi
       # todo: make this a function of f(W)
       psi <- mean(EY1)
       IC <- HA * (Y - EYA) + EY1 - psi
-
+      
       result <- list(psi = psi, IC = IC)
       return(result)
     }
