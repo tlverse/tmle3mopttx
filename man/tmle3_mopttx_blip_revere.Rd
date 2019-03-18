@@ -3,6 +3,7 @@
 %   R/tmle3_Spec_rule.R
 \name{tmle3_mopttx_blip_revere}
 \alias{tmle3_mopttx_blip_revere}
+\alias{tmle3_mopttx_blip_revere}
 \title{Mean under the Optimal Individualized Treatment Rule}
 \usage{
 tmle3_mopttx_blip_revere(V, type = "blip1", b_learner, maximize = TRUE,
