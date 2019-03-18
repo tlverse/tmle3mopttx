@@ -1,4 +1,5 @@
 ## Helper functions
+#' @export
 
 #Make SL of multivariate learners:
 create_mv_learners <- function(learners){
