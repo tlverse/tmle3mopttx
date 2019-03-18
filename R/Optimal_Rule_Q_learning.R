@@ -26,11 +26,17 @@ Optimal_Rule_Q_learning <- R6Class(
       tmle_task <- self$tmle_task
 
       # todo: function
-      A_levels <- tmle_task$npsem$A$variable_type$levels
-      A_levels <- factor(A_levels, A_levels)
+      A_vals <- tmle_task$npsem$A$variable_type$levels
+      A_vals <- factor(A_vals, A_vals)
+      
       # Generate counterfactual tasks for each value of A:
-      cf_tasks <- lapply(A_levels, function(A_level) {
-        newdata <- data.table(A = A_level)
+      cf_tasks <- lapply(A_vals, function(A_val) {
+        #if(is.character(A_val)){
+        #  A_val<-as.numeric(A_val)
+          #A_val<-as.factor(A_val)
+        #}
+        A_val<-as.numeric(A_val)
+        newdata <- data.table(A = A_val)
         cf_task <- tmle_task$generate_counterfactual_task(UUIDgenerate(), new_data = newdata)
         return(cf_task)
       })

@@ -1,17 +1,19 @@
-#' Defines the Mean Under the Optimal Individualized Rule with Categorical Treatment, estimated using Q learning.
+#' Defines the Mean Under the Optimal Individualized Rule with Categorical Treatment, 
+#' estimated using Q learning.
 #'
 #' @importFrom R6 R6Class
 #'
 #' @export
 #
+
 tmle3_Spec_mopttx_Q <- R6Class(
   classname = "tmle3_Spec_mopttx_Q",
   portable = TRUE,
   class = TRUE,
   inherit = tmle3_Spec,
   public = list(
-    initialize = function(V, type, b_learner, ...) {
-      options <- list(V = V, type = type, b_learner = b_learner)
+    initialize = function(maximize = TRUE, ...) {
+      options <- list(maximize = maximize, ...)
       do.call(super$initialize, options)
     },
 
@@ -24,11 +26,10 @@ tmle3_Spec_mopttx_Q <- R6Class(
     },
 
     make_params = function(tmle_task, likelihood) {
-
+      
       # Learn the rule
-      opt_rule <- Optimal_Rule$new(tmle_task, likelihood, "split-specific",
-        blip_library = private$.options$b_learner
-      )
+      opt_rule <- Optimal_Rule_Q_learning$new(tmle_task, likelihood, 
+                                              maximize = private$.options$maximize)
       opt_rule$fit_blip()
 
       # Define a dynamic Likelihood factor:
@@ -36,7 +37,16 @@ tmle3_Spec_mopttx_Q <- R6Class(
       tsm_rule <- Param_TSM$new(likelihood, lf_rule)
 
       return(list(tsm_rule))
+    },
+    
+    estimate = function(tmle_params,tmle_task){
+      
+      est<-lapply(tmle_params, function(tmle_param){
+        mean(tmle_param$cf_likelihood$get_likelihood(tmle_task = tmle_task, node = "Y"))})
+      return(est)
+
     }
+    
   ),
   active = list(),
   private = list()
@@ -49,17 +59,11 @@ tmle3_Spec_mopttx_Q <- R6Class(
 #' A=Treatment (binary or categorical)
 #' Y=Outcome (binary or bounded continuous)
 #'
-#' @param V Covariates the rule depends on
-#' @param type One of three psudo-blip versions developed to accommodate categorical treatment. "Blip1"
-#' corresponds to chosing a reference category, and defining the blip for all other categories relative to the
-#' specified reference. Note that in the case of binary treatment, "blip1" is just the usual blip.
-#' "Blip2$ corresponds to defining the blip relative to the average of all categories. Finally,
-#' "Blip3" corresponds to defining the blip relative to the weighted average of all categories.
-#' @param b_learner Library for blip estimation.
+#' @param maximize Specify whether we want to maximize or minimize the mean of the final outcome.
 #'
 #' @export
 #'
 
-tmle3_mopttx_Q <- function(V, type, b_learner) {
-  tmle3_Spec_mopttx_Q$new(V = V, type = type, b_learner = b_learner)
+tmle3_mopttx_Q <- function(maximize) {
+  tmle3_Spec_mopttx_Q$new(maximize=maximize)
 }
