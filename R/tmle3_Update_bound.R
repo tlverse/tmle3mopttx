@@ -12,6 +12,7 @@ tmle3_Update_bound <- R6Class(
   classname = "tmle3_Update_bound",
   portable = TRUE,
   class = TRUE,
+  inherit = tmle3_Update,
   public = list(
     initialize = function(maxit=100) {
       private$.maxit=maxit
@@ -43,13 +44,16 @@ tmle3_Update_bound <- R6Class(
       # todo: support not getting observed for case where we're applying updates instead of fitting them
       clever_covariates <- lapply(self$tmle_params, function(tmle_param) tmle_param$clever_covariates(tmle_task, fold_number))
       
-      observed_values <- lapply(update_nodes, tmle_task$get_tmle_node, bound = TRUE)
-      
       all_submodels <- lapply(update_nodes, function(update_node) {
         node_covariates <- lapply(clever_covariates, `[[`, update_node)
         covariates_dt <- do.call(cbind, node_covariates)
-        observed <- tmle_task$get_tmle_node(update_node, bound = TRUE)
+        observed <- tmle_task$get_tmle_node(update_node)
         initial <- likelihood$get_likelihood(tmle_task, update_node, fold_number)
+        
+        # scale observed and initial
+        observed <- tmle_task$scale(observed, update_node)
+        initial <- tmle_task$scale(initial, update_node)
+        
         initial <- self$bound(initial)
         submodel_data <- list(
           observed = observed,
@@ -137,6 +141,9 @@ tmle3_Update_bound <- R6Class(
     },
     step_number = function() {
       return(private$.step_number)
+    },
+    cvtmle = function(){
+      return(FALSE)
     }
   ),
   private = list(

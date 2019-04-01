@@ -44,9 +44,9 @@ Optimal_Rule_Q_learning <- R6Class(
       private$.cf_tasks <- cf_tasks
     },
 
-    rule = function(tmle_task) {
+    rule = function(tmle_task, fold_number="full") {
       # Get Q(a,W) for each level of A, all folds
-      blip_fin <- sapply(private$.cf_tasks, private$.likelihood$get_likelihood, "Y", -1)
+      blip_fin <- sapply(private$.cf_tasks, private$.likelihood$get_likelihood, "Y", fold_number)
 
       if (private$.maximize) {
         rule_index <- max.col(blip_fin)

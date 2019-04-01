@@ -42,5 +42,11 @@ tmle3_cv_Update <- R6Class(
       ED <- colMeans(ICs)
       return(max(abs(ED)) < ED_criterion)
     }
+  ),
+  active = list(
+    
+    cvtmle = function(){
+      return(TRUE)
+    }
   )
 )
