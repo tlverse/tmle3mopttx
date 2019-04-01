@@ -145,10 +145,9 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
           V_sub <- self$make_rules(V)
 
           tsm_rule <- lapply(V_sub, function(v) {
-            opt_rule <- Optimal_Rule$new(tmle_task, likelihood, "split-specific",
-              V = v, blip_type = private$.options$type,
-              blip_library = private$.options$b_learner,
-              maximize = private$.options$maximize
+            opt_rule <- Optimal_Rule_Revere$new(tmle_task, likelihood$initial_likelihood, "split-specific",
+                                                V = V, blip_type = private$.options$type,
+                                                blip_library = private$.options$b_learner, maximize = private$.options$maximize
             )
             opt_rule$fit_blip()
             self$set_B_rule(opt_rule)

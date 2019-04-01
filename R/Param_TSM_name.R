@@ -49,9 +49,10 @@ Param_TSM2 <- R6Class(
   class = TRUE,
   inherit = Param_base,
   public = list(
-    initialize = function(observed_likelihood, intervention_list, ..., outcome_node = "Y") {
+    initialize = function(observed_likelihood, intervention_list, v, ..., outcome_node = "Y") {
       super$initialize(observed_likelihood, ..., outcome_node = outcome_node)
       private$.cf_likelihood <- make_CF_Likelihood(observed_likelihood, intervention_list)
+      private$.v <- v
     },
     clever_covariates = function(tmle_task = NULL, fold_number = "full") {
       if (is.null(tmle_task)) {
@@ -103,7 +104,7 @@ Param_TSM2 <- R6Class(
     name = function() {
       param_form <- sprintf(
         "E[%s_{%s}]", self$outcome_node,
-        paste0("A=", paste(self$v, collapse = ","))
+        paste0("A=", paste(private$.v, collapse = ","))
       )
       return(param_form)
     },
@@ -119,6 +120,7 @@ Param_TSM2 <- R6Class(
   ),
   private = list(
     .type = "TSM",
-    .cf_likelihood = NULL
+    .cf_likelihood = NULL,
+    .v=NULL
   )
 )

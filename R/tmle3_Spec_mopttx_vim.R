@@ -100,19 +100,20 @@ tmle3_Spec_mopttx_vim <- R6Class(
         )
       } else if (method == "SL") {
         # Learn the rule using split-specific methodology:
-        opt_rule <- Optimal_Rule$new(tmle_task, likelihood,
-          fold_number = "split-specific",
-          V = private$.options$V,
-          blip_library = private$.options$b_learner,
-          maximize = private$.options$maximize
+        opt_rule <- Optimal_Rule_Revere$new(tmle_task, likelihood$initial_likelihood, 
+                                            "split-specific", V = private$.options$V,
+                                            blip_type = private$.options$type,
+                                            blip_library = private$.options$b_learner, 
+                                            maximize = private$.options$maximize
         )
       }
 
       opt_rule$fit_blip()
       self$set_B_rule(opt_rule)
-
+      
       # Define a dynamic Likelihood factor:
-      lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
+      lf_rule <- define_lf(LF_rule, "A", 
+                           rule_fun = function(task){opt_rule$rule(task,"validation")})
       tsm_rule <- Param_TSM$new(likelihood, lf_rule)
       mean_param <- Param_mean$new(likelihood)
 
@@ -124,7 +125,8 @@ tmle3_Spec_mopttx_vim <- R6Class(
         stop("Contrast can be either linear or multiplicative")
       }
 
-      contrast_param <- Param_delta$new(likelihood, contrast_delta, list(mean_param, tsm_rule))
+      contrast_param <- Param_delta$new(likelihood, contrast_delta, 
+                                        list(mean_param, tsm_rule))
 
       return(list(tsm_rule, mean_param, contrast_param))
     }
