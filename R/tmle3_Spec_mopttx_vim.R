@@ -91,29 +91,32 @@ tmle3_Spec_mopttx_vim <- R6Class(
     },
 
     make_params = function(tmle_task, likelihood) {
+      
       method <- private$.options$method
+      V <- private$.options$V
+      complex <- private$.options$complex
+      max <- private$.options$maximize
+      #realistic <- private$.options$realistic
 
+      #TO DO: Should add options for VIM that accounts for complex and realistic interventions?
       if (method == "Q") {
         # Learn the rule using Q-learning:
         opt_rule <- Optimal_Rule_Q_learning$new(tmle_task, likelihood,
           maximize = private$.options$maximize
         )
       } else if (method == "SL") {
-        # Learn the rule using split-specific methodology:
-        opt_rule <- Optimal_Rule_Revere$new(tmle_task, likelihood$initial_likelihood, 
-                                            "split-specific", V = private$.options$V,
-                                            blip_type = private$.options$type,
+        # Learn the rule
+        opt_rule <- Optimal_Rule_Revere$new(tmle_task, likelihood$initial_likelihood, "split-specific",
+                                            V = V, blip_type = private$.options$type,
                                             blip_library = private$.options$b_learner, 
-                                            maximize = private$.options$maximize
-        )
+                                            maximize = private$.options$maximize)
       }
-
+      
       opt_rule$fit_blip()
       self$set_B_rule(opt_rule)
       
       # Define a dynamic Likelihood factor:
-      lf_rule <- define_lf(LF_rule, "A", 
-                           rule_fun = function(task){opt_rule$rule(task,"validation")})
+      lf_rule <- define_lf(LF_rule, "A", rule_fun = function(task){opt_rule$rule(task,"validation")})
       tsm_rule <- Param_TSM$new(likelihood, lf_rule)
       mean_param <- Param_mean$new(likelihood)
 

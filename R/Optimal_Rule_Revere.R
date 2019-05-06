@@ -14,14 +14,16 @@ Optimal_Rule_Revere <- R6Class(
   inherit = tmle3_Spec,
   lock_objects = FALSE,
   public = list(
-    initialize = function(tmle_task, likelihood, fold_number = "split-specific",
-                              V = NULL, blip_type = "blip2", blip_library, maximize = TRUE) {
+    initialize = function(tmle_task, likelihood, fold_number = "split-specific", V = NULL, 
+                          blip_type = "blip2", blip_library, maximize = TRUE, realistic=FALSE) {
       private$.tmle_task <- tmle_task
       private$.likelihood <- likelihood
       private$.fold_number <- fold_number
       private$.blip_type <- blip_type
       private$.blip_library <- blip_library
       private$.maximize <- maximize
+      private$.realistic <- realistic
+      
       if (missing(V)) {
         V <- tmle_task$npsem$W$variables
       }
@@ -113,6 +115,9 @@ Optimal_Rule_Revere <- R6Class(
 
     rule = function(tmle_task, fold_number="full") {
       
+      realistic <- private$.realistic
+      likelihood <- self$likelihood
+      
       # TODO: when applying the rule, we actually only need the covariates
       blip_task <- self$blip_revere_function(tmle_task, fold_number)
       blip_preds <- self$blip_fit$predict_fold(blip_task, fold_number)
@@ -125,20 +130,27 @@ Optimal_Rule_Revere <- R6Class(
       }
       
       rule_preds <- NULL
-      if (!private$.maximize) {
-        blip_preds <- blip_preds * -1
-      }
       
-      if(blip_type == "blip1"){
-        rule_preds <- as.numeric(blip_preds > 0)
+      if(realistic){
+        #Need to grab the propensity score:
+        g <-likelihood$get_likelihood(tmle_task = tmle_task, node = "A")
+        
+      
       }else{
-        if(dim(blip_preds)[2]<3){
-          rule_preds <- max.col(blip_preds) - 1
+        if (!private$.maximize) {
+          blip_preds <- blip_preds * -1
+        }
+        
+        if(blip_type == "blip1"){
+          rule_preds <- as.numeric(blip_preds > 0)
         }else{
-          rule_preds <- max.col(blip_preds)
+          if(dim(blip_preds)[2]<3){
+            rule_preds <- max.col(blip_preds) - 1
+          }else{
+            rule_preds <- max.col(blip_preds)
+          }
         }
       }
-      
       return(rule_preds)
     }
   ),
@@ -173,6 +185,7 @@ Optimal_Rule_Revere <- R6Class(
     .blip_type = NULL,
     .blip_fit = NULL,
     .blip_library = NULL,
-    .maximize = NULL
+    .maximize = NULL,
+    .realistic = NULL
   )
 )

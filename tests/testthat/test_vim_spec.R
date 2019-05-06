@@ -9,64 +9,40 @@ library(here)
 
 set.seed(1234)
 
-data(test_vim_cat_data)
-data <- test_vim_cat_data
+data("data_cat_vim")
+data <- data_cat_vim
 data <- data.table(data)
-data[, A := factor(A)]
+#data[, A := factor(A)]
 
 # Define nodes:
 node_list <- list(
-  W = c("W1", "W2", "W3", "W4", "W5"),
-  A = "A",
+  W = c("W3", "W4"),
+  A = c("A","W1", "W2"),
   Y = "Y"
 )
 
-# Define sl3 library and metalearners:
-qlib <- make_learner_stack(
-  "Lrnr_mean",
-  "Lrnr_glm_fast"
+xgboost_100<-Lrnr_xgboost$new(nrounds = 100)
+xgboost_500<-Lrnr_xgboost$new(nrounds = 500)
+lrn1 <- Lrnr_mean$new()
+lrn2<-Lrnr_glm_fast$new()
+
+Q_learner <- Lrnr_sl$new(
+  learners = list(xgboost_100,xgboost_500,lrn1,lrn2),
+  metalearner = Lrnr_nnls$new()
 )
 
-# sl3_list_learners(c("categorical"))
-glib <- make_learner_stack(
-  "Lrnr_mean",
-  "Lrnr_glmnet",
-  "Lrnr_xgboost"
-)
+#Define the g learner, which is a multinomial learner:
+glib <- list(xgboost_100,lrn1)
 
-blib <- make_learner_stack(
-  "Lrnr_glm_fast",
-  "Lrnr_xgboost"
-)
-
-metalearner <- make_learner(Lrnr_nnls)
-mn_metalearner <- make_learner(Lrnr_solnp, loss_function = loss_loglik_multinomial, learner_function = metalearner_linear_multinomial)
-
-Q_learner <- make_learner(Lrnr_sl, qlib, metalearner)
+mn_metalearner <- make_learner(Lrnr_solnp, loss_function = loss_loglik_multinomial, 
+                               learner_function = metalearner_linear_multinomial)
 g_learner <- make_learner(Lrnr_sl, glib, mn_metalearner)
-b_learner <- make_learner(Lrnr_sl, blib, metalearner)
+
+#Define the Blip learner, which is a multivariate learner:
+learners <- list(xgboost_100,xgboost_500,lrn1,lrn2)
+b_learner <- create_mv_learners(learners = learners)
+
 learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
-
-###############
-# Q learning:
-###############
-
-# Define spec:
-# fit opttx spec with Q-learning
-tmle_spec <- tmle3_mopttx_vim(
-  contrast = "multiplicative",
-  maximize = FALSE,
-  method = "Q"
-)
-
-# Fast way of doing it:
-fit_opttx <- tmle3(tmle_spec, data, node_list, learner_list)
-
-# Variable importance:
-vim_results <- tmle3_vim(tmle_spec, data,
-  node_list = node_list, learner_list,
-  adjust_for_other_A = FALSE
-)
 
 ##################
 # Split-specific:
@@ -80,17 +56,11 @@ tmle_spec <- tmle3_mopttx_vim(
   method = "SL"
 )
 
-# TO DO: Check this
-# Fast way of doing it:
-# fit_opttx <- tmle3(tmle_spec, data, node_list, learner_list)
-
-
-
-
-
-
-
-
+# Variable importance:
+vim_results <- tmle3_vim(tmle_spec, data,
+                         node_list = node_list, learner_list,
+                         adjust_for_other_A = TRUE
+)
 
 # tmle_task <- tmle_spec_opttx$make_tmle_task(data, node_list)
 # g_task <- tmle_task$get_regression_task("A")
@@ -112,3 +82,24 @@ tmle_spec <- tmle3_mopttx_vim(
 # rule_fun <- fit_opttx$tmle_params[[1]]$cf_likelihood$intervention_list$A$rule_fun
 # treatment_assignment <- rule_fun(fit_opttx$tmle_task)
 # table(treatment_assignment)
+
+###############
+# Q learning:
+###############
+
+# Define spec:
+# fit opttx spec with Q-learning
+#tmle_spec <- tmle3_mopttx_vim(
+#  contrast = "multiplicative",
+#  maximize = FALSE,
+#  method = "Q"
+#)
+
+# Fast way of doing it:
+#fit_opttx <- tmle3(tmle_spec, data, node_list, learner_list)
+
+# Variable importance:
+#vim_results <- tmle3_vim(tmle_spec, data,
+#                         node_list = node_list, learner_list,
+#                         adjust_for_other_A = FALSE
+#)
