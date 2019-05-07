@@ -15,12 +15,12 @@ Optimal_Rule_Revere <- R6Class(
   lock_objects = FALSE,
   public = list(
     initialize = function(tmle_task, likelihood, fold_number = "split-specific", V = NULL, 
-                          blip_type = "blip2", blip_library, maximize = TRUE, realistic=FALSE) {
+                          blip_type = "blip2", learners, maximize = TRUE, realistic=FALSE) {
       private$.tmle_task <- tmle_task
       private$.likelihood <- likelihood
       private$.fold_number <- fold_number
       private$.blip_type <- blip_type
-      private$.blip_library <- blip_library
+      private$.learners <- learners
       private$.maximize <- maximize
       private$.realistic <- realistic
       
@@ -132,10 +132,51 @@ Optimal_Rule_Revere <- R6Class(
       rule_preds <- NULL
       
       if(realistic){
-        #Need to grab the propensity score:
-        g <-likelihood$get_likelihood(tmle_task = tmle_task, node = "A")
         
-      
+        #Need to grab the propensity score:
+        g_learner <- likelihood$factor_list[["A"]]$learner
+        g_task <- tmle_task$get_regression_task("A")
+        g_fits <- unpack_predictions(g_learner$predict(g_task))
+        
+        if (!private$.maximize) {
+          blip_preds <- blip_preds * -1
+        }
+        
+        if(blip_type == "blip1"){
+          rule_preds <- as.numeric(blip_preds > 0)
+        
+          for(i in 1:length(rule_preds)){
+            rule_preds_prob<-g_fits[i,]
+            #TO DO: What is a realistic cutoff here?
+            if(rule_preds_prob<0.05){
+              #Switch- assumes options are 0 and 1.
+              rule_preds[i] <- abs(rule_preds[i] - 1)
+            }
+          }
+          
+        }else{
+          if(dim(blip_preds)[2]<3){
+            rule_preds <- max.col(blip_preds) - 1
+            for(i in 1:length(rule_preds)){
+              rule_preds_prob<-g_fits[i,rule_preds[i]]
+              #TO DO: What is a realistic cutoff here?
+              if(rule_preds_prob<0.05){
+                #Pick the next largest blip
+                rule_preds[i] <- max.col(blip_preds[i,order(blip_preds[i,], decreasing = TRUE)[2]])
+              }
+            }
+          }else{
+            rule_preds <- max.col(blip_preds)
+            for(i in 1:length(rule_preds)){
+              rule_preds_prob<-g_fits[i,rule_preds[i]]
+              #TO DO: What is a realistic cutoff here?
+              if(rule_preds_prob<0.05){
+                #Pick the next largest blip
+                rule_preds[i] <- max.col(blip_preds[i,order(blip_preds[i,], decreasing = TRUE)[2]])
+              }
+            }
+          }
+        }
       }else{
         if (!private$.maximize) {
           blip_preds <- blip_preds * -1
@@ -174,7 +215,10 @@ Optimal_Rule_Revere <- R6Class(
       return(private$.blip_fit)
     },
     blip_library = function() {
-      return(private$.blip_library)
+      return(private$.learners$B)
+    },
+    A_library = function() {
+      return(private$.learners$A)
     }
   ),
   private = list(
@@ -184,7 +228,7 @@ Optimal_Rule_Revere <- R6Class(
     .V = NULL,
     .blip_type = NULL,
     .blip_fit = NULL,
-    .blip_library = NULL,
+    .learners = NULL,
     .maximize = NULL,
     .realistic = NULL
   )
