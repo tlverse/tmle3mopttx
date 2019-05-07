@@ -51,11 +51,11 @@ ten continous and categorical covariates we want to assess importance of in term
 
 ```{r load sim_data}
 #Load data:
-data("test_vim_data")
+data("data_cat_vim")
+data <- data_cat_vim
 
 #Expore the data:
 head(data)
-
 ```
 
 The above composes our observed data structure $O = (W, A, Y)$. To formally
@@ -65,11 +65,11 @@ the nodes in the _directed acyclic graph_ (DAG) via _nonparametric structural
 equation models_ (NPSEMs), reflected in the node list that we set up:
 
 ```{r data_nodes}
-# Organize data and nodes for tmle3
-node_list
-
-# Subset to discrete nodes:
-node_list_discrete <- list(W=node_list$W, A=node_list$A_discrete, Y=node_list$Y)
+node_list <- list(
+  W = c("W3", "W4"),
+  A = c("A","W1", "W2"),
+  Y = "Y"
+)
 ```
 
 We now have an observed data structure (`data`) and a specification of the role
@@ -145,31 +145,24 @@ using the cross-validation framework of the Super Learner algorithm of
 @vdl2007super.
 
 ```{r sl3_lrnrs}
+xgboost_100<-Lrnr_xgboost$new(nrounds = 100)
+xgboost_500<-Lrnr_xgboost$new(nrounds = 500)
+lrn1 <- Lrnr_mean$new()
+lrn2<-Lrnr_glm_fast$new()
 
-#Define sl3 library and metalearners:
-qlib <- make_learner_stack(
-  "Lrnr_mean",
-  "Lrnr_glm_fast"
+Q_learner <- Lrnr_sl$new(
+  learners = list(xgboost_100,xgboost_500,lrn1,lrn2),
+  metalearner = Lrnr_nnls$new()
 )
 
-glib <- make_learner_stack(
-  "Lrnr_mean",
-  "Lrnr_glmnet",
-  "Lrnr_xgboost"
-)
+#Define the g learner, which is a multinomial learner:
+mn_metalearner <- make_learner(Lrnr_solnp, loss_function = loss_loglik_multinomial, 
+                               learner_function = metalearner_linear_multinomial)
+g_learner <- make_learner(Lrnr_sl, list(xgboost_500,xgboost_100,lrn1), mn_metalearner)
 
-blib <- make_learner_stack(
-  "Lrnr_mean",
-  "Lrnr_glm_fast"
-)
-
-metalearner <- make_learner(Lrnr_nnls)
-mn_metalearner <- make_learner(Lrnr_solnp, loss_function = loss_loglik_multinomial, learner_function = metalearner_linear_multinomial)
-
-Q_learner <- make_learner(Lrnr_sl, qlib, metalearner)
-g_learner <- make_learner(Lrnr_sl, glib, mn_metalearner)
-b_learner <- make_learner(Lrnr_sl, blib, metalearner)
-
+#Define the Blip learner, which is a multivariate learner:
+learners <- list(xgboost_100,xgboost_500,lrn1,lrn2)
+b_learner <- create_mv_learners(learners = learners)
 ```
 
 As seen above, we generate three different ensemble learners that must be fit, corresponding to the learners for the outcome regression, propensity score, and the blip function. 
@@ -208,12 +201,14 @@ multiplicative scale (risk ratio) or linear (similar to average treatment effect
 
 ```{r spec_init}
 # initialize a tmle specification
-tmle_spec <-  tmle3_mopttx_vim(V = c("W01", "W02", "W03", "W04"),
-                               type = "blip1",
-                               b_learner = learner_list$B,
-                               contrast = "multiplicative",
-                               maximize = FALSE,
-                               method="Q")
+tmle_spec <- tmle3_mopttx_vim(
+  V = node_list$W, learners = learner_list, type = "blip2",
+  contrast = "multiplicative",
+  maximize = FALSE,
+  method = "SL", 
+  complex = TRUE, 
+  realistic = FALSE
+)
 ```
 
 As seen above, the `tmle_mopttx` specification object (like all `tmle3_Spec`
@@ -221,56 +216,6 @@ objects) does _not_ store the data for our specific analysis of interest. Later,
 we'll see that passing a data object directly to the `tmle3` wrapper function,
 alongside the instantiated `tmle_spec`, will serve to construct a `tmle3_Task`
 object internally (see the `tmle3` documentation for details).
-
-### Targeted Estimation of the Mean under the Optimal Individualized Treatment Regime
-
-One may walk through the step-by-step procedure for assessing the contrast between the 
-mean under the optimal individualized rule and the mean under the observed outcome for a
-single covariate. By doing this step-by-step, we dive into the machinery exposed by the [`tmle3` R package](https://tmle3.tlverse.org/). This step can be easily avoided, as demonstrated by the
-following passage. 
-
-```{r fit_tmle_manual_singleA, eval=FALSE}
-# NOT RUN -- SEE NEXT CODE CHUNK!
-
-# As an example, we look at the result for a single interesting treatment, "A_bin01":
-node_list <- list(W = node_list$W, A = "A_bin01", Y = node_list$Y)
-
-#Generate tmle task:
-tmle_task <- tmle_spec$make_tmle_task(data, node_list)
-
-#Generate initial likelihood using the specified learners:
-initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task,learner_list)
-
-#Define the updater:
-updater <- tmle_spec$make_updater()
-
-#Define targeted likelihood:
-targeted_likelihood <- tmle_spec$make_targeted_likelihood(initial_likelihood, updater)
-
-#Define the parameter:
-#Note that this step does the actual rule learning!
-tmle_params <- tmle_spec$make_params(tmle_task, targeted_likelihood)
-
-updater$tmle_params <- tmle_params
-
-#Targeting step:
-fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, updater)
-fit
-```
-
-Instead, one may invoke the `tmle3` convenience function to fit the series of
-TML estimators in a single function call:
-
-```{r fit_tmle_auto, eval=TRUE}
-#Repeat all the steps from above in one step:
-fit <- tmle3(tmle_spec, data, node_list, learner_list)
-fit
-```
-
-_Remark_: The `print` method of the resultant `fit` object conveniently
-displays the results from computing our TML estimator. In particular, we can we type of 
-our target parameter, the initial and targeted estimate, standard error, and the 
-associated confidence interval.
 
 ### Variable Importance using the Targeted Estimation of the Mean under the Optimal ITR 
 
@@ -289,12 +234,19 @@ if `adjust_for_other_A=TRUE`, also for all $A$ covariates that are not treated a
 variable importance loop. For computational reasons, we set `adjust_for_other_A=FALSE` below.
 
 ```{r vim_categorical}
-vim_results <- tmle3_vim(tmle_spec, data, node_list=node_list_discrete, learner_list,
-                         adjust_for_other_A = FALSE)
+vim_results <- tmle3_vim(tmle_spec, data,
+                         node_list = node_list, learner_list,
+                         adjust_for_other_A = TRUE
+)
+
 vim_results
 ```
 
-The final result of `tmle3_vim` with the `tmle3mopttx` spec is an ordered list of mean outcomes under the optimal individualized treatment for all categorical covariates in our dataset. 
+The final result of `tmle3_vim` with the `tmle3mopttx` spec is an ordered list of mean outcomes under 
+the optimal individualized treatment for the specifed categorical covariates in our dataset. 
+In the column "A" we can see which covariate was handled as treatment, and which were adjusted for, "W".
+In addition, we can also see the corrected significance of the particular VIM, listed in the 
+"p_nz_corrected" column.
 
 ### Variable Importance using Q-learning
 
@@ -306,10 +258,9 @@ tmle_spec_Q <-  tmle3_mopttx_vim(contrast = "multiplicative",
                                maximize = FALSE,
                                method="Q")
 
-vim_results_Q <- tmle3_vim(tmle_spec_Q, data, node_list=node_list_discrete, learner_list,
-                         adjust_for_other_A = FALSE)
+vim_results_Q <- tmle3_vim(tmle_spec, data, node_list = node_list, learner_list,
+                         adjust_for_other_A = TRUE)
 vim_results_Q
 ```
-
 
 ## References

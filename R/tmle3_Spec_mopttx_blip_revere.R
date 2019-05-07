@@ -9,6 +9,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
   classname = "tmle3_Spec_mopttx_blip_revere",
   portable = TRUE,
   class = TRUE,
+  lock_objects = FALSE,
   inherit = tmle3_Spec,
   public = list(
     initialize = function(V, type, learners, maximize = TRUE, complex = TRUE, realistic=FALSE, ...) {
@@ -153,9 +154,12 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 
           tsm_rule <- lapply(V_sub, function(v) {
             opt_rule <- Optimal_Rule_Revere$new(tmle_task, likelihood$initial_likelihood, "split-specific",
-                                                V = V, blip_type = private$.options$type,
-                                                blip_library = private$.options$b_learner, maximize = private$.options$maximize
+                                                V = V, blip_type = private$.options$type, 
+                                                learners = private$.options$learners, 
+                                                maximize = private$.options$maximize,
+                                                realistic = realistic
             )
+            
             opt_rule$fit_blip()
             self$set_opt(opt_rule)
             
@@ -233,7 +237,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 #'
 
 tmle3_mopttx_blip_revere <- function(V, type = "blip1", learners, maximize = TRUE, 
-                                     complex = TRUE,realistic=FALSE) {
+                                     complex = TRUE, realistic=FALSE) {
   tmle3_Spec_mopttx_blip_revere$new(V = V, type = type, learners = learners, 
-                                    maximize = maximize, complex = complex,realistic=realistic)
+                                    maximize = maximize, complex = complex, realistic=realistic)
 }

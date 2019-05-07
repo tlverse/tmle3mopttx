@@ -1,18 +1,7 @@
-#' Defines a TMLE for the Mean Under the Optimal Individualized Rule with Categorical Treatment and contrast with
-#' the Mean under Observed Treatment.
+#' Defines a TMLE for the Mean Under the Optimal Individualized Rule with 
+#' Categorical Treatment and contrast with the Mean under Observed Treatment.
 #'
 #' @importFrom R6 R6Class
-#'
-#' @param V Covariates the rule depends on.
-#' @param type One of three psudo-blip versions developed to accommodate categorical treatment. "Blip1"
-#' corresponds to chosing a reference category, and defining the blip for all other categories relative to the
-#' specified reference. Note that in the case of binary treatment, "blip1" is just the usual blip.
-#' "Blip2$ corresponds to defining the blip relative to the average of all categories. Finally,
-#' "Blip3" corresponds to defining the blip relative to the weighted average of all categories.
-#' @param b_learner Library for blip estimation.
-#' @param method Specifies which methodology to use for learning the rule. Options are "Q" for Q-learning, and
-#' "SL" for the Super-Learner approach using split-specific estimates.
-#' @param maximize Specify whether we want to maximize or minimize the mean of the final outcome.
 #'
 #' @export
 #
@@ -21,13 +10,16 @@ tmle3_Spec_mopttx_vim <- R6Class(
   classname = "tmle3_Spec_mopttx_vim",
   portable = TRUE,
   class = TRUE,
+  lock_objects = FALSE,
   inherit = tmle3_Spec,
   public = list(
-    initialize = function(V = NULL, type = "blip2", method = "SL", b_learner = NULL,
-                              contrast = "linear", maximize = TRUE...) {
+    initialize = function(V = NULL, type = "blip2", method = "SL", learners = NULL,
+                              contrast = "linear", maximize = TRUE, complex = TRUE, 
+                              realistic=FALSE, ...) {
       options <- list(
-        V = V, type = type, method = method, b_learner = b_learner,
-        contrast = contrast, maximize = maximize
+        V = V, type = type, method = method, learners = learners,
+        contrast = contrast, maximize = maximize, complex=complex, 
+        realistic=realistic
       )
       do.call(super$initialize, options)
     },
@@ -82,23 +74,22 @@ tmle3_Spec_mopttx_vim <- R6Class(
 
       return(tmle_task)
     },
-    make_updater = function() {
-      updater <- tmle3_cv_Update$new()
-    },
+    #make_updater = function() {
+    #  updater <- tmle3_cv_Update$new()
+    #},
 
-    set_B_rule = function(opt) {
-      private$B_rule <- opt
+    set_opt = function(opt) {
+      private$.opt <- opt
     },
 
     make_params = function(tmle_task, likelihood) {
       
-      method <- private$.options$method
       V <- private$.options$V
       complex <- private$.options$complex
       max <- private$.options$maximize
-      #realistic <- private$.options$realistic
-
-      #TO DO: Should add options for VIM that accounts for complex and realistic interventions?
+      realistic <- private$.options$realistic
+      method <- private$.options$method
+      
       if (method == "Q") {
         # Learn the rule using Q-learning:
         opt_rule <- Optimal_Rule_Q_learning$new(tmle_task, likelihood,
@@ -108,12 +99,13 @@ tmle3_Spec_mopttx_vim <- R6Class(
         # Learn the rule
         opt_rule <- Optimal_Rule_Revere$new(tmle_task, likelihood$initial_likelihood, "split-specific",
                                             V = V, blip_type = private$.options$type,
-                                            blip_library = private$.options$b_learner, 
-                                            maximize = private$.options$maximize)
+                                            learners = private$.options$learners, 
+                                            maximize = private$.options$maximize,
+                                            realistic=realistic)
       }
       
       opt_rule$fit_blip()
-      self$set_B_rule(opt_rule)
+      self$set_opt(opt_rule)
       
       # Define a dynamic Likelihood factor:
       lf_rule <- define_lf(LF_rule, "A", rule_fun = function(task){opt_rule$rule(task,"validation")})
@@ -136,7 +128,7 @@ tmle3_Spec_mopttx_vim <- R6Class(
   ),
   active = list(),
   private = list(
-    B_rule = list()
+    opt = list()
   )
 )
 
@@ -153,18 +145,20 @@ tmle3_Spec_mopttx_vim <- R6Class(
 #' specified reference. Note that in the case of binary treatment, "blip1" is just the usual blip.
 #' "Blip2$ corresponds to defining the blip relative to the average of all categories. Finally,
 #' "Blip3" corresponds to defining the blip relative to the weighted average of all categories.
-#' @param b_learner Library for blip estimation.
+#' @param learners Library for Y (outcome), A (treatment), and B (blip) estimation.
 #' @param method Specifies which methodology to use for learning the rule. Options are "Q" for Q-learning, and
 #' "SL" for the Super-Learner approach using split-specific estimates.
 #' @param maximize Specify whether we want to maximize or minimize the mean of the final outcome.
+#' @param complex If \code{TRUE}, learn the rule using the specified covariates \code{V}. If
+#' \code{FALSE}, check if a less complex rule is better.
+#' @param realistic If \code{TRUE}, it will return a rule what is possible due to practical positivity constraints. 
 #'
 #' @export
 #'
 
-tmle3_mopttx_vim <- function(V = NULL, type = "blip2", method = "SL", b_learner = NULL,
-                             contrast = "linear", maximize = TRUE) {
+tmle3_mopttx_vim <- function(V = NULL, type = "blip2", method = "SL", learners = NULL,
+                             contrast = "linear", maximize = TRUE, complex = TRUE, realistic=FALSE) {
   tmle3_Spec_mopttx_vim$new(
-    V = V, type = type, method = method, b_learner = b_learner,
-    contrast = contrast, maximize = maximize
-  )
+    V = V, type = type, method = method, learners = learners,
+    contrast = contrast, maximize = maximize, complex = complex, realistic=realistic)
 }

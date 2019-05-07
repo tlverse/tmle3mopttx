@@ -1,5 +1,5 @@
 ---
-title: "Mean under the Optimal Individualized Categorical Treatment"
+title: "Mean under the Optimal Individualized Binary Treatment"
 author: "[Ivana Malenica](https://github.com/podTockom), [Jeremy R.
   Coyle](https://github.com/jeremyrcoyle)"
 date: "`r Sys.Date()`"
@@ -17,7 +17,7 @@ options(scipen=999)
 
 ## Introduction
 
-Suppose one wishes to maximize (or minimize) the population mean of an outcome using a categorical point treatment, where for each individual one has access to measured baseline covariates. Such a treatment strategy is termed individualized treatment regime (ITR), and the (counterfactual) population mean outcome under an ITR is the value of the ITR. An ITR with the maximal (or minimal) value is referred to as an optimal ITR or the optimal rule, whereas the value of an optimal ITR is termed the optimal value. We consider estimation of the mean outcome under the optimal rule, where the candidate rules are restricted to depend only on user-supplied subset of the baseline covariates. The estimation problem is addressed in a statistical model for the data distribution that is nonparametric, and at most places restrictions on the probability of a patient receiving treatment given covariates. In particular, we extend ideas explored by Luedtke et. al to cover ITRs with categorical treatment. For additional background on Targeted Learning and previous work on optimal individualized treatment regimes, please consider consulting @vdl2011targeted,
+Suppose one wishes to maximize (or minimize) the population mean of an outcome using a categorical point treatment, where for each individual one has access to measured baseline covariates. Such a treatment strategy is termed individualized treatment regime (ITR), and the (counterfactual) population mean outcome under an ITR is the value of the ITR. An ITR with the maximal (or minimal) value is referred to as an optimal ITR or the optimal rule, whereas the value of an optimal ITR is termed the optimal value. We consider estimation of the mean outcome under the optimal rule, where the candidate rules are restricted to depend only on user-supplied subset of the baseline covariates. The estimation problem is addressed in a statistical model for the data distribution that is nonparametric, and at most places restrictions on the probability of a patient receiving treatment given covariates. Finally, we extend ideas explored by Luedtke et. al to cover ITRs with categorical treatment. For additional background on Targeted Learning and previous work on optimal individualized treatment regimes, please consider consulting @vdl2011targeted,
 @vdl2018targeted, @vanderLaanLuedtke15 and @luedtke2016super.   
 
 To start, let's load the packages we'll use and set a seed for simulation:
@@ -44,28 +44,29 @@ In addition, we also define $\bar{Q}_{Y,0}(A,W) \equiv E_0[Y|A,W]$ such that $E_
 
 First, we load the simulated data. Here, our data generating distribution was of the following form:
 
-$$W \sim \mathcal{N}(\bf{0},I_{4 \times 4})$$
-$$P(A=a|W) = \frac{1}{1+\exp^{(-0.8*W_a)}}$$
+$$W \sim \mathcal{N}(\bf{0},I_{3 \times 3})$$
+$$P(A=1|W) = \frac{1}{1+\exp^{(-0.8*W_1)}}$$
 
-$$P(Y=1|A,W) = 0.5\text{logit}^{-1}[3I(A=1)(W_1-0.5) - 3I(A=2)(2W_2+0.5) + 3I(A=3)(3W_3-0.5)] +\text{logit}^{-1}(W_2W_3)$$
+$$P(Y=1|A,W) = 0.5\text{logit}^{-1}[-5I(A=1)(W_1-0.5)+5I(A=0)(W_1-0.5)] + 0.5\text{logit}^{-1}(W_2W_3)$$
 
 ```{r load sim_data}
-data("data_cat")
+data("data_bin")
 ```
 
 The above composes our observed data structure $O = (W, A, Y)$. Note that the 
-mean under the true optimal rule is $\psi=0.625$.
+mean under the true optimal rule is $\psi=0.578$.
 
-To formally express this fact using the `tlverse` grammar introduced by the `tmle3` package,
+To formally
+express this fact using the `tlverse` grammar introduced by the `tmle3` package,
 we create a single data object and specify the functional relationships between
 the nodes in the _directed acyclic graph_ (DAG) via _nonparametric structural
 equation models_ (NPSEMs), reflected in the node list that we set up:
 
 ```{r data_nodes}
 # organize data and nodes for tmle3
-data <- data_cat
+data <- data_bin
 node_list <- list(
-  W = c("W1", "W2", "W3", "W4"),
+  W = c("W1", "W2", "W3"),
   A = "A",
   Y = "Y"
 )
@@ -79,7 +80,8 @@ that each variable in the data set plays as the nodes in a DAG.
 ## Methodology
 
 Many methods for learning an optimal rule from data have been developed. Here, we focus on the methods developed in @luedtke2016super and @vanderLaanLuedtke15; however `tmle3mopttx` also supports the widely used Q-learning approach, based on generating an estimate of $\bar{Q}_{Y,0}(A,W)$ @Sutton1998. We cover how to use the Q-learning approach in the later implementation of the vignette. 
-Here, we focus on the methodology outlined in @luedtke2016super and @vanderLaanLuedtke15, where we learn the optimal ITR using Super Learner @vdl2007super, and estimate its value using the cross-validated Targeted Minimum Loss-based Estimation (CV-TMLE) @cvtmle2010. Luedtke and van der Laan present three different approaches for learning the optimal rule, but `tmle3mopttx` relies on using the Super Learner to estimate the blip function (or "pseudo-blip" for categorical treatment). 
+However, we focus on the methodology outlined in @luedtke2016super and @vanderLaanLuedtke15, where we learn the optimal ITR using Super Learner @vdl2007super, and estimate its value using the cross-validated Targeted Minimum Loss-based Estimation (CV-TMLE) @cvtmle2010. Luedtke and van der Laan present three different approaches for learning the optimal rule, but `tmle3mopttx` relies on using the Super Learner to estimate the blip function (or "pseudo-blip" for categorical treatment). 
+
 In great generality, we first need to estimate an individual treatment regime which corresponds to dynamic treatment rule ($d(V)$) that takes a subset of covariates $V \in W$ and assigns treatment. As specified in the introduction, we are also interested in the value of such a dynamic rule: $$E_0[Y_{d(V)}] = E_{0,W}[\bar{Q}_{Y,0}(A=d(V),W)]$$ which, under causal assumptions, can be interpreted as the mean outcome if (possibly contrary to fact), treatment was assigned according to the rule. The optimal rule is the rule with the maximal value: $$d_0 \equiv \text{argmax}_{d \in \mathcal{D}} E_0[Y_{d(V)}] $$
 where $\mathcal{D}$ represents the set of possible rules, $d$. We note that minimization is completely ok as well, depending on the problem in hand. 
 
@@ -105,22 +107,6 @@ We estimate the blip function (\bar{Q}_{0,a}(V)) by regressing $D_{\bar{Q},g}(O)
 
 4. Obtain inference for the mean outcome under the optimal rule using CV-TMLE.
 
-### Categorical treatment
-
-In line with the approach considered for binary treatment, we extend the blip function approach to allow for categorical treatment by estimating "pseudo-blips". We define pseudo-blips as vector valued entities where the output for a given $V$ is a vector of length equal to the number of treatment categories. As such, we define it as:
-$$\bar{Q}_0^{pblip}(V) = \{\bar{Q}_{0,a}^{pblip}(V): a \in \mathcal{A} \}$$
-We implement three different pseudo-blips in `tmle3mopttx`. 
-
-1. "Blip1" corresponds to choosing a reference category of treatment, and defining the blip for all other categories relative to the specified reference. Hence we have that: $$\bar{Q}_{0,a}^{pblip-ref}(V) \equiv E_0(Y_a-Y-0|V)$$ where $Y_0$ is the specified reference category. Note that, for the case of binary treatment, this strategy reduces to the approach described in the previous section.
-
-2. "Blip2" approach corresponds to defining the blip relative to the average of all categories. As such, we can define $\bar{Q}_{0,a}^{pblip-avg}(V)$ as:
-$$\bar{Q}_{0,a}^{pblip-avg}(V) \equiv E_0(Y_a- \frac{1}{n_A} \sum_{a^{'} \in \mathcal{A}} Y_{a^{'}}|V)$$
-3. "Blip3" reflects an extension of "Blip2", where the average is now a weighted average. 
-$$\bar{Q}_{0,a}^{pblip-wavg}(V) \equiv E_0(Y_a- \frac{1}{n_A} \sum_{a^{'} \in \mathcal{A}} P(A=a^{'}|V)
-Y_{a^{'}}|V)$$
-
-Just like in the binary case, pseudo-blips are estimated by regressing contrasts composed using the A-IPW transform on $V$. 
-
 ### Computational Considerations
 
 We use the estimation approach outlined in @luedtke2016super and @vanderLaanLuedtke15, which makes frequent use of cross-validation for both model selection and CV-TMLE based parameter estimation @cvtmle2010. In order to avoid nesting cross-validation, `tmle3mopptx` relies on Split-Specific Super Learner in order to estimate the rule, as described by Coyle et al [@jeremythesis].
@@ -140,41 +126,32 @@ using the cross-validation framework of the Super Learner algorithm of
 @vdl2007super.
 
 ```{r sl3_lrnrs}
-#Initialize some of the learners.
-#Here we use xgboost with various parameters, glm, HAL and the simle mean.
+# Define sl3 library and metalearners:
 xgboost_50<-Lrnr_xgboost$new(nrounds = 50)
 xgboost_100<-Lrnr_xgboost$new(nrounds = 100)
 xgboost_500<-Lrnr_xgboost$new(nrounds = 500)
 lrn1 <- Lrnr_mean$new()
 lrn2<-Lrnr_glm_fast$new()
 
-#Define the Q learner, which is just a regular learner:
 Q_learner <- Lrnr_sl$new(
-  learners = list(xgboost_50,xgboost_100,xgboost_500,lrn1,lrn2),
+  learners = list(xgboost_50,xgboost_100,xgboost_500,
+                  lrn1,lrn2),
   metalearner = Lrnr_nnls$new()
 )
 
-#Define the g learner, which is a multinomial learner:
-mn_metalearner <- make_learner(Lrnr_solnp, loss_function = loss_loglik_multinomial, 
-                               learner_function = metalearner_linear_multinomial)
-g_learner <- make_learner(Lrnr_sl, list(xgboost_100,xgboost_500,lrn1), mn_metalearner)
+g_learner <- Lrnr_sl$new(
+  learners = list(xgboost_100,lrn2),
+  metalearner = Lrnr_nnls$new()
+)
 
-#Define the Blip learner, which is a multivariate learner:
-learners <- list(xgboost_50,xgboost_100,xgboost_500,lrn1,lrn2)
-b_learner <- create_mv_learners(learners = learners)
+b_learner <- Lrnr_sl$new(
+  learners = list(xgboost_50,xgboost_100,xgboost_500,
+                  lrn1,lrn2),
+  metalearner = Lrnr_nnls$new()
+)
 ```
 
-As seen above, we generate three different ensemble learners that must be fit, corresponding to the learners for the outcome regression, propensity score, and the blip function. Note that we need to estimate $g_0(A|W)$ for a categorical $A$- therefore we use the multinomial Super Learner option available within the `sl3` package with learners that can address multi-class classification problems. In order to see which learners can be used to estimate $g_0(A|W)$ in `sl3`, we run the following:
-
-```{r cat_learners}
-#See which learners support multi-class classification:
-sl3_list_learners(c("categorical"))
-```
-
-Also note that since the corresponding blip will be vector valued, with a column for each additional level of treatment. As such, we need to initialize a multivariate learners with the the helper function `create_mv_learners` that takes a list of initialized learners as input. 
-
-We make the above explicit with respect to standard notation by bundling the
-ensemble learners into a list object below:
+As seen above, we generate three different ensemble learners that must be fit, corresponding to the learners for the outcome regression, propensity score, and the blip function. We make the above explicit with respect to standard notation by bundling the ensemble learners into a list object below:
 
 ```{r make_lrnr_list}
 # specify outcome and treatment regressions and create learner list
@@ -185,7 +162,8 @@ The `learner_list` object above specifies the role that each of the ensemble
 learners we've generated is to play in computing initial estimators to be used
 in building a TMLE for the parameter of interest. In particular, it makes
 explicit the fact that our `Y` is used in fitting the outcome regression
-while our `A` is used in fitting our treatment mechanism regression, and finally `B` is used in fitting the blip function.
+while our `A` is used in fitting our treatment mechanism regression, and 
+finally `B` is used in fitting the blip function.
 
 ### Initializing `tmle3mopttx` through its `tmle3_Spec`
 
@@ -195,13 +173,14 @@ interest (called a `tmle3_Spec` in the `tlverse` nomenclature) simply by calling
 when initializing the `tmle3_Spec` object in order to communicate that we're interested
 in learning a rule dependent on `V` covariates. We also need to specify the type of 
 pseudo-blip we will use in this estimation problem, and finally the list of learners 
-used to estimate the blip function.
+used to estimate the blip function. Note that for binary treatment, the most natural
+type of blip to use is the `blip1`, as specified below.
 
 ```{r spec_init}
 # initialize a tmle specification
-tmle_spec <- tmle3_mopttx_blip_revere(V = c("W1", "W2", "W3", "W4"), type = "blip2", 
-                                      learners = learner_list, maximize = TRUE, complex = TRUE, 
-                                      realistic = FALSE)
+tmle_spec <- tmle3_mopttx_blip_revere(V = c("W1", "W2", "W3"), type = "blip1", 
+                                      learners = learner_list, maximize = TRUE, 
+                                      complex = TRUE, realistic=FALSE)
 ```
 
 As seen above, the `tmle3_mopttx_blip_revere` specification object (like all `tmle3_Spec`
@@ -211,29 +190,16 @@ alongside the instantiated `tmle_spec`, will serve to construct a `tmle3_Task`
 object internally (see the `tmle3` documentation for details).
 
 In initializing the specification for the TMLE of our parameter of
-interest, we have specified the set of covariates the rule depends on ($V$), 
-the type of pseudo-blip to use ("type"), and the learners used for estimating all
-the parts of the likelihood, including the blip. In addition, we need to specify whether 
-we want to maximize the mean outcome under the rule ("maximize=TRUE"), and whether we want 
-to estimate the rule under all the covariates $V$ provided by the user. If FALSE, `tmle3mopttx`
-will instead consider all the possible rules under a smaller set of covariates including the 
-static rules, and optimize the mean outcome over all the subsets of $V$. As such, while the 
-user might have provided a full set of collected covariates as input for $V$, it is possible 
-that the true rule only depends on a subset of the set provided by the user. In that case, 
-our returned mean under the optimal individualized rule will be based on the smaller subset.
-Finally, we also specify whether we want to estimate the realistic rule that takes into 
-account how likely the optimal rule is to be encountered in the population. If "realistic=FALSE",
-whatever rule that maximize (or minimizes) the mean under the optimal individualized regime 
-will be used, despite possible positivity issues.
+interest, we have specified the set of covariates the rule depends on ($V$), the type of pseudo-blip to use ("type"), and the learners used for estimating the pseudo-blip. In addition, we need to specify whether we want to maximize the mean outcome under the rule ("maximize=TRUE"), and whether we want to estimate the rule under all the covariates $V$ provided by the user. If FALSE, `tmle3mopttx` will instead consider all the possible rules under a smaller set of covariates including the static rules, and optimize the mean outcome over all the subsets of $V$. As such, while the user might have provided a full set of collected covariates as input for $V$, it is possible that the true rule only depends on a subset of the set provided by the user. In that case, our returned mean under the optimal individualized rule will be based on the smaller subset.  
 
-### Targeted Estimation of the Mean under the Optimal ITR with Categorical Treatment
+### Targeted Estimation of the Mean under the Optimal ITR with Binary Treatment
 
 One may walk through the step-by-step procedure for fitting the TML estimator
 of the mean counterfactual outcome under the optimal ITR, using the
 machinery exposed by the [`tmle3` R package](https://tmle3.tlverse.org/) (see
 below); however, the step-by-step procedure is often not of interest.
 
-```{r fit_tmle_manual, eval=TRUE}
+```{r fit_tmle_manual, eval=FALSE}
 # NOT RUN -- SEE NEXT CODE CHUNK
 
 # Define data:
@@ -278,22 +244,82 @@ We can also look at the distribution of the optimal interventions estimated:
 table(tmle_spec$return_rule)
 ```
 
-### Learning the Mean Outcome under the Optimal Rule with Q-learning
+### Learning the Mean Outcome under the Simplified Optimal Rule 
 
-Here we outline how to use `tmle3mopttx` package in order to estimate the mean under the ITR using Q-learning. As demonstrated in the previous sections, we first need to initialize a specification for the TMLE of our parameter of interest. As opposed to the previous section however, we will now use `tmle3_mopttx_Q` instead of `tmle3_mopttx_blip_revere` in order to indicate that we want to use Q-learning instead of TMLE. 
+As mentioned in the previous sections, it is possible that the true rule is dependent on 
+less covariates than specified by the user. Similarly, it is possible that a static
+treatment is actually the optimal intervention for all individuals- there is no 
+heterogeneity among the sampled population. As such, `tmle3mopttx` will still try 
+to estimate the true rule dependent on the provided `V`, but with option `complex`
+we can force it to consider simpler rules as well. If there is no difference between
+the mean under a static intervention and a more elaborate rule, the algorithm will 
+opt for a simpler rule, thereby alleviating the possibility that the estimated rule is
+mostly noise. 
 
-```{r spec_init_Qlearning}
+```{r spec_init_simple}
 # initialize a tmle specification
-tmle_spec_Q <- tmle3_mopttx_Q(maximize = TRUE)
+tmle_spec_simple <- tmle3_mopttx_blip_revere(V = c("W1", "W2", "W3"), type = "blip1", 
+                                             learners = learner_list, maximize = TRUE, 
+                                             complex = FALSE, realistic = FALSE)
 
 # Define data:
-tmle_task <- tmle_spec_Q$make_tmle_task(data, node_list)
+tmle_task <- tmle_spec_simple$make_tmle_task(data, node_list)
 
 # Define likelihood:
-initial_likelihood <- tmle_spec_Q$make_initial_likelihood(tmle_task, learner_list)
+initial_likelihood <- tmle_spec_simple$make_initial_likelihood(tmle_task, learner_list)
 
-#Estimate the parameter:
-Q_learning(tmle_spec_Q, initial_likelihood, tmle_task)
+# Define updater and targeted likelihood:
+updater <- tmle_spec_simple$make_updater()
+targeted_likelihood <- tmle_spec_simple$make_targeted_likelihood(initial_likelihood, 
+                                                            updater)
+
+tmle_params <- tmle_spec_simple$make_params(tmle_task, likelihood=targeted_likelihood)
+updater$tmle_params <- tmle_params
+
+fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, 
+                   updater)
+fit$summary
+```
+
+With the parameter `complex` set to FALSE, we continue as in the previous example. 
+
+```{r fit_tmle_simple, eval=T}
+# fit the TML estimator
+fit <- tmle3(tmle_spec_simple, data, node_list, learner_list)
+print(fit)
+```
+
+### Learning the Mean Outcome under the Realistic Rule
+
+It is often the case that the estimated rule is not realistic- perhaps giving treatment
+to a specific subgroup is optimal, however often (if ever) encountered in the 
+population. Faced with population or practical positivity issues, the user 
+might seek an optimal rule that is supported by the collected sample of data. As such, 
+`tmle3mopttx` will estimate a data-dependent realistic rule by setting `realistic=TRUE`.
+
+```{r spec_init_realistic}
+# initialize a tmle specification
+tmle_spec_realistic <- tmle3_mopttx_blip_revere(V = c("W1", "W2", "W3"), type = "blip1", 
+                                             learners = learner_list, maximize = TRUE, 
+                                             complex = TRUE, realistic = TRUE)
+# Define data:
+tmle_task <- tmle_spec_realistic$make_tmle_task(data, node_list)
+
+# Define likelihood:
+initial_likelihood <- tmle_spec_realistic$make_initial_likelihood(tmle_task, learner_list)
+
+# Define updater and targeted likelihood:
+updater <- tmle_spec_realistic$make_updater()
+targeted_likelihood <- tmle_spec_realistic$make_targeted_likelihood(initial_likelihood, 
+                                                            updater)
+
+tmle_params <- tmle_spec_realistic$make_params(tmle_task, likelihood=targeted_likelihood)
+updater$tmle_params <- tmle_params
+
+fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, 
+                   updater)
+fit$summary
+```
 
 ```
 
