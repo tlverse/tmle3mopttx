@@ -1,5 +1,5 @@
-#' Defines a TMLE for the Mean Under the Optimal Individualized Rule with Categorical Treatment
-#' under Revere CV-TMLE
+#' Defines a TMLE for the Mean Under the Optimal Individualized Rule with 
+#' Categorical Treatment under Revere CV-TMLE.
 #'
 #' @importFrom R6 R6Class
 #'
@@ -91,14 +91,14 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
       return(res)
     },
 
-    set_B_rule = function(opt) {
-      private$B_rule <- opt
-    },
-
-    return_rule = function() {
-      return(private$B_rule)
+    set_opt = function(opt) {
+      private$.opt <- opt
     },
     
+    set_rule = function(rule){
+      private$.rule <- rule
+    },
+
     ### Simulation specific: Returns data-adaptive truth.
     #Takes as input: data set with large n, node list, and true Q function.
     data_adapt_psi = function(data_tda,node_list,Qbar0){
@@ -130,7 +130,10 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
                                             realistic=realistic)
         
         opt_rule$fit_blip()
-        self$set_B_rule(opt_rule)
+        self$set_opt(opt_rule)
+        
+        #Save the rule for each individual:
+        self$set_rule(opt_rule$rule(tmle_task,"validation"))
         
         # Define a dynamic Likelihood factor:
         lf_rule <- define_lf(LF_rule, "A", rule_fun = function(task){opt_rule$rule(task,"validation")})
@@ -154,7 +157,10 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
                                                 blip_library = private$.options$b_learner, maximize = private$.options$maximize
             )
             opt_rule$fit_blip()
-            self$set_B_rule(opt_rule)
+            self$set_opt(opt_rule)
+            
+            #Save the rule for each individual:
+            self$set_rule(opt_rule$rule(tmle_task,"validation"))
 
             # Define a dynamic Likelihood factor:
             lf_rule <- define_lf(LF_rule, "A", rule_fun = function(task){opt_rule$rule(task,"validation")})
@@ -190,9 +196,17 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
       return(intervens)
     }
   ),
-  active = list(),
+  active = list(
+    return_opt = function() {
+      return(private$.opt)
+    },
+    return_rule = function() {
+      return(private$.rule)
+    }
+  ),
   private = list(
-    B_rule = list()
+    .opt = list(),
+    .rule = NULL
   )
 )
 
@@ -218,7 +232,8 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 #' @export
 #'
 
-tmle3_mopttx_blip_revere <- function(V, type = "blip1", learners, maximize = TRUE, complex = TRUE,realistic=FALSE) {
+tmle3_mopttx_blip_revere <- function(V, type = "blip1", learners, maximize = TRUE, 
+                                     complex = TRUE,realistic=FALSE) {
   tmle3_Spec_mopttx_blip_revere$new(V = V, type = type, learners = learners, 
                                     maximize = maximize, complex = complex,realistic=realistic)
 }

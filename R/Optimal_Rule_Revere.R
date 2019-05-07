@@ -1,6 +1,6 @@
-#' Learns the Optimal Rule given a tmle_task and likelihood
+#' Learns the Optimal Rule given a tmle_task and likelihood, using the Revere framework.
+#' Complements 'tmle3_Spec_mopttx_blip_revere'.
 #' 
-#' Uses new revere framework
 #'
 #' @importFrom R6 R6Class
 #' @importFrom data.table data.table

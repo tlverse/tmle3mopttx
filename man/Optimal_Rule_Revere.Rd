@@ -3,12 +3,14 @@
 \docType{data}
 \name{Optimal_Rule_Revere}
 \alias{Optimal_Rule_Revere}
-\title{Learns the Optimal Rule given a tmle_task and likelihood}
+\title{Learns the Optimal Rule given a tmle_task and likelihood, using the Revere framework.
+Complements 'tmle3_Spec_mopttx_blip_revere'.}
 \format{An object of class \code{R6ClassGenerator} of length 24.}
 \usage{
 Optimal_Rule_Revere
 }
 \description{
-Uses new revere framework
+Learns the Optimal Rule given a tmle_task and likelihood, using the Revere framework.
+Complements 'tmle3_Spec_mopttx_blip_revere'.
 }
 \keyword{datasets}

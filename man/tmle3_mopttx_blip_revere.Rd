@@ -28,6 +28,10 @@ specified reference. Note that in the case of binary treatment, "blip1" is just 
 \item{complex}{If \code{TRUE}, learn the rule using the specified covariates \code{V}. If
 \code{FALSE}, check if a less complex rule is better.}
 
+\item{learners}{Library for Y (outcome), A (treatment), and B (blip) estimation.}
+
+\item{realistic}{If \code{TRUE}, it will return a rule what is possible due to practical positivity constraints.}
+
 \item{V}{Covariates the rule depends on.}
 
 \item{type}{One of three psudo-blip versions developed to accommodate categorical treatment. "Blip1"
@@ -35,8 +39,6 @@ corresponds to chosing a reference category, and defining the blip for all other
 specified reference. Note that in the case of binary treatment, "blip1" is just the usual blip.
 "Blip2$ corresponds to defining the blip relative to the average of all categories. Finally,
 "Blip3" corresponds to defining the blip relative to the weighted average of all categories.}
-
-\item{b_learner}{Library for blip estimation.}
 
 \item{maximize}{Specify whether we want to maximize or minimize the mean of the final outcome.}
 
