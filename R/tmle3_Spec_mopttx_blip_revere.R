@@ -12,7 +12,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
   lock_objects = FALSE,
   inherit = tmle3_Spec,
   public = list(
-    initialize = function(V, type, learners, maximize = TRUE, complex = TRUE, realistic=FALSE, ...) {
+    initialize = function(V=NULL, type, learners, maximize = TRUE, complex = TRUE, realistic=FALSE, ...) {
       options <- list(V = V, type = type, learners = learners, maximize = maximize, complex = complex, 
                       realistic=realistic, ...)
       do.call(super$initialize, options)
@@ -236,7 +236,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 #' @export
 #'
 
-tmle3_mopttx_blip_revere <- function(V, type = "blip1", learners, maximize = TRUE, 
+tmle3_mopttx_blip_revere <- function(V=NULL, type = "blip1", learners, maximize = TRUE, 
                                      complex = TRUE, realistic=FALSE) {
   tmle3_Spec_mopttx_blip_revere$new(V = V, type = type, learners = learners, 
                                     maximize = maximize, complex = complex, realistic=realistic)

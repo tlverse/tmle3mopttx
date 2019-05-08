@@ -5,7 +5,8 @@
 \title{Mean under the Optimal Individualized Treatment Rule}
 \usage{
 tmle3_mopttx_vim(V = NULL, type = "blip2", method = "SL",
-  b_learner = NULL, contrast = "linear", maximize = TRUE)
+  learners = NULL, contrast = "linear", maximize = TRUE, complex = TRUE,
+  realistic = FALSE)
 }
 \arguments{
 \item{V}{Covariates the rule depends on.}
@@ -19,9 +20,14 @@ specified reference. Note that in the case of binary treatment, "blip1" is just 
 \item{method}{Specifies which methodology to use for learning the rule. Options are "Q" for Q-learning, and
 "SL" for the Super-Learner approach using split-specific estimates.}
 
-\item{b_learner}{Library for blip estimation.}
+\item{learners}{Library for Y (outcome), A (treatment), and B (blip) estimation.}
 
 \item{maximize}{Specify whether we want to maximize or minimize the mean of the final outcome.}
+
+\item{complex}{If \code{TRUE}, learn the rule using the specified covariates \code{V}. If
+\code{FALSE}, check if a less complex rule is better.}
+
+\item{realistic}{If \code{TRUE}, it will return a rule what is possible due to practical positivity constraints.}
 }
 \description{
 O=(W,A,Y)

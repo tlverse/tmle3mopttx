@@ -3,30 +3,14 @@
 \docType{data}
 \name{tmle3_Spec_mopttx_vim}
 \alias{tmle3_Spec_mopttx_vim}
-\title{Defines a TMLE for the Mean Under the Optimal Individualized Rule with Categorical Treatment and contrast with
-the Mean under Observed Treatment.}
+\title{Defines a TMLE for the Mean Under the Optimal Individualized Rule with 
+Categorical Treatment and contrast with the Mean under Observed Treatment.}
 \format{An object of class \code{R6ClassGenerator} of length 24.}
 \usage{
 tmle3_Spec_mopttx_vim
 }
-\arguments{
-\item{V}{Covariates the rule depends on.}
-
-\item{type}{One of three psudo-blip versions developed to accommodate categorical treatment. "Blip1"
-corresponds to chosing a reference category, and defining the blip for all other categories relative to the
-specified reference. Note that in the case of binary treatment, "blip1" is just the usual blip.
-"Blip2$ corresponds to defining the blip relative to the average of all categories. Finally,
-"Blip3" corresponds to defining the blip relative to the weighted average of all categories.}
-
-\item{b_learner}{Library for blip estimation.}
-
-\item{method}{Specifies which methodology to use for learning the rule. Options are "Q" for Q-learning, and
-"SL" for the Super-Learner approach using split-specific estimates.}
-
-\item{maximize}{Specify whether we want to maximize or minimize the mean of the final outcome.}
-}
 \description{
-Defines a TMLE for the Mean Under the Optimal Individualized Rule with Categorical Treatment and contrast with
-the Mean under Observed Treatment.
+Defines a TMLE for the Mean Under the Optimal Individualized Rule with 
+Categorical Treatment and contrast with the Mean under Observed Treatment.
 }
 \keyword{datasets}

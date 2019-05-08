@@ -52,6 +52,7 @@ Optimal_Rule_Revere <- R6Class(
       
       likelihood <- self$likelihood
       A_vals <- tmle_task$npsem$A$variable_type$levels
+      V <- self$V
       
       # Generate counterfactual tasks for each value of A:
       cf_tasks <- lapply(A_vals, function(A_val) {
@@ -88,10 +89,18 @@ Optimal_Rule_Revere <- R6Class(
       }
       
       #TO DO: Nicer solutions. Do it one by one, for now
-      V <- tmle_task$data[,self$V,with=FALSE]
-      data <- data.table(V,blip=blip)
-      outcomes <- grep("blip", names(data), value = TRUE)
-      revere_task <- make_sl3_Task(data, outcome=outcomes, covariates=self$V, folds=tmle_task$folds)
+      if(is.null(V)){
+        data <- data.table(V=blip,blip=blip)
+        outcomes <- grep("blip", names(data), value = TRUE)
+        V <- grep("V", names(data), value = TRUE)
+        revere_task <- make_sl3_Task(data, outcome=outcomes, covariates=V, folds=tmle_task$folds)
+      }else{
+        V <- tmle_task$data[,self$V,with=FALSE]
+        data <- data.table(V,blip=blip)
+        outcomes <- grep("blip", names(data), value = TRUE)
+        revere_task <- make_sl3_Task(data, outcome=outcomes, covariates=self$V, folds=tmle_task$folds)
+      }
+      
 
       return(revere_task)
     },
@@ -106,6 +115,7 @@ Optimal_Rule_Revere <- R6Class(
       tmle_task <- self$tmle_task
       likelihood <- self$likelihood
       fold_number <- self$fold_number
+      V <- self$V
 
       # TODO: swap arg order in sl3
       blip_revere_task <- sl3:::sl3_revere_Task$new(self$blip_revere_function, tmle_task)

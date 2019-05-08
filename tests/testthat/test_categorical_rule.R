@@ -10,48 +10,41 @@ library(uuid)
 
 set.seed(1234)
 
-data(test_vim_cat_data)
-data <- test_vim_cat_data
-data$A <- as.numeric(data$A)
+## Load data:
+data("data_cat")
+data <- data_cat
 
-# Define nodes:
+## Define nodes:
 node_list <- list(
-  W = c("W1", "W2", "W3", "W4", "W5"),
+  W = c("W1", "W2", "W3", "W4"),
   A = "A",
   Y = "Y"
 )
 
-# Define sl3 library and metalearners:
-qlib <- make_learner_stack(
-  "Lrnr_mean",
-  "Lrnr_glm_fast"
+## Set the library:
+xgboost_100<-Lrnr_xgboost$new(nrounds = 100)
+xgboost_500<-Lrnr_xgboost$new(nrounds = 500)
+lrn1 <- Lrnr_mean$new()
+lrn2<-Lrnr_glm_fast$new()
+
+Q_learner <- Lrnr_sl$new(
+  learners = list(xgboost_100,xgboost_500,lrn1,lrn2),
+  metalearner = Lrnr_nnls$new()
 )
 
-# sl3_list_learners(c("categorical"))
-glib <- make_learner_stack(
-  "Lrnr_mean",
-  "Lrnr_glmnet",
-  "Lrnr_xgboost"
-)
+mn_metalearner <- make_learner(Lrnr_solnp, loss_function = loss_loglik_multinomial, 
+                               learner_function = metalearner_linear_multinomial)
+g_learner <- make_learner(Lrnr_sl, list(xgboost_100,xgboost_500,lrn1), mn_metalearner)
 
-blib <- make_learner_stack(
-  "Lrnr_glm_fast",
-  "Lrnr_xgboost"
-)
+#Define the Blip learner, which is a multivariate learner:
+learners <- list(xgboost_100,xgboost_500,lrn1,lrn2)
+b_learner <- create_mv_learners(learners = learners)
 
-metalearner <- make_learner(Lrnr_nnls)
-mn_metalearner <- make_learner(Lrnr_solnp, loss_function = loss_loglik_multinomial, learner_function = metalearner_linear_multinomial)
-
-Q_learner <- make_learner(Lrnr_sl, qlib, metalearner)
-g_learner <- make_learner(Lrnr_sl, glib, mn_metalearner)
-b_learner <- make_learner(Lrnr_sl, blib, metalearner)
 learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
 
 # Define spec:
-tmle_spec <- tmle3_mopttx_blip(
-  V = c("W1", "W2", "W3", "W4", "W5"), type = "blip1",
-  b_learner = learner_list$B, maximize = TRUE
-)
+tmle_spec <- tmle3_mopttx_blip_revere(V = c("W1", "W2", "W3", "W4"), type = "blip2", 
+                                      learners = learner_list, maximize = TRUE, complex = TRUE, realistic = TRUE)
 
 # Define data:
 tmle_task <- tmle_spec$make_tmle_task(data, node_list)
@@ -59,21 +52,19 @@ tmle_task <- tmle_spec$make_tmle_task(data, node_list)
 # Define likelihood:
 initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task, learner_list)
 
-# Shortcut:
-# fit <- tmle3(tmle_spec, data, node_list, learner_list)
-
-# Define an updater and define targeted likelihood:
+# Define updater and targeted likelihood:
 updater <- tmle_spec$make_updater()
-targeted_likelihood <- tmle_spec$make_targeted_likelihood(initial_likelihood, updater)
+targeted_likelihood <- tmle_spec$make_targeted_likelihood(initial_likelihood, 
+                                                          updater)
 
-tmle_params <- tmle_spec$make_params(tmle_task, targeted_likelihood)
+tmle_params <- tmle_spec$make_params(tmle_task, likelihood=targeted_likelihood)
 updater$tmle_params <- tmle_params
 
-fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, updater)
+fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, 
+                 updater)
 
-# extract results
-# tmle3_psi <- fit$summary$tmle_est
+fit <- tmle3(tmle_spec, data, node_list, learner_list)
+test_that("Mean under the optimal binary rule is correct", {
+  expect_equal(fit$summary$tmle_est, 0.582741, tolerance = 0.2)
+})
 
-# test_that("Mean under the optimal categorical rule is correct", {
-#  expect_equal(tmle3_psi, 0.621474, tolerance = 0.1)
-# })
