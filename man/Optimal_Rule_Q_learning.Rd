@@ -8,13 +8,6 @@
 \usage{
 Optimal_Rule_Q_learning
 }
-\arguments{
-\item{tmle_task}{\code{tmle3} object, makes the tmle task.}
-
-\item{likelihood}{\code{Targeted_Likelihood} object, contains estimates of all relevant parts of the likelihood.}
-
-\item{maximize}{Specify whether we want to maximize or minimize the mean of the final outcome.}
-}
 \description{
 Learns the Optimal Rule given a tmle_task and likelihood, using Q learning.
 }

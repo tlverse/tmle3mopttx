@@ -151,7 +151,8 @@ tmle3_Spec_mopttx_vim <- R6Class(
 #' @param maximize Specify whether we want to maximize or minimize the mean of the final outcome.
 #' @param complex If \code{TRUE}, learn the rule using the specified covariates \code{V}. If
 #' \code{FALSE}, check if a less complex rule is better.
-#' @param realistic If \code{TRUE}, it will return a rule what is possible due to practical positivity constraints. 
+#' @param realistic If \code{TRUE}, it will return a rule what is possible due to practical positivity constraints.
+#' @param contrast Defined either a linear or multiplicative contrast for the delta method.
 #'
 #' @export
 #'

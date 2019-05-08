@@ -12,7 +12,8 @@ Param_TSM2
 \code{Param_base} object
 }
 \description{
-Parameter definition for the Treatment Specific Mean (TSM): $E_W[E_{Y|A}(Y|A=a|W)|$. Currently supports multiple static intervention nodes.
+Parameter definition for the Treatment Specific Mean (TSM).
+Currently supports multiple static intervention nodes.
 Does yet not support dynamic rule or stochastic interventions.
 }
 \section{Current Issues}{
@@ -29,9 +30,9 @@ Does yet not support dynamic rule or stochastic interventions.
   \code{define_param(Param_TSM, observed_likelihood, intervention_list, ..., outcome_node)}
 
   \describe{
-    \item{\code{observed_likelihood}}{A \code{\link{Likelihood}} corresponding to the observed likelihood
+    \item{\code{observed_likelihood}}{A \code{Likelihood} corresponding to the observed likelihood
     }
-    \item{\code{intervention_list}}{A list of objects inheriting from \code{\link{LF_base}}, representing the intervention.
+    \item{\code{intervention_list}}{A list of objects inheriting from \code{LF_base}, representing the intervention.
     }
     \item{\code{...}}{Not currently used.
     }
@@ -45,7 +46,7 @@ Does yet not support dynamic rule or stochastic interventions.
 \describe{
     \item{\code{cf_likelihood}}{the counterfactual likelihood for this treatment
     }
-    \item{\code{intervention_list}}{A list of objects inheriting from \code{\link{LF_base}}, representing the intervention
+    \item{\code{intervention_list}}{A list of objects inheriting from \code{LF_base}, representing the intervention
     }
 }
 }

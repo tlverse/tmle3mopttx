@@ -3,10 +3,6 @@
 #' @importFrom R6 R6Class
 #' @importFrom data.table data.table
 #'
-#' @param tmle_task \code{tmle3} object, makes the tmle task.
-#' @param likelihood \code{Targeted_Likelihood} object, contains estimates of all relevant parts of the likelihood.
-#' @param maximize Specify whether we want to maximize or minimize the mean of the final outcome.
-#'
 #' @export
 #
 

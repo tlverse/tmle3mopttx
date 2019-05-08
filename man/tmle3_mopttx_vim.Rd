@@ -22,6 +22,8 @@ specified reference. Note that in the case of binary treatment, "blip1" is just 
 
 \item{learners}{Library for Y (outcome), A (treatment), and B (blip) estimation.}
 
+\item{contrast}{Defined either a linear or multiplicative contrast for the delta method.}
+
 \item{maximize}{Specify whether we want to maximize or minimize the mean of the final outcome.}
 
 \item{complex}{If \code{TRUE}, learn the rule using the specified covariates \code{V}. If

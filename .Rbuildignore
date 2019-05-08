@@ -1,2 +1,10 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^README-refs.bib
+^README.Rmd
+^README.knit.md
+^README.utf8.md
+^Simulations/
+^sandbox/
+^vignette/
+^Makefile
