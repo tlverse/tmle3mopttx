@@ -2,26 +2,15 @@ context("Test categorical rule")
 
 library(testthat)
 library(sl3)
+library(data.table)
 library(tmle3mopttx)
 library(tmle3)
-library(data.table)
-library(here)
-library(uuid)
 
 set.seed(1234)
 
-## Load data:
 data("data_cat")
-data <- data_cat
+data<-data_cat
 
-## Define nodes:
-node_list <- list(
-  W = c("W1", "W2", "W3", "W4"),
-  A = "A",
-  Y = "Y"
-)
-
-## Set the library:
 xgboost_100<-Lrnr_xgboost$new(nrounds = 100)
 xgboost_500<-Lrnr_xgboost$new(nrounds = 500)
 lrn1 <- Lrnr_mean$new()
@@ -42,29 +31,14 @@ b_learner <- create_mv_learners(learners = learners)
 
 learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
 
-# Define spec:
-tmle_spec <- tmle3_mopttx_blip_revere(V = c("W1", "W2", "W3", "W4"), type = "blip2", 
-                                      learners = learner_list, maximize = TRUE, complex = TRUE, realistic = TRUE)
+# Define nodes:
+node_list <- list(W = c("W1", "W2", "W3", "W4"), A = "A", Y = "Y")
 
-# Define data:
-tmle_task <- tmle_spec$make_tmle_task(data, node_list)
-
-# Define likelihood:
-initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task, learner_list)
-
-# Define updater and targeted likelihood:
-updater <- tmle_spec$make_updater()
-targeted_likelihood <- tmle_spec$make_targeted_likelihood(initial_likelihood, 
-                                                          updater)
-
-tmle_params <- tmle_spec$make_params(tmle_task, likelihood=targeted_likelihood)
-updater$tmle_params <- tmle_params
-
-fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, 
-                 updater)
-
-fit <- tmle3(tmle_spec, data, node_list, learner_list)
-test_that("Mean under the optimal binary rule is correct", {
-  expect_equal(fit$summary$tmle_est, 0.582741, tolerance = 0.2)
+test_that("Categorical rule, V is not an empty set", {
+  tmle_spec <- tmle3_mopttx_blip_revere(V = c("W1", "W2", "W3", "W4"), type = "blip2", 
+                                        learners = learner_list, maximize = TRUE, complex = TRUE, realistic = TRUE)
+  
+  fit <- tmle3(tmle_spec, data, node_list, learner_list)
+  expect_equal(fit$summary$tmle_est, 0.5893713, tolerance = 0.2)
 })
 
