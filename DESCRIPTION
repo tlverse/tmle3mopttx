@@ -1,5 +1,6 @@
 Package: tmle3mopttx
-Title: Targeted Maximum Likelihood Estimation of the Mean under Optimal Individualized Treatment
+Title: Targeted Maximum Likelihood Estimation of the Mean under Optimal
+    Individualized Treatment
 Version: 0.1.0
 Authors@R: c(
     person("Ivana", "Malenica", email = "imalenica@berkeley.edu",
@@ -10,32 +11,37 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-9874-6649")),
     person("Mark", "van der Laan", email = "laan@berkeley.edu",
            role = c("aut", "ths")))
-Description: This package estimates the optimal individualized treatment rule for the categorical treatment
-  using Super Learner (sl3). In order to avoid nesting cross-validation, it uses split-specific estimates 
-  of Q and g to estimate the rule as described by Coyle et al. In addition it provides the Targeted Maximum
-  Likelihood estimates of the mean performance using CV-TMLE under such estimated rules. This is an 
-  adapter package for use with the tmle3 framework and the tlverse software ecosystem for Targeted Learning.
+Description: This package estimates the optimal individualized treatment rule
+    for the categorical treatment using Super Learner (sl3). In order to avoid
+    nested cross-validation, it uses split-specific estimates of Q and g to
+    estimate the rule as described by Coyle et al. In addition it provides the
+    Targeted Maximum Likelihood estimates of the mean performance using CV-TMLE
+    under such estimated rules. This is an adapter package for use with the
+    tmle3 framework and the tlverse software ecosystem for Targeted Learning.
 Depends: R (>= 3.5.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 LazyLoad: yes
 Imports:
-    data.table,
-    assertthat,
     R6,
     uuid,
+    stats,
     methods,
-    stats
+    data.table,
+    assertthat,
+    sl3,
+    tmle3
 Suggests:
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    covr
 Remotes:
-    github::tlverse/tmle3,
-    github::tlverse/sl3,
+    github::tlverse/delayed,
     github::tlverse/origami,
-    github::tlverse/delayed
+    github::tlverse/sl3,
+    github::tlverse/tmle3
 BugReports: https://github.com/tlverse/tmle3mopttx/issues
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1

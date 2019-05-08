@@ -3,14 +3,14 @@
 \docType{data}
 \name{tmle3_Spec_mopttx_blip_revere}
 \alias{tmle3_Spec_mopttx_blip_revere}
-\title{Defines a TMLE for the Mean Under the Optimal Individualized Rule with 
+\title{Defines a TMLE for the Mean Under the Optimal Individualized Rule with
 Categorical Treatment under Revere CV-TMLE.}
 \format{An object of class \code{R6ClassGenerator} of length 24.}
 \usage{
 tmle3_Spec_mopttx_blip_revere
 }
 \description{
-Defines a TMLE for the Mean Under the Optimal Individualized Rule with 
+Defines a TMLE for the Mean Under the Optimal Individualized Rule with
 Categorical Treatment under Revere CV-TMLE.
 }
 \keyword{datasets}
