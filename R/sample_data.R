@@ -17,7 +17,7 @@
 #' Mock data set with Categorical Treatment
 #'
 #' A dataset with a simple data structure O = (A, Y, W), where outcome (Y) is
-#' binary and treatment (A) is categorical. 
+#' binary and treatment (A) is categorical.
 #' This is a simple dataset designed specifically to illustrate the TMLE estimation procedure.
 #'
 #' @format A \code{data.frame} with 6 columns.

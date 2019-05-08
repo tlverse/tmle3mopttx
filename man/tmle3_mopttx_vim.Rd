@@ -5,8 +5,8 @@
 \title{Mean under the Optimal Individualized Treatment Rule}
 \usage{
 tmle3_mopttx_vim(V = NULL, type = "blip2", method = "SL",
-  learners = NULL, contrast = "linear", maximize = TRUE, complex = TRUE,
-  realistic = FALSE)
+  learners = NULL, contrast = "linear", maximize = TRUE,
+  complex = TRUE, realistic = FALSE)
 }
 \arguments{
 \item{V}{Covariates the rule depends on.}
