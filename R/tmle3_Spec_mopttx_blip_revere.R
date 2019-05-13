@@ -43,7 +43,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
       return(V_sub)
     },
 
-    make_est_fin = function(fit, max, p.value = 0.40) {
+    make_est_fin = function(fit, max, p.value = 0.35) {
 
       # Goal: pick the simplest rule, that is significant
       summary_all <- fit$summary

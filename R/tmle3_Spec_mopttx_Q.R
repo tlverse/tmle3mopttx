@@ -21,9 +21,9 @@ tmle3_Spec_mopttx_Q <- R6Class(
       sort(unique(x))
     },
 
-    make_updater = function() {
-      updater <- tmle3_cv_Update$new()
-    },
+    #make_updater = function() {
+    #  updater <- tmle3_cv_Update$new()
+    #},
 
     make_params = function(tmle_task, likelihood) {
       

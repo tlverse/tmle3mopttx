@@ -180,9 +180,9 @@ Optimal_Rule_Revere <- R6Class(
             for(i in 1:length(rule_preds)){
               rule_preds_prob<-g_fits[i,rule_preds[i]]
               #TO DO: What is a realistic cutoff here?
-              if(rule_preds_prob<0.05){
+              if(rule_preds_prob<0.07){
                 #Pick the next largest blip
-                rule_preds[i] <- max.col(blip_preds[i,order(blip_preds[i,], decreasing = TRUE)[2]])
+                rule_preds[i] <- order(blip_preds[i,], decreasing = TRUE)[2] 
               }
             }
           }

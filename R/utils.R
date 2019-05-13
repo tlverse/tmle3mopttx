@@ -40,7 +40,6 @@ Q_learning <- function(tmle_spec_Q, initial_likelihood, tmle_task){
   return(psi=psi)
 }
 
-
 #' Normalize rows
 #' 
 #' @param x Values needed to be normalized.
