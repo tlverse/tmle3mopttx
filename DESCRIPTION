@@ -18,7 +18,7 @@ Description: This package estimates the optimal individualized treatment rule
     Targeted Maximum Likelihood estimates of the mean performance using CV-TMLE
     under such estimated rules. This is an adapter package for use with the
     tmle3 framework and the tlverse software ecosystem for Targeted Learning.
-Depends: R (>= 3.4.0)
+Depends: R (>= 3.3.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

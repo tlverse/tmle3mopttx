@@ -3,7 +3,7 @@
 R/`tmle3mopttx`
 ===============
 
-[![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+[![Travis-CI Build Status](https://travis-ci.org/tlverse/tmle3mopttx.svg?branch=master)](https://travis-ci.org/tlverse/tmle3mopttx) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/tlverse/tmle3mopttx?branch=master&svg=true)](https://ci.appveyor.com/project/tlverse/tmle3mopttx) \[\[Coverage Status\]\[![codecov](https://codecov.io/gh/tlverse/tmle3mopttx/branch/master/graph/badge.svg)\](<https://codecov.io/gh/tlverse/tmle3mopttx>) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 
 > Targeted Learning and Variable Importance with Optimal Individualized Categorical Treatment
 

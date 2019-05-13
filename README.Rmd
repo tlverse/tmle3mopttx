@@ -16,10 +16,10 @@ knitr::opts_chunk$set(
 # R/`tmle3mopttx`
 
 [![Travis-CI Build Status](https://travis-ci.org/tlverse/tmle3mopttx.svg?branch=master)](https://travis-ci.org/tlverse/tmle3mopttx)
-[![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/tlverse/tmle3mopttx?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/tmle3mopttx)
-[![Coverage Status](https://img.shields.io/codecov/c/github/tlverse/tmle3mopttx/master.svg)](https://codecov.io/github/tlverse/tmle3mopttx?branch=master)
+[![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/tlverse/tmle3mopttx?branch=master&svg=true)](https://ci.appveyor.com/project/tlverse/tmle3mopttx)
+[![Coverage Status]
+[![codecov](https://codecov.io/gh/tlverse/tmle3mopttx/branch/master/graph/badge.svg)](https://codecov.io/gh/tlverse/tmle3mopttx)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
 > Targeted Learning and Variable Importance with Optimal Individualized
 > Categorical Treatment

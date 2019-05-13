@@ -18,7 +18,7 @@ data_cat_realistic
 }
 \description{
 A dataset with a simple data structure O = (A, Y, W), where outcome (Y) is
-binary and treatment (A) is categorical, with one of the categories having 
+binary and treatment (A) is categorical, with one of the categories having
 low probability.
 This is a simple dataset designed specifically to illustrate the TMLE estimation procedure
 with realistic intervention.
