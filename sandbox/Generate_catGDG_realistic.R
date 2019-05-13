@@ -60,8 +60,8 @@ gen_data <- function(n = 1000, p = 4) {
 }
 
 set.seed(11)
-data_cat_realistic <- gen_data(1000000, 4)
+data_cat_realistic <- gen_data(1000, 4)
 data_cat_realistic<-data.table(data_cat_realistic[,1:6])
 rm(vals_from_factor,Qbar0,normalize_rows,gen_data,g0)
-devtools::use_data(data_cat_realistic)
+devtools::use_data(data_cat_realistic, overwrite = TRUE)
 

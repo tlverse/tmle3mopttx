@@ -43,7 +43,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
       return(V_sub)
     },
 
-    make_est_fin = function(fit, max, p.value = 0.05) {
+    make_est_fin = function(fit, max, p.value = 0.40) {
 
       # Goal: pick the simplest rule, that is significant
       summary_all <- fit$summary
@@ -143,60 +143,64 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
       } else if (!complex) {
         # TO DO: Order covarates in order of importance
         # Right now naively respects the order
-
-        if (length(V) < 2) {
-          stop("This is a simple rule, should be run with complex=TRUE.")
-        } else {
-          upd <- self$make_updater()
-          targ_likelihood <- Targeted_Likelihood$new(likelihood$initial_likelihood, upd)
-
-          V_sub <- self$make_rules(V)
-
-          tsm_rule <- lapply(V_sub, function(v) {
-            opt_rule <- Optimal_Rule_Revere$new(tmle_task, likelihood$initial_likelihood, "split-specific",
-                                                V = v, blip_type = private$.options$type, 
-                                                learners = private$.options$learners, 
-                                                maximize = private$.options$maximize,
-                                                realistic = realistic
-            )
+        
+        if(realistic){
+          stop("At the moment less complex rules can only be estimated for true (possibly not
+               realistic) interventions. Check back as the package matures!")
+        }else{
+          if (length(V) < 2) {
+            stop("This is a simple rule, should be run with complex=TRUE.")
+          } else {
+            upd <- self$make_updater()
+            targ_likelihood <- Targeted_Likelihood$new(likelihood$initial_likelihood, upd)
             
-            opt_rule$fit_blip()
-            self$set_opt(opt_rule)
+            V_sub <- self$make_rules(V)
             
-            #Save the rule for each individual:
-            self$set_rule(opt_rule$rule(tmle_task,"validation"))
-
-            # Define a dynamic Likelihood factor:
-            lf_rule <- define_lf(LF_rule, "A", rule_fun = function(task){opt_rule$rule(task,"validation")})
-            Param_TSM2$new(targ_likelihood, v = v, lf_rule)
+            tsm_rule <- lapply(V_sub, function(v) {
+              opt_rule <- Optimal_Rule_Revere$new(tmle_task, likelihood$initial_likelihood, "split-specific",
+                                                  V = v, blip_type = private$.options$type, 
+                                                  learners = private$.options$learners, 
+                                                  maximize = private$.options$maximize,
+                                                  realistic = realistic
+              )
+              
+              opt_rule$fit_blip()
+              self$set_opt(opt_rule)
+              
+              #Save the rule for each individual:
+              self$set_rule(opt_rule$rule(tmle_task,"validation"))
+              
+              # Define a dynamic Likelihood factor:
+              lf_rule <- define_lf(LF_rule, "A", rule_fun = function(task){opt_rule$rule(task,"validation")})
+              Param_TSM2$new(targ_likelihood, v = v, lf_rule)
+            })
+          
+          # Define a static intervention for each level of A:
+          A_vals <- tmle_task$npsem$A$variable_type$levels
+          
+          interventions <- lapply(A_vals, function(A_val) {
+            intervention <- define_lf(LF_static, "A", value = A_val)
+            tsm <- define_param(Param_TSM, targ_likelihood, intervention)
           })
-        }
-
-        # Define a static intervention for each level of A:
-        A_vals <- tmle_task$npsem$A$variable_type$levels
-
-        interventions <- lapply(A_vals, function(A_val) {
-          intervention <- define_lf(LF_static, "A", value = A_val)
-          tsm <- define_param(Param_TSM, targ_likelihood, intervention)
-        })
-
-        intervens <- c(tsm_rule, interventions)
-        upd$tmle_params <- intervens
-
-        fit <- fit_tmle3(tmle_task, targ_likelihood, intervens, upd)
-        ind <- self$make_est_fin(fit, max = max)
-        best_interven <- intervens[[ind]]
-
-        lev <- tmle_task$npsem$A$variable_type$levels
-        V_sub_all <- c(V_sub, lev)
-        V_sub_all[[self$make_est_fin(fit, max = max)]]
-
-        intervens <- define_param(Param_TSM2, likelihood,
-          intervention_list = best_interven$intervention_list,
-          v = V_sub_all[[ind]]
-        )
+          
+          intervens <- c(tsm_rule, interventions)
+          upd$tmle_params <- intervens
+          
+          fit <- fit_tmle3(tmle_task, targ_likelihood, intervens, upd)
+          ind <- self$make_est_fin(fit, max = max)
+          best_interven <- intervens[[ind]]
+          
+          lev <- tmle_task$npsem$A$variable_type$levels
+          V_sub_all <- c(V_sub, lev)
+          V_sub_all[[self$make_est_fin(fit, max = max)]]
+          
+          intervens <- define_param(Param_TSM2, likelihood,
+                                    intervention_list = best_interven$intervention_list,
+                                    v = V_sub_all[[ind]]
+          )
+          }
+          }
       }
-
       return(intervens)
     }
   ),
