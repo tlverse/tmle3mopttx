@@ -17,7 +17,7 @@ Qbar0 <- function(A, W) {
   W2 <- W[, 2]
   W3 <- W[, 3]
   W4 <- W[, 4]
-  Qbar <- (1/2) * (plogis(3 * (A == 1) * (1 * W1 - 0.5) - 3 * (A == 2) * 
+  Qbar <- (1/2) * (plogis(15 * (A == 1) * (1 * W1 - 0.5) - 3 * (A == 2) * 
                             (2 * W1 + 0.5) + 3 * (A == 3) * (3 * W1 - 0.5)) + plogis(W2 * W1))
   return(Qbar)
 }
@@ -60,7 +60,7 @@ gen_data <- function(n = 1000, p = 4) {
 }
 
 set.seed(11)
-data_cat_realistic <- gen_data(1000, 4)
+data_cat_realistic <- gen_data(1000000, 4)
 data_cat_realistic<-data.table(data_cat_realistic[,1:6])
 rm(vals_from_factor,Qbar0,normalize_rows,gen_data,g0)
 devtools::use_data(data_cat_realistic)
