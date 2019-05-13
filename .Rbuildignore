@@ -6,7 +6,7 @@
 ^README\.md
 
 # Automated testing files.
-^travis\.yml$
+^.travis\.yml$
 ^appveyor\.yml$
 ^codecov\.yml$
 # Files from building the Guide-to-SuperLearner.rmd vignette.
