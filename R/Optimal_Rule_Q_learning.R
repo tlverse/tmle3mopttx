@@ -24,14 +24,14 @@ Optimal_Rule_Q_learning <- R6Class(
       # todo: function
       A_vals <- tmle_task$npsem$A$variable_type$levels
       A_vals <- factor(A_vals, A_vals)
-      
+
       # Generate counterfactual tasks for each value of A:
       cf_tasks <- lapply(A_vals, function(A_val) {
-        #if(is.character(A_val)){
+        # if(is.character(A_val)){
         #  A_val<-as.numeric(A_val)
-          #A_val<-as.factor(A_val)
-        #}
-        A_val<-as.numeric(A_val)
+        # A_val<-as.factor(A_val)
+        # }
+        A_val <- as.numeric(A_val)
         newdata <- data.table(A = A_val)
         cf_task <- tmle_task$generate_counterfactual_task(UUIDgenerate(), new_data = newdata)
         return(cf_task)
@@ -40,7 +40,7 @@ Optimal_Rule_Q_learning <- R6Class(
       private$.cf_tasks <- cf_tasks
     },
 
-    rule = function(tmle_task, fold_number="full") {
+    rule = function(tmle_task, fold_number = "full") {
       # Get Q(a,W) for each level of A, all folds
       blip_fin <- sapply(private$.cf_tasks, private$.likelihood$get_likelihood, "Y", fold_number)
 

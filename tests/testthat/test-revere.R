@@ -10,9 +10,9 @@ Qbar0 <- function(A, W) {
   W2 <- W[, 2]
   W3 <- W[, 3]
   W4 <- W[, 4]
-  #When W4>0, optimal A=1
-  #When W4<0, optimal A=0
-  Qbar <- ifelse(W4 > 0, plogis(7 * A), plogis(-5*A))
+  # When W4>0, optimal A=1
+  # When W4<0, optimal A=0
+  Qbar <- ifelse(W4 > 0, plogis(7 * A), plogis(-5 * A))
   return(Qbar)
 }
 
@@ -21,7 +21,7 @@ g0 <- function(W) {
   W2 <- W[, 2]
   W3 <- W[, 3]
   W4 <- W[, 4]
-  
+
   plogis(0.25 * W1 - 0.1 * W2)
 }
 
@@ -40,35 +40,37 @@ gen_data <- function(n = 1000, p = 4) {
 
 # Define sl3 library and metalearners:
 
-xgboost_50<-Lrnr_xgboost$new(nrounds = 50)
-xgboost_100<-Lrnr_xgboost$new(nrounds = 100)
-xgboost_500<-Lrnr_xgboost$new(nrounds = 500)
-xgboost_1000<-Lrnr_xgboost$new(nrounds = 1000)
-glmnet_0.2<-Lrnr_glmnet$new(alpha = 0.2, lambda = 300)
-glmnet_0.4<-Lrnr_glmnet$new(alpha = 0.4, lambda = 300)
-glmnet_0.6<-Lrnr_glmnet$new(alpha = 0.6, lambda = 300)
-glmnet_0.8<-Lrnr_glmnet$new(alpha = 0.8, lambda = 300)
+xgboost_50 <- Lrnr_xgboost$new(nrounds = 50)
+xgboost_100 <- Lrnr_xgboost$new(nrounds = 100)
+xgboost_500 <- Lrnr_xgboost$new(nrounds = 500)
+xgboost_1000 <- Lrnr_xgboost$new(nrounds = 1000)
+glmnet_0.2 <- Lrnr_glmnet$new(alpha = 0.2, lambda = 300)
+glmnet_0.4 <- Lrnr_glmnet$new(alpha = 0.4, lambda = 300)
+glmnet_0.6 <- Lrnr_glmnet$new(alpha = 0.6, lambda = 300)
+glmnet_0.8 <- Lrnr_glmnet$new(alpha = 0.8, lambda = 300)
 
 lrn1 <- Lrnr_mean$new()
-lrn2<-Lrnr_glm_fast$new()
-lrn3<-Lrnr_hal9001$new()
+lrn2 <- Lrnr_glm_fast$new()
+lrn3 <- Lrnr_hal9001$new()
 
 Q_learner <- Lrnr_sl$new(
-  #learners = list(xgboost_100,xgboost_500,xgboost_1000,lrn2),
-  learners = list(xgboost_50,xgboost_100,xgboost_500,
-                  lrn1,lrn2,xgboost_1000),
+  # learners = list(xgboost_100,xgboost_500,xgboost_1000,lrn2),
+  learners = list(
+    xgboost_50, xgboost_100, xgboost_500,
+    lrn1, lrn2, xgboost_1000
+  ),
   metalearner = Lrnr_nnls$new()
 )
 
 g_learner <- Lrnr_sl$new(
   learners = list(lrn2),
-  #learners = list(xgboost_100,xgboost_500,glmnet_0.2,glmnet_0.8,lrn1,lrn2),
+  # learners = list(xgboost_100,xgboost_500,glmnet_0.2,glmnet_0.8,lrn1,lrn2),
   metalearner = Lrnr_nnls$new()
 )
 
 b_learner <- Lrnr_sl$new(
-  #learners = list(xgboost_100,xgboost_500,xgboost_1000,lrn2),
-  learners = list(xgboost_100,lrn2,xgboost_1000),
+  # learners = list(xgboost_100,xgboost_500,xgboost_1000,lrn2),
+  learners = list(xgboost_100, lrn2, xgboost_1000),
   metalearner = Lrnr_nnls$new()
 )
 
@@ -82,9 +84,9 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 )
 
 set.seed(1111)
-#Generate data:
+# Generate data:
 n <- 1000
 data <- gen_data(n, 4)
 node_list <- list(W = c("W1", "W2", "W3", "W4"), A = "A", Y = "Y")
-fit <- tmle3(tmle_spec, data=data, node_list=node_list, learner_list=learner_list)
+fit <- tmle3(tmle_spec, data = data, node_list = node_list, learner_list = learner_list)
 fit

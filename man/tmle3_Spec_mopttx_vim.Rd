@@ -3,14 +3,14 @@
 \docType{data}
 \name{tmle3_Spec_mopttx_vim}
 \alias{tmle3_Spec_mopttx_vim}
-\title{Defines a TMLE for the Mean Under the Optimal Individualized Rule with 
+\title{Defines a TMLE for the Mean Under the Optimal Individualized Rule with
 Categorical Treatment and contrast with the Mean under Observed Treatment.}
 \format{An object of class \code{R6ClassGenerator} of length 24.}
 \usage{
 tmle3_Spec_mopttx_vim
 }
 \description{
-Defines a TMLE for the Mean Under the Optimal Individualized Rule with 
+Defines a TMLE for the Mean Under the Optimal Individualized Rule with
 Categorical Treatment and contrast with the Mean under Observed Treatment.
 }
 \keyword{datasets}

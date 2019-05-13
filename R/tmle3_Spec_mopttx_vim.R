@@ -1,4 +1,4 @@
-#' Defines a TMLE for the Mean Under the Optimal Individualized Rule with 
+#' Defines a TMLE for the Mean Under the Optimal Individualized Rule with
 #' Categorical Treatment and contrast with the Mean under Observed Treatment.
 #'
 #' @importFrom R6 R6Class
@@ -14,12 +14,12 @@ tmle3_Spec_mopttx_vim <- R6Class(
   inherit = tmle3_Spec,
   public = list(
     initialize = function(V = NULL, type = "blip2", method = "SL", learners = NULL,
-                              contrast = "linear", maximize = TRUE, complex = TRUE, 
-                              realistic=FALSE, ...) {
+                              contrast = "linear", maximize = TRUE, complex = TRUE,
+                              realistic = FALSE, ...) {
       options <- list(
         V = V, type = type, method = method, learners = learners,
-        contrast = contrast, maximize = maximize, complex=complex, 
-        realistic=realistic
+        contrast = contrast, maximize = maximize, complex = complex,
+        realistic = realistic
       )
       do.call(super$initialize, options)
     },
@@ -74,22 +74,21 @@ tmle3_Spec_mopttx_vim <- R6Class(
 
       return(tmle_task)
     },
-    #make_updater = function() {
+    # make_updater = function() {
     #  updater <- tmle3_cv_Update$new()
-    #},
+    # },
 
     set_opt = function(opt) {
       private$.opt <- opt
     },
 
     make_params = function(tmle_task, likelihood) {
-      
       V <- private$.options$V
       complex <- private$.options$complex
       max <- private$.options$maximize
       realistic <- private$.options$realistic
       method <- private$.options$method
-      
+
       if (method == "Q") {
         # Learn the rule using Q-learning:
         opt_rule <- Optimal_Rule_Q_learning$new(tmle_task, likelihood,
@@ -98,17 +97,20 @@ tmle3_Spec_mopttx_vim <- R6Class(
       } else if (method == "SL") {
         # Learn the rule
         opt_rule <- Optimal_Rule_Revere$new(tmle_task, likelihood$initial_likelihood, "split-specific",
-                                            V = V, blip_type = private$.options$type,
-                                            learners = private$.options$learners, 
-                                            maximize = private$.options$maximize,
-                                            realistic=realistic)
+          V = V, blip_type = private$.options$type,
+          learners = private$.options$learners,
+          maximize = private$.options$maximize,
+          realistic = realistic
+        )
       }
-      
+
       opt_rule$fit_blip()
       self$set_opt(opt_rule)
-      
+
       # Define a dynamic Likelihood factor:
-      lf_rule <- define_lf(LF_rule, "A", rule_fun = function(task){opt_rule$rule(task,"validation")})
+      lf_rule <- define_lf(LF_rule, "A", rule_fun = function(task) {
+        opt_rule$rule(task, "validation")
+      })
       tsm_rule <- Param_TSM$new(likelihood, lf_rule)
       mean_param <- Param_mean$new(likelihood)
 
@@ -120,8 +122,10 @@ tmle3_Spec_mopttx_vim <- R6Class(
         stop("Contrast can be either linear or multiplicative")
       }
 
-      contrast_param <- Param_delta$new(likelihood, contrast_delta, 
-                                        list(mean_param, tsm_rule))
+      contrast_param <- Param_delta$new(
+        likelihood, contrast_delta,
+        list(mean_param, tsm_rule)
+      )
 
       return(list(tsm_rule, mean_param, contrast_param))
     }
@@ -158,8 +162,9 @@ tmle3_Spec_mopttx_vim <- R6Class(
 #'
 
 tmle3_mopttx_vim <- function(V = NULL, type = "blip2", method = "SL", learners = NULL,
-                             contrast = "linear", maximize = TRUE, complex = TRUE, realistic=FALSE) {
+                             contrast = "linear", maximize = TRUE, complex = TRUE, realistic = FALSE) {
   tmle3_Spec_mopttx_vim$new(
     V = V, type = type, method = method, learners = learners,
-    contrast = contrast, maximize = maximize, complex = complex, realistic=realistic)
+    contrast = contrast, maximize = maximize, complex = complex, realistic = realistic
+  )
 }

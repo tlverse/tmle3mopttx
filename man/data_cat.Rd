@@ -18,7 +18,7 @@ data_cat
 }
 \description{
 A dataset with a simple data structure O = (A, Y, W), where outcome (Y) is
-binary and treatment (A) is categorical. 
+binary and treatment (A) is categorical.
 This is a simple dataset designed specifically to illustrate the TMLE estimation procedure.
 }
 \keyword{datasets}

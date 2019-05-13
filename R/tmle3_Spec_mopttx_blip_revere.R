@@ -1,4 +1,4 @@
-#' Defines a TMLE for the Mean Under the Optimal Individualized Rule with 
+#' Defines a TMLE for the Mean Under the Optimal Individualized Rule with
 #' Categorical Treatment under Revere CV-TMLE.
 #'
 #' @importFrom R6 R6Class
@@ -12,9 +12,11 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
   lock_objects = FALSE,
   inherit = tmle3_Spec,
   public = list(
-    initialize = function(V=NULL, type, learners, maximize = TRUE, complex = TRUE, realistic=FALSE, ...) {
-      options <- list(V = V, type = type, learners = learners, maximize = maximize, complex = complex, 
-                      realistic=realistic, ...)
+    initialize = function(V = NULL, type, learners, maximize = TRUE, complex = TRUE, realistic = FALSE, ...) {
+      options <- list(
+        V = V, type = type, learners = learners, maximize = maximize, complex = complex,
+        realistic = realistic, ...
+      )
       do.call(super$initialize, options)
     },
 
@@ -95,27 +97,25 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
     set_opt = function(opt) {
       private$.opt <- opt
     },
-    
-    set_rule = function(rule){
+
+    set_rule = function(rule) {
       private$.rule <- rule
     },
 
     ### Simulation specific: Returns data-adaptive truth.
-    #Takes as input: data set with large n, node list, and true Q function.
-    data_adapt_psi = function(data_tda,node_list,Qbar0){
-      
-      opt<-self$return_rule()
-      tda_task <- self$make_tmle_task(data=data_tda, node_list=node_list)
+    # Takes as input: data set with large n, node list, and true Q function.
+    data_adapt_psi = function(data_tda, node_list, Qbar0) {
+      opt <- self$return_rule()
+      tda_task <- self$make_tmle_task(data = data_tda, node_list = node_list)
       tda_tx <- opt$rule(tda_task, "full")
-      
+
       tda_W <- tda_task$get_tmle_node("W")
-      Edn <- mean(Qbar0(tda_tx,as.matrix(tda_W)))
-      
-      return(Edn=Edn)
+      Edn <- mean(Qbar0(tda_tx, as.matrix(tda_W)))
+
+      return(Edn = Edn)
     },
 
     make_params = function(tmle_task, likelihood) {
-      
       V <- private$.options$V
       complex <- private$.options$complex
       max <- private$.options$maximize
@@ -125,81 +125,85 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
       if (complex) {
         # Learn the rule
         opt_rule <- Optimal_Rule_Revere$new(tmle_task, likelihood$initial_likelihood, "split-specific",
-                                            V = V, blip_type = private$.options$type,
-                                            learners = private$.options$learners, 
-                                            maximize = private$.options$maximize,
-                                            realistic=realistic)
-        
+          V = V, blip_type = private$.options$type,
+          learners = private$.options$learners,
+          maximize = private$.options$maximize,
+          realistic = realistic
+        )
+
         opt_rule$fit_blip()
         self$set_opt(opt_rule)
-        
-        #Save the rule for each individual:
-        self$set_rule(opt_rule$rule(tmle_task,"validation"))
-        
-        # Define a dynamic Likelihood factor:
-        lf_rule <- define_lf(LF_rule, "A", rule_fun = function(task){opt_rule$rule(task,"validation")})
-        intervens <- Param_TSM$new(likelihood, lf_rule)
 
+        # Save the rule for each individual:
+        self$set_rule(opt_rule$rule(tmle_task, "validation"))
+
+        # Define a dynamic Likelihood factor:
+        lf_rule <- define_lf(LF_rule, "A", rule_fun = function(task) {
+          opt_rule$rule(task, "validation")
+        })
+        intervens <- Param_TSM$new(likelihood, lf_rule)
       } else if (!complex) {
         # TO DO: Order covarates in order of importance
         # Right now naively respects the order
-        
-        if(realistic){
+
+        if (realistic) {
           stop("At the moment less complex rules can only be estimated for true (possibly not
                realistic) interventions. Check back as the package matures!")
-        }else{
+        } else {
           if (length(V) < 2) {
             stop("This is a simple rule, should be run with complex=TRUE.")
           } else {
             upd <- self$make_updater()
             targ_likelihood <- Targeted_Likelihood$new(likelihood$initial_likelihood, upd)
-            
+
             V_sub <- self$make_rules(V)
-            
+
             tsm_rule <- lapply(V_sub, function(v) {
               opt_rule <- Optimal_Rule_Revere$new(tmle_task, likelihood$initial_likelihood, "split-specific",
-                                                  V = v, blip_type = private$.options$type, 
-                                                  learners = private$.options$learners, 
-                                                  maximize = private$.options$maximize,
-                                                  realistic = realistic
+                V = v, blip_type = private$.options$type,
+                learners = private$.options$learners,
+                maximize = private$.options$maximize,
+                realistic = realistic
               )
-              
+
               opt_rule$fit_blip()
               self$set_opt(opt_rule)
-              
-              #Save the rule for each individual:
-              self$set_rule(opt_rule$rule(tmle_task,"validation"))
-              
+
+              # Save the rule for each individual:
+              self$set_rule(opt_rule$rule(tmle_task, "validation"))
+
               # Define a dynamic Likelihood factor:
-              lf_rule <- define_lf(LF_rule, "A", rule_fun = function(task){opt_rule$rule(task,"validation")})
+              lf_rule <- define_lf(LF_rule, "A", rule_fun = function(task) {
+                opt_rule$rule(task, "validation")
+              })
               Param_TSM2$new(targ_likelihood, v = v, lf_rule)
             })
-          
-          # Define a static intervention for each level of A:
-          A_vals <- tmle_task$npsem$A$variable_type$levels
-          
-          interventions <- lapply(A_vals, function(A_val) {
-            intervention <- define_lf(LF_static, "A", value = A_val)
-            tsm <- define_param(Param_TSM, targ_likelihood, intervention)
-          })
-          
-          intervens <- c(tsm_rule, interventions)
-          upd$tmle_params <- intervens
-          
-          fit <- fit_tmle3(tmle_task, targ_likelihood, intervens, upd)
-          ind <- self$make_est_fin(fit, max = max)
-          best_interven <- intervens[[ind]]
-          
-          lev <- tmle_task$npsem$A$variable_type$levels
-          V_sub_all <- c(V_sub, lev)
-          V_sub_all[[self$make_est_fin(fit, max = max)]]
-          
-          intervens <- define_param(Param_TSM2, likelihood,
-                                    intervention_list = best_interven$intervention_list,
-                                    v = V_sub_all[[ind]]
-          )
+
+            # Define a static intervention for each level of A:
+            A_vals <- tmle_task$npsem$A$variable_type$levels
+
+            interventions <- lapply(A_vals, function(A_val) {
+              intervention <- define_lf(LF_static, "A", value = A_val)
+              tsm <- define_param(Param_TSM, targ_likelihood, intervention)
+            })
+
+            intervens <- c(tsm_rule, interventions)
+            upd$tmle_params <- intervens
+
+            fit <- fit_tmle3(tmle_task, targ_likelihood, intervens, upd)
+            ind <- self$make_est_fin(fit, max = max)
+            best_interven <- intervens[[ind]]
+
+            lev <- tmle_task$npsem$A$variable_type$levels
+            V_sub_all <- c(V_sub, lev)
+            V_sub_all[[self$make_est_fin(fit, max = max)]]
+
+            intervens <- define_param(Param_TSM2, likelihood,
+              intervention_list = best_interven$intervention_list,
+              v = V_sub_all[[ind]]
+            )
           }
-          }
+        }
       }
       return(intervens)
     }
@@ -235,13 +239,15 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 #' @param maximize Specify whether we want to maximize or minimize the mean of the final outcome.
 #' @param complex If \code{TRUE}, learn the rule using the specified covariates \code{V}. If
 #' \code{FALSE}, check if a less complex rule is better.
-#' @param realistic If \code{TRUE}, it will return a rule what is possible due to practical positivity constraints. 
+#' @param realistic If \code{TRUE}, it will return a rule what is possible due to practical positivity constraints.
 #'
 #' @export
 #'
 
-tmle3_mopttx_blip_revere <- function(V=NULL, type = "blip1", learners, maximize = TRUE, 
-                                     complex = TRUE, realistic=FALSE) {
-  tmle3_Spec_mopttx_blip_revere$new(V = V, type = type, learners = learners, 
-                                    maximize = maximize, complex = complex, realistic=realistic)
+tmle3_mopttx_blip_revere <- function(V = NULL, type = "blip1", learners, maximize = TRUE,
+                                     complex = TRUE, realistic = FALSE) {
+  tmle3_Spec_mopttx_blip_revere$new(
+    V = V, type = type, learners = learners,
+    maximize = maximize, complex = complex, realistic = realistic
+  )
 }

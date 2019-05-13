@@ -1,4 +1,4 @@
-#' Defines the Mean Under the Optimal Individualized Rule with Categorical Treatment, 
+#' Defines the Mean Under the Optimal Individualized Rule with Categorical Treatment,
 #' estimated using Q learning.
 #'
 #' @importFrom R6 R6Class
@@ -21,15 +21,16 @@ tmle3_Spec_mopttx_Q <- R6Class(
       sort(unique(x))
     },
 
-    #make_updater = function() {
+    # make_updater = function() {
     #  updater <- tmle3_cv_Update$new()
-    #},
+    # },
 
     make_params = function(tmle_task, likelihood) {
-      
+
       # Learn the rule
-      opt_rule <- Optimal_Rule_Q_learning$new(tmle_task, likelihood, 
-                                              maximize = private$.options$maximize)
+      opt_rule <- Optimal_Rule_Q_learning$new(tmle_task, likelihood,
+        maximize = private$.options$maximize
+      )
       opt_rule$fit_blip()
 
       # Define a dynamic Likelihood factor:
@@ -38,15 +39,13 @@ tmle3_Spec_mopttx_Q <- R6Class(
 
       return(list(tsm_rule))
     },
-    
-    estimate = function(tmle_params,tmle_task){
-      
-      est<-lapply(tmle_params, function(tmle_param){
-        mean(tmle_param$cf_likelihood$get_likelihood(tmle_task = tmle_task, node = "Y"))})
-      return(est)
 
+    estimate = function(tmle_params, tmle_task) {
+      est <- lapply(tmle_params, function(tmle_param) {
+        mean(tmle_param$cf_likelihood$get_likelihood(tmle_task = tmle_task, node = "Y"))
+      })
+      return(est)
     }
-    
   ),
   active = list(),
   private = list()
@@ -65,5 +64,5 @@ tmle3_Spec_mopttx_Q <- R6Class(
 #'
 
 tmle3_mopttx_Q <- function(maximize) {
-  tmle3_Spec_mopttx_Q$new(maximize=maximize)
+  tmle3_Spec_mopttx_Q$new(maximize = maximize)
 }

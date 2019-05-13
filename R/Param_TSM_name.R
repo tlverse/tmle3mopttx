@@ -62,9 +62,9 @@ Param_TSM2 <- R6Class(
       intervention_nodes <- names(self$intervention_list)
       pA <- self$observed_likelihood$get_likelihoods(tmle_task, intervention_nodes, fold_number)
       cf_pA <- self$cf_likelihood$get_likelihoods(tmle_task, intervention_nodes, fold_number)
-      
+
       HA <- cf_pA / pA
-      
+
       # collapse across multiple intervention nodes
       if (!is.null(ncol(HA)) && ncol(HA) > 1) {
         HA <- apply(HA, 1, prod)
@@ -75,28 +75,28 @@ Param_TSM2 <- R6Class(
       if (is.null(tmle_task)) {
         tmle_task <- self$observed_likelihood$training_task
       }
-      
+
       # todo: extend for stochastic
       cf_task <- self$cf_likelihood$cf_tasks[[1]]
-      
-      
+
+
       Y <- tmle_task$get_tmle_node(self$outcome_node)
-      
-      
+
+
       # clever_covariates happen here (for this param) only, but this is repeated computation
       HA <- self$clever_covariates(tmle_task, fold_number)[[self$outcome_node]]
-      
+
       # clever_covariates happen here (for all fit params), and this is repeated computation
       EYA <- unlist(self$observed_likelihood$get_likelihood(tmle_task, self$outcome_node, fold_number), use.names = FALSE)
-      
+
       # clever_covariates happen here (for all fit params), and this is repeated computation
       EY1 <- unlist(self$cf_likelihood$get_likelihood(cf_task, self$outcome_node, fold_number), use.names = FALSE)
-      
+
       # todo: separate out psi
       # todo: make this a function of f(W)
       psi <- mean(EY1)
       IC <- HA * (Y - EYA) + EY1 - psi
-      
+
       result <- list(psi = psi, IC = IC)
       return(result)
     }
@@ -122,6 +122,6 @@ Param_TSM2 <- R6Class(
   private = list(
     .type = "TSM",
     .cf_likelihood = NULL,
-    .v=NULL
+    .v = NULL
   )
 )
