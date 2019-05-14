@@ -5,6 +5,8 @@ library(sl3)
 library(data.table)
 library(tmle3mopttx)
 library(tmle3)
+library(xgboost)
+library(speedglm)
 
 set.seed(1234)
 

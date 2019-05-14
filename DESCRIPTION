@@ -35,7 +35,14 @@ Imports:
 Suggests:
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    covr,
+    ggplot2,
+    tidyverse,
+    Rsolnp,
+    nnls,
+    xgboost,
+    speedglm
 Remotes:
     github::tlverse/delayed,
     github::tlverse/origami,
