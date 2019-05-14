@@ -1,3 +1,4 @@
 library(testthat)
+library(tmle3mopttx)
 
-# test_check("tstmle")
+test_check("tmle3mopttx")
