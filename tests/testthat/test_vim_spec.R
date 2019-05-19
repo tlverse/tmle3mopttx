@@ -1,10 +1,9 @@
 # context("Test categorical rule Variable Importance Measure")
 
-# library(testthat)
-# library(sl3)
-# library(data.table)
-# library(tmle3mopttx)
-# library(tmle3)
+#library(sl3)
+#library(data.table)
+#library(tmle3mopttx)
+#library(tmle3)
 
 # set.seed(1234)
 
