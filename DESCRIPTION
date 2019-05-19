@@ -43,7 +43,8 @@ Suggests:
     nnls,
     xgboost,
     speedglm,
-    glmnet
+    glmnet,
+    randomForest
 Remotes:
     github::tlverse/delayed,
     github::tlverse/origami,
