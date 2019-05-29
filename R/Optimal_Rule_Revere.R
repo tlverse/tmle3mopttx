@@ -190,15 +190,14 @@ Optimal_Rule_Revere <- R6Class(
         }
 
         if (blip_type == "blip1") {
-          rule_preds <- as.numeric(blip_preds > 0)
+          rule_preds <- ifelse(blip_preds > 0,2,1)
         } else {
-          if (dim(blip_preds)[2] < 3) {
-            rule_preds <- max.col(blip_preds) - 1
-          } else {
-            rule_preds <- max.col(blip_preds)
-          }
+          rule_preds <- max.col(blip_preds)
         }
       }
+      
+      A_vals <- tmle_task$npsem$A$variable_type$levels
+      rule_preds <- A_vals[rule_preds]
       return(rule_preds)
     }
   ),
