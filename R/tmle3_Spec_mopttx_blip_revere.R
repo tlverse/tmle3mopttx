@@ -138,9 +138,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
         self$set_rule(opt_rule$rule(tmle_task, "validation"))
 
         # Define a dynamic Likelihood factor:
-        lf_rule <- define_lf(LF_rule, "A", rule_fun = function(task) {
-          opt_rule$rule(task, "validation")
-        })
+        lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
         intervens <- Param_TSM$new(likelihood, lf_rule)
       } else if (!complex) {
         # TO DO: Order covarates in order of importance
