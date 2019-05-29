@@ -11,7 +11,7 @@ tmle3_Spec_mopttx_vim <- R6Class(
   portable = TRUE,
   class = TRUE,
   lock_objects = FALSE,
-  inherit = tmle3_Spec,
+  inherit = tmle3_Spec_mopttx_blip_revere,
   public = list(
     initialize = function(V = NULL, type = "blip2", method = "SL", learners = NULL,
                               contrast = "linear", maximize = TRUE, complex = TRUE,
@@ -108,9 +108,7 @@ tmle3_Spec_mopttx_vim <- R6Class(
       self$set_opt(opt_rule)
 
       # Define a dynamic Likelihood factor:
-      lf_rule <- define_lf(LF_rule, "A", rule_fun = function(task) {
-        opt_rule$rule(task, "validation")
-      })
+      lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
       tsm_rule <- Param_TSM$new(likelihood, lf_rule)
       mean_param <- Param_mean$new(likelihood)
 

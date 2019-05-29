@@ -173,9 +173,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
               self$set_rule(opt_rule$rule(tmle_task, "validation"))
 
               # Define a dynamic Likelihood factor:
-              lf_rule <- define_lf(LF_rule, "A", rule_fun = function(task) {
-                opt_rule$rule(task, "validation")
-              })
+              lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
               Param_TSM2$new(targ_likelihood, v = v, lf_rule)
             })
 
