@@ -43,18 +43,19 @@ LF_rule <- R6Class(
     },
 
     get_mean = function(tmle_task, fold_number) {
-      return(self$rule_fun(tmle_task))
+      return(self$rule_fun(tmle_task, fold_number))
     },
 
     get_density = function(tmle_task, fold_number) {
       observed <- tmle_task$get_tmle_node(self$name)
-      likelihood <- as.numeric(self$rule_fun(tmle_task) == observed)
+      likelihood <- as.numeric(self$rule_fun(tmle_task, fold_number) == observed)
 
       return(likelihood)
     },
 
     cf_values = function(tmle_task) {
-      cf_values <- self$rule_fun(tmle_task)
+      # todo: think carefully about this for data adaptive parameters
+      cf_values <- self$rule_fun(tmle_task, "validation")
       return(cf_values)
     }
   ),
