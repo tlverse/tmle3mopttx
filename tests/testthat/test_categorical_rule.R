@@ -45,10 +45,10 @@ test_that("Categorical rule, V is not an empty set", {
   expect_equal(fit$summary$tmle_est, 0.5893713, tolerance = 0.2)
   
   # Test on a new data set:
-  data_new<-data[1:200,]
-  tmle_task_new <- tmle_spec$make_tmle_task(data_new, node_list)
-  fit_new <- tmle_spec$predict_rule(tmle_task_new)
+  #data_new<-data[1:200,]
+  #tmle_task_new <- tmle_spec$make_tmle_task(data_new, node_list)
+  #fit_new <- tmle_spec$predict_rule(tmle_task_new)
   
-  expect_equal(fit_new$tmle_fit$summary$tmle_est, 0.5269744, tolerance = 0.2)
+  #expect_equal(fit_new$tmle_fit$summary$tmle_est, 0.5269744, tolerance = 0.2)
 })
 
