@@ -24,6 +24,13 @@ tmle3_Spec_mopttx_Q <- R6Class(
     # make_updater = function() {
     #  updater <- tmle3_cv_Update$new()
     # },
+    
+    #Shrinkage based Q
+    make_initial_likelihood_glm = function(tmle_task){
+      
+      
+      
+    },
 
     make_params = function(tmle_task, likelihood) {
 

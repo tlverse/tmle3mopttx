@@ -30,13 +30,16 @@ Imports:
     data.table,
     assertthat,
     sl3,
-    tmle3
+    tmle3,
+    doMC,
+    dplyr,
+    foreach,
+    stats
 Suggests:
     testthat,
     knitr,
     rmarkdown,
     covr,
-    stats,
     ggplot2,
     tidyverse,
     Rsolnp,

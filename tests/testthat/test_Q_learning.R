@@ -39,14 +39,8 @@ test_that("Categorical rule, Q learning", {
   # initialize a tmle specification
   tmle_spec_Q <- tmle3_mopttx_Q(maximize = TRUE)
 
-  # Define data:
-  tmle_task <- tmle_spec_Q$make_tmle_task(data, node_list)
-
-  # Define likelihood:
-  initial_likelihood <- tmle_spec_Q$make_initial_likelihood(tmle_task, learner_list)
-
   # Estimate the parameter:
-  fit <- Q_learning(tmle_spec_Q, initial_likelihood, tmle_task)
+  fit <- Q_learning(tmle_spec_Q, learner_list, B=5, data, node_list)
 
-  expect_equal(fit, 0.4765371, tolerance = 0.2)
+  expect_equal(fit$psi, 0.4649058, tolerance = 0.5)
 })

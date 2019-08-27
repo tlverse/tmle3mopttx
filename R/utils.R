@@ -22,24 +22,54 @@ create_mv_learners <- function(learners) {
 #' Q learning wrapper
 #'
 #' @param tmle_spec_Q TMLE Spec initializing Q learning.
-#' @param initial_likelihood Initial likelihood object as defined and obtained by tmle3.
-#' @param tmle_task TMLE task object as defined and obtained by tmle3.
-#'
+#' @param learner_list List of algorithms used to fit Q
+#' @param B Number of bootstraps
+#' @param data Dataset used
+#' @param node_list List of nodes corresponding to Y, A and W.
+#' 
+#' @import foreach
 #' @export
 #'
 
-Q_learning <- function(tmle_spec_Q, initial_likelihood, tmle_task) {
+Q_learning <- function(tmle_spec_Q, learner_list, B=1000, data, node_list) {
 
-  # Define updater and targeted likelihood:
-  updater <- tmle_spec_Q$make_updater()
-  targeted_likelihood <- tmle_spec_Q$make_targeted_likelihood(
-    initial_likelihood,
-    updater
-  )
-  tmle_params <- tmle_spec_Q$make_params(tmle_task, targeted_likelihood)
-  psi <- tmle_spec_Q$estimate(tmle_params, tmle_task)[[1]]
+  ##Estimate the parameter
+  bst <- function(i){
 
-  return(psi = psi)
+    #Resample
+    data_new <- dplyr::sample_n(data, replace = TRUE, size = nrow(data))
+    
+    #Define data with tmle3
+    tmle_task <- tmle_spec_Q$make_tmle_task(data_new, node_list)
+    
+    #Define likelihood
+    initial_likelihood <- tmle_spec_Q$make_initial_likelihood(tmle_task, learner_list)
+    
+    #Define updater and targeted likelihood
+    updater <- tmle_spec_Q$make_updater()
+    targeted_likelihood <- tmle_spec_Q$make_targeted_likelihood(
+      initial_likelihood,
+      updater
+    )
+    tmle_params <- tmle_spec_Q$make_params(tmle_task, targeted_likelihood)
+    psi <- tmle_spec_Q$estimate(tmle_params, tmle_task)[[1]]
+    updater<-targeted_likelihood<-NULL
+    return(psi=psi)
+  }
+  
+  ##Bootstrap
+  doMC::registerDoMC(16)
+  bootstrap_results <- foreach::foreach(iter = seq_len(B), .errorhandling = "remove") %dopar% {
+    return(bst(iter))
+  }
+  
+  ##Get the CI
+  results <- do.call(rbind, bootstrap_results)
+  psi<-mean(results)
+  var<-var(results)
+  CI<-quantile(results, prob=c(0.025,0.975))
+
+  return(list(psi = psi, variance=var, CI=CI, all_psi=results))
 }
 
 #' Normalize rows

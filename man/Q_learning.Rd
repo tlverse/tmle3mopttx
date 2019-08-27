@@ -4,14 +4,18 @@
 \alias{Q_learning}
 \title{Q learning wrapper}
 \usage{
-Q_learning(tmle_spec_Q, initial_likelihood, tmle_task)
+Q_learning(tmle_spec_Q, learner_list, B = 1000, data, node_list)
 }
 \arguments{
 \item{tmle_spec_Q}{TMLE Spec initializing Q learning.}
 
-\item{initial_likelihood}{Initial likelihood object as defined and obtained by tmle3.}
+\item{learner_list}{List of algorithms used to fit Q}
 
-\item{tmle_task}{TMLE task object as defined and obtained by tmle3.}
+\item{B}{Number of bootstraps}
+
+\item{data}{Dataset used}
+
+\item{node_list}{List of nodes corresponding to Y, A and W.}
 }
 \description{
 Q learning wrapper
