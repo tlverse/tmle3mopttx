@@ -38,8 +38,5 @@ Dynamic Likelihood Factor
     }
 }
 
-\seealso{
-Other Likelihood objects: \code{\link{LF_individual_shift}}
-}
 \concept{Likelihood objects}
 \keyword{data}
