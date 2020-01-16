@@ -5,7 +5,7 @@
 \alias{Optimal_Rule_Revere}
 \title{Learns the Optimal Rule given a tmle_task and likelihood, using the Revere framework.
 Complements 'tmle3_Spec_mopttx_blip_revere'.}
-\format{An object of class \code{R6ClassGenerator} of length 24.}
+\format{An object of class \code{R6ClassGenerator} of length 25.}
 \usage{
 Optimal_Rule_Revere
 }

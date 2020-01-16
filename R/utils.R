@@ -1,19 +1,39 @@
 ## Helper functions
 
-#' Make SL of multivariate learners:
+#' Normalize rows
+#'
+#' @param x Values needed to be normalized.
+#'
+#' @export
+#'
+normalize_rows <- function(x) {
+  sweep(x, 1, rowSums(x), "/")
+}
+
+#' Get factors
+#'
+#' @param x Values from which we obtain factors.
+#'
+#' @export
+#'
+#'
+vals_from_factor <- function(x) {
+  sort(unique(x))
+}
+
+#' Make SL of multivariate learners
 #'
 #' @param learners List of learners supporting multivariate prediction.
 #'
 #' @export
 #'
-
 create_mv_learners <- function(learners) {
   mv_learners <- lapply(learners, function(learner) sl3::make_learner(sl3::Lrnr_multivariate, learner))
   mv_stack <- sl3::make_learner(sl3::Stack, mv_learners)
-
+  
   mv_metalearner <- sl3::make_learner(sl3::Lrnr_solnp,
-    loss_function = sl3::loss_squared_error_multivariate,
-    learner_function = sl3::metalearner_linear_multivariate
+                                      loss_function = sl3::loss_squared_error_multivariate,
+                                      learner_function = sl3::metalearner_linear_multivariate
   )
   b_learner <- sl3::make_learner(sl3::Lrnr_sl, mv_stack, mv_metalearner)
   return(mv_learner = b_learner)
@@ -30,12 +50,11 @@ create_mv_learners <- function(learners) {
 #' @import foreach
 #' @export
 #'
-
 Q_learning <- function(tmle_spec_Q, learner_list, B=1000, data, node_list) {
-
+  
   ##Estimate the parameter
   bst <- function(i){
-
+    
     #Resample
     data_new <- dplyr::sample_n(data, replace = TRUE, size = nrow(data))
     
@@ -57,8 +76,11 @@ Q_learning <- function(tmle_spec_Q, learner_list, B=1000, data, node_list) {
     return(psi=psi)
   }
   
+  doFuture::registerDoFuture()
+  future::supportsMulticore()
+  future::plan(future::multiprocess)
+  
   ##Bootstrap
-  doMC::registerDoMC(16)
   bootstrap_results <- foreach::foreach(iter = seq_len(B), .errorhandling = "remove") %dopar% {
     return(bst(iter))
   }
@@ -68,27 +90,6 @@ Q_learning <- function(tmle_spec_Q, learner_list, B=1000, data, node_list) {
   psi<-mean(results)
   var<-var(results)
   CI<-quantile(results, prob=c(0.025,0.975))
-
+  
   return(list(psi = psi, variance=var, CI=CI, all_psi=results))
-}
-
-#' Normalize rows
-#'
-#' @param x Values needed to be normalized.
-#'
-#' @export
-#'
-normalize_rows <- function(x) {
-  sweep(x, 1, rowSums(x), "/")
-}
-
-#' Get factors
-#'
-#' @param x Values from which we obtain factors.
-#'
-#' @export
-#'
-#'
-vals_from_factor <- function(x) {
-  sort(unique(x))
 }

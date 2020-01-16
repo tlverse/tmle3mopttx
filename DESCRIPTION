@@ -14,7 +14,7 @@ Authors@R: c(
 Description: This package estimates the optimal individualized treatment rule
     for the categorical treatment using Super Learner (sl3). In order to avoid
     nested cross-validation, it uses split-specific estimates of Q and g to
-    estimate the rule as described by Coyle et al. In addition it provides the
+    estimate the rule as described by Coyle et al. In addition, it provides the
     Targeted Maximum Likelihood estimates of the mean performance using CV-TMLE
     under such estimated rules. This is an adapter package for use with the
     tmle3 framework and the tlverse software ecosystem for Targeted Learning.
@@ -31,7 +31,8 @@ Imports:
     assertthat,
     sl3,
     tmle3,
-    doMC,
+    future,
+    doFuture,
     dplyr,
     foreach,
     stats
@@ -52,7 +53,8 @@ Remotes:
     github::tlverse/delayed,
     github::tlverse/origami,
     github::tlverse/sl3,
-    github::tlverse/tmle3
+    github::tlverse/tmle3,
+    github::tlverse/tmle3shift
 URL: https://tlverse.org/tmle3mopttx
 BugReports: https://github.com/tlverse/tmle3mopttx/issues
 VignetteBuilder: knitr

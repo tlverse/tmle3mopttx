@@ -4,13 +4,13 @@
 \name{tmle3_Spec_mopttx_Q}
 \alias{tmle3_Spec_mopttx_Q}
 \title{Defines the Mean Under the Optimal Individualized Rule with Categorical Treatment,
-estimated using Q learning.}
-\format{An object of class \code{R6ClassGenerator} of length 24.}
+estimated using Q learning (single step).}
+\format{An object of class \code{R6ClassGenerator} of length 25.}
 \usage{
 tmle3_Spec_mopttx_Q
 }
 \description{
 Defines the Mean Under the Optimal Individualized Rule with Categorical Treatment,
-estimated using Q learning.
+estimated using Q learning (single step).
 }
 \keyword{datasets}

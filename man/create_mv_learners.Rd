@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{create_mv_learners}
 \alias{create_mv_learners}
-\title{Make SL of multivariate learners:}
+\title{Make SL of multivariate learners}
 \usage{
 create_mv_learners(learners)
 }
@@ -10,5 +10,5 @@ create_mv_learners(learners)
 \item{learners}{List of learners supporting multivariate prediction.}
 }
 \description{
-Make SL of multivariate learners:
+Make SL of multivariate learners
 }

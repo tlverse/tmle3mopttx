@@ -4,7 +4,7 @@
 \name{Optimal_Rule_Q_learning}
 \alias{Optimal_Rule_Q_learning}
 \title{Learns the Optimal Rule given a tmle_task and likelihood, using Q learning.}
-\format{An object of class \code{R6ClassGenerator} of length 24.}
+\format{An object of class \code{R6ClassGenerator} of length 25.}
 \usage{
 Optimal_Rule_Q_learning
 }

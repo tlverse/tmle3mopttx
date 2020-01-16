@@ -15,7 +15,8 @@ Optimal_Rule_Revere <- R6Class(
   lock_objects = FALSE,
   public = list(
     initialize = function(tmle_task, likelihood, fold_number = "split-specific", V = NULL,
-                              blip_type = "blip2", learners, maximize = TRUE, realistic = FALSE) {
+                              blip_type = "blip2", learners, maximize = TRUE, realistic = FALSE,
+                          shift_grid=seq(-1, 1, by = 0.5)) {
       private$.tmle_task <- tmle_task
       private$.likelihood <- likelihood
       private$.fold_number <- fold_number
@@ -23,6 +24,7 @@ Optimal_Rule_Revere <- R6Class(
       private$.learners <- learners
       private$.maximize <- maximize
       private$.realistic <- realistic
+      private$.shift_grid <- shift_grid
 
       if (missing(V)) {
         V <- tmle_task$npsem$W$variables
@@ -47,7 +49,7 @@ Optimal_Rule_Revere <- R6Class(
       DR <- data.frame(private$.DR_full[[v]])
       return(data.frame(DR[indx, ]))
     },
-
+    
     blip_revere_function = function(tmle_task, fold_number) {
       likelihood <- self$likelihood
       A_vals <- tmle_task$npsem$A$variable_type$levels
@@ -99,7 +101,6 @@ Optimal_Rule_Revere <- R6Class(
         outcomes <- grep("blip", names(data), value = TRUE)
         revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V, folds = tmle_task$folds)
       }
-
 
       return(revere_task)
     },
@@ -166,7 +167,34 @@ Optimal_Rule_Revere <- R6Class(
       A_vals <- tmle_task$npsem$A$variable_type$levels
       rule_preds <- A_vals[rule_preds]
       return(rule_preds)
+    },
+    
+    #TO DO: Think carefully as to how this should be done with folds.
+    rule_stochastic = function(tmle_task, fold_number="full"){
+      
+      likelihood <- self$likelihood
+      shift_grid <- self$shift_grid
+      A <- tmle_task$get_tmle_node("A")
+      
+      #TO DO: Only supports additive shifts for now.
+      #Generate counterfactual tasks for each delta shift of A:
+      cf_tasks <- lapply(shift_grid, function(shift) {
+        newdata <- data.table(A = A+shift)
+        cf_task <- tmle_task$generate_counterfactual_task(UUIDgenerate(), new_data = newdata)
+        return(cf_task)
+      })
+      
+      Q_vals <- sapply(cf_tasks, likelihood$get_likelihood, "Y", fold_number)
+      opt_col <- max.col(Q_vals)
+      opt_A <- Q_vals[cbind(seq_along(opt_col), opt_col)]
+      private$.opt_delta <- shift_grid[opt_col]
+      
+      private$.opt_A <- opt_A
+      private$.Q_vals <- Q_vals
+      
+      return(opt_A)
     }
+    
   ),
   active = list(
     tmle_task = function() {
@@ -192,6 +220,9 @@ Optimal_Rule_Revere <- R6Class(
     },
     A_library = function() {
       return(private$.learners$A)
+    },
+    shift_grid = function(){
+      return(private$.shift_grid)
     }
   ),
   private = list(
@@ -203,6 +234,10 @@ Optimal_Rule_Revere <- R6Class(
     .blip_fit = NULL,
     .learners = NULL,
     .maximize = NULL,
-    .realistic = NULL
+    .realistic = NULL,
+    .shift_grid = NULL,
+    .opt_delta = NULL,
+    .opt_A = NULL,
+    .Q_vals = NULL
   )
 )

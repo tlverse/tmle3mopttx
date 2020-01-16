@@ -5,7 +5,7 @@
 \alias{tmle3_Spec_mopttx_blip_revere}
 \title{Defines a TMLE for the Mean Under the Optimal Individualized Rule with
 Categorical Treatment under Revere CV-TMLE.}
-\format{An object of class \code{R6ClassGenerator} of length 24.}
+\format{An object of class \code{R6ClassGenerator} of length 25.}
 \usage{
 tmle3_Spec_mopttx_blip_revere
 }

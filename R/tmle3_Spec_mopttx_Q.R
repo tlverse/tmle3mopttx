@@ -1,5 +1,5 @@
 #' Defines the Mean Under the Optimal Individualized Rule with Categorical Treatment,
-#' estimated using Q learning.
+#' estimated using Q learning (single step).
 #'
 #' @importFrom R6 R6Class
 #'
@@ -21,15 +21,9 @@ tmle3_Spec_mopttx_Q <- R6Class(
       sort(unique(x))
     },
 
-    # make_updater = function() {
-    #  updater <- tmle3_cv_Update$new()
-    # },
-    
     #Shrinkage based Q
     make_initial_likelihood_glm = function(tmle_task){
-      
-      
-      
+      #TO DO
     },
 
     make_params = function(tmle_task, likelihood) {
