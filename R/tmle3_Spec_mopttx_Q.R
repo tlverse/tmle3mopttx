@@ -21,9 +21,9 @@ tmle3_Spec_mopttx_Q <- R6Class(
       sort(unique(x))
     },
 
-    #Shrinkage based Q
-    make_initial_likelihood_glm = function(tmle_task){
-      #TO DO
+    # Shrinkage based Q
+    make_initial_likelihood_glm = function(tmle_task) {
+      # TO DO
     },
 
     make_params = function(tmle_task, likelihood) {

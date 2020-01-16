@@ -18,7 +18,7 @@ lrn2 <- Lrnr_glm_fast$new()
 Q_learner <- Lrnr_sl$new(
   learners = list(xgboost_100, xgboost_500, lrn1, lrn2),
   metalearner = Lrnr_nnls$new()
- )
+)
 
 mn_metalearner <- make_learner(Lrnr_solnp,
   loss_function = loss_loglik_multinomial,
@@ -33,18 +33,20 @@ b_learner <- create_mv_learners(learners = learners)
 learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
 
 # Define nodes:
-node_list <- list(W = c("W2", "W3", "W4"), A = c("A","W1"), Y = "Y")
+node_list <- list(W = c("W2", "W3", "W4"), A = c("A", "W1"), Y = "Y")
 
 test_that("Categorical rule, Variable Importance", {
   tmle_spec <- tmle3_mopttx_vim(
     V = "W3", learners = learner_list, type = "blip2",
     contrast = "multiplicative",
     maximize = FALSE,
-    method = "SL", complex = TRUE, realistic = FALSE)
+    method = "SL", complex = TRUE, realistic = FALSE
+  )
 
-  vim_results <- tmle3_vim(tmle_spec, data, 
-                           node_list = node_list, learner_list,
-                           adjust_for_other_A = TRUE)
+  vim_results <- tmle3_vim(tmle_spec, data,
+    node_list = node_list, learner_list,
+    adjust_for_other_A = TRUE
+  )
 
   expect_equal(vim_results$tmle_est[1], -0.2397367, tolerance = 0.2)
 })

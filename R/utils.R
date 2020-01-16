@@ -30,10 +30,10 @@ vals_from_factor <- function(x) {
 create_mv_learners <- function(learners) {
   mv_learners <- lapply(learners, function(learner) sl3::make_learner(sl3::Lrnr_multivariate, learner))
   mv_stack <- sl3::make_learner(sl3::Stack, mv_learners)
-  
+
   mv_metalearner <- sl3::make_learner(sl3::Lrnr_solnp,
-                                      loss_function = sl3::loss_squared_error_multivariate,
-                                      learner_function = sl3::metalearner_linear_multivariate
+    loss_function = sl3::loss_squared_error_multivariate,
+    learner_function = sl3::metalearner_linear_multivariate
   )
   b_learner <- sl3::make_learner(sl3::Lrnr_sl, mv_stack, mv_metalearner)
   return(mv_learner = b_learner)
@@ -46,25 +46,25 @@ create_mv_learners <- function(learners) {
 #' @param B Number of bootstraps
 #' @param data Dataset used
 #' @param node_list List of nodes corresponding to Y, A and W.
-#' 
+#'
 #' @import foreach
 #' @export
 #'
-Q_learning <- function(tmle_spec_Q, learner_list, B=1000, data, node_list) {
-  
-  ##Estimate the parameter
-  bst <- function(i){
-    
-    #Resample
+Q_learning <- function(tmle_spec_Q, learner_list, B = 1000, data, node_list) {
+
+  ## Estimate the parameter
+  bst <- function(i) {
+
+    # Resample
     data_new <- dplyr::sample_n(data, replace = TRUE, size = nrow(data))
-    
-    #Define data with tmle3
+
+    # Define data with tmle3
     tmle_task <- tmle_spec_Q$make_tmle_task(data_new, node_list)
-    
-    #Define likelihood
+
+    # Define likelihood
     initial_likelihood <- tmle_spec_Q$make_initial_likelihood(tmle_task, learner_list)
-    
-    #Define updater and targeted likelihood
+
+    # Define updater and targeted likelihood
     updater <- tmle_spec_Q$make_updater()
     targeted_likelihood <- tmle_spec_Q$make_targeted_likelihood(
       initial_likelihood,
@@ -72,24 +72,24 @@ Q_learning <- function(tmle_spec_Q, learner_list, B=1000, data, node_list) {
     )
     tmle_params <- tmle_spec_Q$make_params(tmle_task, targeted_likelihood)
     psi <- tmle_spec_Q$estimate(tmle_params, tmle_task)[[1]]
-    updater<-targeted_likelihood<-NULL
-    return(psi=psi)
+    updater <- targeted_likelihood <- NULL
+    return(psi = psi)
   }
-  
+
   doFuture::registerDoFuture()
   future::supportsMulticore()
   future::plan(future::multiprocess)
-  
-  ##Bootstrap
+
+  ## Bootstrap
   bootstrap_results <- foreach::foreach(iter = seq_len(B), .errorhandling = "remove") %dopar% {
     return(bst(iter))
   }
-  
-  ##Get the CI
+
+  ## Get the CI
   results <- do.call(rbind, bootstrap_results)
-  psi<-mean(results)
-  var<-var(results)
-  CI<-quantile(results, prob=c(0.025,0.975))
-  
-  return(list(psi = psi, variance=var, CI=CI, all_psi=results))
+  psi <- mean(results)
+  var <- var(results)
+  CI <- quantile(results, prob = c(0.025, 0.975))
+
+  return(list(psi = psi, variance = var, CI = CI, all_psi = results))
 }

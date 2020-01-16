@@ -14,8 +14,8 @@ tmle3_Spec_mopttx_vim <- R6Class(
   inherit = tmle3_Spec_mopttx_blip_revere,
   public = list(
     initialize = function(V = NULL, type = "blip2", method = "SL", learners = NULL,
-                              contrast = "linear", maximize = TRUE, complex = TRUE,
-                              realistic = FALSE, ...) {
+                          contrast = "linear", maximize = TRUE, complex = TRUE,
+                          realistic = FALSE, ...) {
       options <- list(
         V = V, type = type, method = method, learners = learners,
         contrast = contrast, maximize = maximize, complex = complex,

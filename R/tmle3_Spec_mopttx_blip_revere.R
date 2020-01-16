@@ -27,45 +27,46 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
     # make_updater = function() {
     #   updater <- tmle3_cv_Update$new()
     # },
-    
+
     ### Function for predicting the rule for a new dataset
     ### (blip function learned previously with an old dataset)
-    
-    # The user specifies a new tmle_task, that should be same as the 
+
+    # The user specifies a new tmle_task, that should be same as the
     # original (except now with new data).
     # tmle_task MUST have the same column names as the original dataset!
-    predict_rule = function(tmle_task_new){
-      
-      #Grab the same configuration as the original problem:
+    predict_rule = function(tmle_task_new) {
+
+      # Grab the same configuration as the original problem:
       realistic <- self$options$realistic
-      complex <- self$options$complex 
+      complex <- self$options$complex
       learner_list <- self$options$learners
-      
-      #Calculate g for the new dataset:
+
+      # Calculate g for the new dataset:
       likelihood <- self$make_initial_likelihood(tmle_task_new, learner_list)
-      
-      #Grab the opt object:
-      opt <- private$.opt  
-      
+
+      # Grab the opt object:
+      opt <- private$.opt
+
       # Save the rule for each individual:
-      # TO DO: potentially an issue with realistic rule 
+      # TO DO: potentially an issue with realistic rule
       # (I think it fetches the old likelihood)
       rule_preds <- opt$rule(tmle_task_new, "full")
-      
-      #Define new updater and targeted likelihood
+
+      # Define new updater and targeted likelihood
       updater_new <- self$make_updater()
       targeted_likelihood_new <- self$make_targeted_likelihood(likelihood, updater_new)
-      
-      #TO DO: Develop with for complex rule
+
+      # TO DO: Develop with for complex rule
       lf_rule <- define_lf(LF_rule, "A", rule_fun = opt$rule)
       intervens <- Param_TSM$new(targeted_likelihood_new, lf_rule)
       updater_new$tmle_params <- intervens
-      
-      fit <- fit_tmle3(tmle_task_new, targeted_likelihood_new, intervens, 
-                       updater_new)
-      
-      return(list(rule=rule_preds, tmle_fit=fit))
-      
+
+      fit <- fit_tmle3(
+        tmle_task_new, targeted_likelihood_new, intervens,
+        updater_new
+      )
+
+      return(list(rule = rule_preds, tmle_fit = fit))
     },
 
     make_rules = function(V) {

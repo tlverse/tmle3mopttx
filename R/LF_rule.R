@@ -37,7 +37,7 @@ LF_rule <- R6Class(
   classname = "LF_rule", portable = TRUE, class = TRUE,
   inherit = LF_base, public = list(
     initialize = function(name,
-                              type = "density", rule_fun, ...) {
+                          type = "density", rule_fun, ...) {
       super$initialize(name, ..., type = type)
       private$.rule_fun <- rule_fun
     },
