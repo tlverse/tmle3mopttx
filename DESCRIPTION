@@ -32,7 +32,6 @@ Imports:
     sl3,
     tmle3,
     future,
-    doFuture,
     dplyr,
     foreach,
     stats

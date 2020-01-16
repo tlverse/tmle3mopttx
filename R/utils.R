@@ -47,7 +47,6 @@ create_mv_learners <- function(learners) {
 #' @param data Dataset used
 #' @param node_list List of nodes corresponding to Y, A and W.
 #'
-#' @import foreach
 #' @export
 #'
 Q_learning <- function(tmle_spec_Q, learner_list, B = 1000, data, node_list) {
@@ -76,14 +75,8 @@ Q_learning <- function(tmle_spec_Q, learner_list, B = 1000, data, node_list) {
     return(psi = psi)
   }
 
-  doFuture::registerDoFuture()
-  future::supportsMulticore()
-  future::plan(future::multiprocess)
-
   ## Bootstrap
-  bootstrap_results <- foreach::foreach(iter = seq_len(B), .errorhandling = "remove") %dopar% {
-    return(bst(iter))
-  }
+  bootstrap_results <- lapply(seq_len(B), function(iter) bst(iter))
 
   ## Get the CI
   results <- do.call(rbind, bootstrap_results)
