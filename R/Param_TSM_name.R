@@ -1,4 +1,4 @@
-#' Treatment Specific Mean with names specifying the covariates the rule depends on
+#' Treatment Specific Mean with names specifying the covariates the rule depends on.
 #'
 #' Parameter definition for the Treatment Specific Mean (TSM).
 #' Currently supports multiple static intervention nodes.
@@ -52,8 +52,16 @@ Param_TSM2 <- R6Class(
   public = list(
     initialize = function(observed_likelihood, intervention_list, v, ..., outcome_node = "Y") {
       super$initialize(observed_likelihood, ..., outcome_node = outcome_node)
-      private$.cf_likelihood <- make_CF_Likelihood(observed_likelihood, intervention_list)
       private$.v <- v
+      
+      if(!is.null(observed_likelihood$censoring_nodes[[outcome_node]])){
+        # add delta_Y=0 to intervention list
+        outcome_censoring_node <- observed_likelihood$censoring_nodes[[outcome_node]]
+        censoring_intervention <- define_lf(LF_static, outcome_censoring_node, value = 1)
+        intervention_list <- c(intervention_list, censoring_intervention)  
+      }
+      
+      private$.cf_likelihood <- make_CF_Likelihood(observed_likelihood, intervention_list)
     },
     clever_covariates = function(tmle_task = NULL, fold_number = "full") {
       if (is.null(tmle_task)) {
@@ -69,6 +77,9 @@ Param_TSM2 <- R6Class(
       if (!is.null(ncol(HA)) && ncol(HA) > 1) {
         HA <- apply(HA, 1, prod)
       }
+      
+      HA <- bound(HA, c(-40,40))
+      
       return(list(Y = unlist(HA, use.names = FALSE)))
     },
     estimates = function(tmle_task = NULL, fold_number = "full") {
@@ -77,10 +88,10 @@ Param_TSM2 <- R6Class(
       }
 
       # todo: extend for stochastic
-      cf_task <- self$cf_likelihood$cf_tasks[[1]]
+      cf_task <- self$cf_likelihood$enumerate_cf_tasks(tmle_task)[[1]]
 
 
-      Y <- tmle_task$get_tmle_node(self$outcome_node)
+      Y <- tmle_task$get_tmle_node(self$outcome_node, impute_censoring=TRUE)
 
 
       # clever_covariates happen here (for this param) only, but this is repeated computation

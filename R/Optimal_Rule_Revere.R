@@ -81,6 +81,8 @@ Optimal_Rule_Revere <- R6Class(
       # Type of pseudo-blip:
       blip_type <- self$blip_type
 
+      #If there are missing values in Y, 
+      #Blip outcomes will have missing values as well
       if (blip_type == "blip1") {
         blip <- DR[, 2] - DR[, 1]
       } else if (blip_type == "blip2") {
@@ -90,16 +92,48 @@ Optimal_Rule_Revere <- R6Class(
       }
 
       # TO DO: Nicer solutions. Do it one by one, for now
+      # If there are missing Ys, there will be missing blips- for now drop these rows.
+      #(otherwise we train on imputed values... )
       if (is.null(V)) {
         data <- data.table(V = blip, blip = blip)
         outcomes <- grep("blip", names(data), value = TRUE)
         V <- grep("V", names(data), value = TRUE)
-        revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V, folds = tmle_task$folds)
+        
+        #Drop censored values:
+        if(!is.null(tmle_task$npsem$Y$censoring_node)){
+          delta<-tmle_task$npsem$Y$censoring_node$name
+          observed <- tmle_task$get_tmle_node(delta)  
+          censoring <- !observed
+          
+          data <- data[!censoring,]
+          folds <- sl3::subset_folds(tmle_task$folds,which(!censoring))
+          
+          revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V, 
+                                       folds = folds)
+        }else{
+          revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V, 
+                                       folds = tmle_task$folds)
+        }
       } else {
         V <- tmle_task$data[, self$V, with = FALSE]
         data <- data.table(V, blip = blip)
         outcomes <- grep("blip", names(data), value = TRUE)
-        revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V, folds = tmle_task$folds)
+        
+        #Drop censored values:
+        if(!is.null(tmle_task$npsem$Y$censoring_node)){
+          delta<-tmle_task$npsem$Y$censoring_node$name
+          observed <- tmle_task$get_tmle_node(delta)  
+          censoring <- !observed
+          
+          data <- data[!censoring,]
+          folds <- sl3::subset_folds(tmle_task$folds,which(observed))
+          
+          revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V, 
+                                       folds = folds)
+        }else{
+          revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V, 
+                                       folds = tmle_task$folds)
+        }
       }
 
       return(revere_task)
@@ -119,6 +153,7 @@ Optimal_Rule_Revere <- R6Class(
 
       # TODO: swap arg order in sl3
       blip_revere_task <- sl3:::sl3_revere_Task$new(self$blip_revere_function, tmle_task)
+
       blip_fit <- self$blip_library$train(blip_revere_task)
       private$.blip_fit <- blip_fit
     },
