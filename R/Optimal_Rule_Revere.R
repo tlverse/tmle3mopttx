@@ -14,12 +14,12 @@ Optimal_Rule_Revere <- R6Class(
   inherit = tmle3_Spec,
   lock_objects = FALSE,
   public = list(
-    initialize = function(tmle_task, likelihood, fold_number = "split-specific", V = NULL,
+    initialize = function(tmle_task, tmle_spec, likelihood, V = NULL,
                           blip_type = "blip2", learners, maximize = TRUE, realistic = FALSE,
                           shift_grid = seq(-1, 1, by = 0.5)) {
       private$.tmle_task <- tmle_task
+      private$.tmle_spec <- tmle_spec
       private$.likelihood <- likelihood
-      private$.fold_number <- fold_number
       private$.blip_type <- blip_type
       private$.learners <- learners
       private$.maximize <- maximize
@@ -31,7 +31,6 @@ Optimal_Rule_Revere <- R6Class(
       }
 
       private$.V <- V
-      private$.fold_number <- fold_number
     },
     factor_to_indicators = function(x, x_vals) {
       ind_mat <- sapply(x_vals, function(x_val) as.numeric(x_val == x))
@@ -103,10 +102,9 @@ Optimal_Rule_Revere <- R6Class(
         if(!is.null(tmle_task$npsem$Y$censoring_node)){
           delta<-tmle_task$npsem$Y$censoring_node$name
           observed <- tmle_task$get_tmle_node(delta)  
-          censoring <- !observed
           
-          data <- data[!censoring,]
-          folds <- sl3::subset_folds(tmle_task$folds,which(!censoring))
+          data <- data[observed,]
+          folds <- sl3::subset_folds(tmle_task$folds,which(observed))
           
           revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V, 
                                        folds = folds)
@@ -123,11 +121,9 @@ Optimal_Rule_Revere <- R6Class(
         if(!is.null(tmle_task$npsem$Y$censoring_node)){
           delta<-tmle_task$npsem$Y$censoring_node$name
           observed <- tmle_task$get_tmle_node(delta)  
-          censoring <- !observed
-          
-          data <- data[!censoring,]
+ 
+          data <- data[observed,]
           folds <- sl3::subset_folds(tmle_task$folds,which(observed))
-          
           revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V, 
                                        folds = folds)
         }else{
@@ -147,17 +143,50 @@ Optimal_Rule_Revere <- R6Class(
 
     fit_blip = function() {
       tmle_task <- self$tmle_task
+      tmle_spec <- self$tmle_spec
       likelihood <- self$likelihood
-      fold_number <- self$fold_number
       V <- self$V
+      
+      type<-tmle_spec$options$type
+      maximize<-tmle_spec$options$maximize
+      complex<-tmle_spec$options$complex
+      realistic<-tmle_spec$options$realistic
+      learner_list<-tmle_spec$options$learners
 
-      # TODO: swap arg order in sl3
-      blip_revere_task <- sl3:::sl3_revere_Task$new(self$blip_revere_function, tmle_task)
+      #Edit the tmle3 task so it avoids missing values:
+      if(!is.null(tmle_task$npsem$Y$censoring_node)){
+        delta<-tmle_task$npsem$Y$censoring_node$name
+        
+        #Subset data and nodes:
+        observed <- tmle_task$get_tmle_node(delta)  
+        data <- tmle_task$get_data()
+        data <- data[observed]
+        data <- data[,(ncol(data)) := NULL]
+        folds <- sl3::subset_folds(tmle_task$folds,which(observed))
+        
+        #Create node list:
+        W<-c(tmle_task$.__enclos_env__$private$.npsem$W$variables)
+        A<-tmle_task$.__enclos_env__$private$.npsem$A$variables
+        Y<-tmle_task$.__enclos_env__$private$.npsem$Y$variables
+        
+        node_list<-list(W = W, A = A, Y = Y)
+        
+        tmle_spec_new <- tmle3_mopttx_blip_revere(
+          V = V, type = type,
+          learners = learner_list, maximize = maximize,
+          complex = complex, realistic = realistic
+        )
 
+        tmle_task_noC <-tmle_spec_new$make_tmle_task(data, node_list = node_list, folds)
+      }else{
+        tmle_task_noC <- tmle_task
+      }
+      
+      blip_revere_task <- sl3:::sl3_revere_Task$new(self$blip_revere_function, tmle_task_noC)
       blip_fit <- self$blip_library$train(blip_revere_task)
       private$.blip_fit <- blip_fit
     },
-
+    
     rule = function(tmle_task, fold_number = "full") {
       realistic <- private$.realistic
       likelihood <- self$likelihood
@@ -232,11 +261,11 @@ Optimal_Rule_Revere <- R6Class(
     tmle_task = function() {
       return(private$.tmle_task)
     },
+    tmle_spec = function(){
+      return(private$.tmle_spec)
+    },
     likelihood = function() {
       return(private$.likelihood)
-    },
-    fold_number = function() {
-      return(private$.fold_number)
     },
     V = function() {
       return(private$.V)
@@ -259,8 +288,8 @@ Optimal_Rule_Revere <- R6Class(
   ),
   private = list(
     .tmle_task = NULL,
+    .tmle_spec = NULL,
     .likelihood = NULL,
-    .fold_number = NULL,
     .V = NULL,
     .blip_type = NULL,
     .blip_fit = NULL,
