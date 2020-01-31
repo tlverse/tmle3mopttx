@@ -98,38 +98,44 @@ Optimal_Rule_Revere <- R6Class(
         outcomes <- grep("blip", names(data), value = TRUE)
         V <- grep("V", names(data), value = TRUE)
         
+        revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V, 
+                                     folds = tmle_task$folds)
+        
         #Drop censored values:
-        if(!is.null(tmle_task$npsem$Y$censoring_node)){
-          delta<-tmle_task$npsem$Y$censoring_node$name
-          observed <- tmle_task$get_tmle_node(delta)  
+        #if(!is.null(tmle_task$npsem$Y$censoring_node)){
+        #  delta<-tmle_task$npsem$Y$censoring_node$name
+        #  observed <- tmle_task$get_tmle_node(delta)  
           
-          data <- data[observed,]
-          folds <- sl3::subset_folds(tmle_task$folds,which(observed))
+        #  data <- data[observed,]
+        #  folds <- sl3::subset_folds(tmle_task$folds,which(observed))
           
-          revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V, 
-                                       folds = folds)
-        }else{
-          revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V, 
-                                       folds = tmle_task$folds)
-        }
+        #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V, 
+        #                               folds = folds)
+        #}else{
+        #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V, 
+        #                               folds = tmle_task$folds)
+        #}
       } else {
         V <- tmle_task$data[, self$V, with = FALSE]
         data <- data.table(V, blip = blip)
         outcomes <- grep("blip", names(data), value = TRUE)
         
+        revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V, 
+                                     folds = tmle_task$folds)
+        
         #Drop censored values:
-        if(!is.null(tmle_task$npsem$Y$censoring_node)){
-          delta<-tmle_task$npsem$Y$censoring_node$name
-          observed <- tmle_task$get_tmle_node(delta)  
+        #if(!is.null(tmle_task$npsem$Y$censoring_node)){
+        #  delta<-tmle_task$npsem$Y$censoring_node$name
+        #  observed <- tmle_task$get_tmle_node(delta)  
  
-          data <- data[observed,]
-          folds <- sl3::subset_folds(tmle_task$folds,which(observed))
-          revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V, 
-                                       folds = folds)
-        }else{
-          revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V, 
-                                       folds = tmle_task$folds)
-        }
+        #  data <- data[observed,]
+        #  folds <- sl3::subset_folds(tmle_task$folds,which(observed))
+        #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V, 
+        #                               folds = folds)
+        #}else{
+        #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V, 
+        #                               folds = tmle_task$folds)
+        #}
       }
 
       return(revere_task)
