@@ -98,17 +98,17 @@ Optimal_Rule_Revere <- R6Class(
         outcomes <- grep("blip", names(data), value = TRUE)
         V <- grep("V", names(data), value = TRUE)
         
-        revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V, 
-                                     folds = tmle_task$folds)
+        #revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V, 
+        #                             folds = tmle_task$folds)
         
         #Drop censored values:
         #if(!is.null(tmle_task$npsem$Y$censoring_node)){
         #  delta<-tmle_task$npsem$Y$censoring_node$name
         #  observed <- tmle_task$get_tmle_node(delta)  
-          
+        #  
         #  data <- data[observed,]
         #  folds <- sl3::subset_folds(tmle_task$folds,which(observed))
-          
+        #  
         #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V, 
         #                               folds = folds)
         #}else{
@@ -127,7 +127,7 @@ Optimal_Rule_Revere <- R6Class(
         #if(!is.null(tmle_task$npsem$Y$censoring_node)){
         #  delta<-tmle_task$npsem$Y$censoring_node$name
         #  observed <- tmle_task$get_tmle_node(delta)  
- 
+        #
         #  data <- data[observed,]
         #  folds <- sl3::subset_folds(tmle_task$folds,which(observed))
         #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V, 
@@ -198,6 +198,10 @@ Optimal_Rule_Revere <- R6Class(
       likelihood <- self$likelihood
 
       # TODO: when applying the rule, we actually only need the covariates
+      ### NOTE: 
+      # If there is missing outcome, this will return rules for ALL values.
+      # This is ok- we don't have missing Ws or As, just Ys (hence, we can get a predicted value).
+      # This outputs a warning, but that's ok. 
       blip_task <- self$blip_revere_function(tmle_task, fold_number)
       blip_preds <- self$blip_fit$predict_fold(blip_task, fold_number)
 
