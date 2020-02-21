@@ -92,16 +92,16 @@ tmle3_Spec_mopttx_vim <- R6Class(
       if (method == "Q") {
         # Learn the rule using Q-learning:
         opt_rule <- Optimal_Rule_Q_learning$new(tmle_task, likelihood,
-                                                maximize = private$.options$maximize
+          maximize = private$.options$maximize
         )
       } else if (method == "SL") {
         # Learn the rule
         opt_rule <- Optimal_Rule_Revere$new(tmle_task,
-                                            tmle_spec = self, likelihood$initial_likelihood,
-                                            V = V, blip_type = private$.options$type,
-                                            learners = private$.options$learners,
-                                            maximize = private$.options$maximize,
-                                            realistic = realistic
+          tmle_spec = self, likelihood$initial_likelihood,
+          V = V, blip_type = private$.options$type,
+          learners = private$.options$learners,
+          maximize = private$.options$maximize,
+          realistic = realistic
         )
       }
 

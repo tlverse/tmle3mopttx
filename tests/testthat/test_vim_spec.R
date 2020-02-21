@@ -34,7 +34,7 @@ learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
 
 # Define nodes:
 node_list <- list(W = c("W2", "W3", "W4"), A = c("A", "W1"), Y = "Y")
-data$A<-as.integer(data$A)
+data$A <- as.integer(data$A)
 
 test_that("Categorical rule, Variable Importance", {
   tmle_spec <- tmle3_mopttx_vim(
