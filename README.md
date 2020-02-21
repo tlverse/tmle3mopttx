@@ -14,10 +14,10 @@ Description
 
 Suppose one wishes to maximize (or minimize) the population mean of an outcome where for each individual one has access to measured baseline covariates. We consider estimation of the mean outcome under the optimal rule, where the candidate rules are restricted to depend only on user-supplied subset of the baseline covariates. The estimation problem is addressed in a statistical model for the data distribution that is nonparametric.
 
-`tmle3mopttx` is an adapter/extension R package in the `tlverse` ecosystem, that estimates the mean outcome under the following regimes:
+The `tmle3mopttx` is an adapter/extension R package in the `tlverse` ecosystem, that estimates the mean outcome under the following regimes:
 
-1.  **Optimal Individualized Treatment for categorical treatment.**
-2.  **Optimal Individualized Treatment based on possibly sub-optimal rules.**
+1.  **Optimal Individualized Treatment for categorical treatment,**
+2.  **Optimal Individualized Treatment based on possibly sub-optimal rules (including static rules),**
 3.  **Optimal Individualized Treatment based on realistic rules.**
 
 The `tmle3mopttx` also provides **variable importance** analysis in terms of optimizing the population mean of an outcome under rules 1-3.
