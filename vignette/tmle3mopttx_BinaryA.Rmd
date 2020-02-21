@@ -1,7 +1,6 @@
 ---
 title: "Mean under the Optimal Individualized Binary Treatment"
-author: "[Ivana Malenica](https://github.com/podTockom), [Jeremy R.
-  Coyle](https://github.com/jeremyrcoyle)"
+author: "[Ivana Malenica](https://github.com/podTockom)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: vignette-refs.bib
@@ -169,11 +168,11 @@ finally `B` is used in fitting the blip function.
 
 To start, we will initialize a specification for the TMLE of our parameter of
 interest (called a `tmle3_Spec` in the `tlverse` nomenclature) simply by calling
-`tmle3_mopttx_blip_revere`. We specify the argument `V = c("W1", "W2", "W3", "W4")`
+`tmle3_mopttx_blip_revere`. We specify the argument `V = c("W1", "W2", "W3")`
 when initializing the `tmle3_Spec` object in order to communicate that we're interested
 in learning a rule dependent on `V` covariates. We also need to specify the type of 
-pseudo-blip we will use in this estimation problem, and finally the list of learners 
-used to estimate the blip function. Note that for binary treatment, the most natural
+pseudo-blip we will use in this estimation problem, and finally the list of learners. 
+Note that for binary treatment, the most natural
 type of blip to use is the `blip1`, as specified below.
 
 ```{r spec_init}
@@ -190,7 +189,7 @@ alongside the instantiated `tmle_spec`, will serve to construct a `tmle3_Task`
 object internally (see the `tmle3` documentation for details).
 
 In initializing the specification for the TMLE of our parameter of
-interest, we have specified the set of covariates the rule depends on ($V$), the type of pseudo-blip to use ("type"), and the learners used for estimating the pseudo-blip. In addition, we need to specify whether we want to maximize the mean outcome under the rule ("maximize=TRUE"), and whether we want to estimate the rule under all the covariates $V$ provided by the user. If FALSE, `tmle3mopttx` will instead consider all the possible rules under a smaller set of covariates including the static rules, and optimize the mean outcome over all the subsets of $V$. As such, while the user might have provided a full set of collected covariates as input for $V$, it is possible that the true rule only depends on a subset of the set provided by the user. In that case, our returned mean under the optimal individualized rule will be based on the smaller subset.  
+interest, we have specified the set of covariates the rule depends on ($V$), the type of pseudo-blip to use ("type"), and the learners used for estimating all the relevant parts ($Q$, $g$, blip). In addition, we need to specify whether we want to maximize the mean outcome under the rule ("maximize=TRUE"), and whether we want to estimate the rule under all the covariates $V$ provided by the user. If FALSE, `tmle3mopttx` will instead consider all the possible rules under a smaller set of covariates including the static rules, and optimize the mean outcome over all the subsets of $V$. As such, while the user might have provided a full set of collected covariates as input for $V$, it is possible that the true rule only depends on a subset of the set provided by the user. In that case, our returned mean under the optimal individualized rule will be based on the smaller subset.  
 
 ### Targeted Estimation of the Mean under the Optimal ITR with Binary Treatment
 
@@ -292,7 +291,7 @@ print(fit)
 ### Learning the Mean Outcome under the Realistic Rule
 
 It is often the case that the estimated rule is not realistic- perhaps giving treatment
-to a specific subgroup is optimal, however often (if ever) encountered in the 
+to a specific subgroup is optimal, however it is rarely (if ever) encountered in the 
 population. Faced with population or practical positivity issues, the user 
 might seek an optimal rule that is supported by the collected sample of data. As such, 
 `tmle3mopttx` will estimate a data-dependent realistic rule by setting `realistic=TRUE`.

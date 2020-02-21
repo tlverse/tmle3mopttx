@@ -80,8 +80,8 @@ Optimal_Rule_Revere <- R6Class(
       # Type of pseudo-blip:
       blip_type <- self$blip_type
 
-      #If there are missing values in Y, 
-      #Blip outcomes will have missing values as well
+      # If there are missing values in Y,
+      # Blip outcomes will have missing values as well
       if (blip_type == "blip1") {
         blip <- DR[, 2] - DR[, 1]
       } else if (blip_type == "blip2") {
@@ -92,50 +92,54 @@ Optimal_Rule_Revere <- R6Class(
 
       # TO DO: Nicer solutions. Do it one by one, for now
       # If there are missing Ys, there will be missing blips- for now drop these rows.
-      #(otherwise we train on imputed values... )
+      # (otherwise we train on imputed values... )
       if (is.null(V)) {
         data <- data.table(V = blip, blip = blip)
         outcomes <- grep("blip", names(data), value = TRUE)
         V <- grep("V", names(data), value = TRUE)
-        
-        #revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V, 
-        #                             folds = tmle_task$folds)
-        
-        #Drop censored values:
-        #if(!is.null(tmle_task$npsem$Y$censoring_node)){
+
+        revere_task <- make_sl3_Task(data,
+          outcome = outcomes, covariates = V,
+          folds = tmle_task$folds
+        )
+
+        # Drop censored values:
+        # if(!is.null(tmle_task$npsem$Y$censoring_node)){
         #  delta<-tmle_task$npsem$Y$censoring_node$name
-        #  observed <- tmle_task$get_tmle_node(delta)  
-        #  
+        #  observed <- tmle_task$get_tmle_node(delta)
+        #
         #  data <- data[observed,]
         #  folds <- sl3::subset_folds(tmle_task$folds,which(observed))
-        #  
-        #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V, 
+        #
+        #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V,
         #                               folds = folds)
-        #}else{
-        #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V, 
+        # }else{
+        #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V,
         #                               folds = tmle_task$folds)
-        #}
+        # }
       } else {
         V <- tmle_task$data[, self$V, with = FALSE]
         data <- data.table(V, blip = blip)
         outcomes <- grep("blip", names(data), value = TRUE)
-        
-        revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V, 
-                                     folds = tmle_task$folds)
-        
-        #Drop censored values:
-        #if(!is.null(tmle_task$npsem$Y$censoring_node)){
+
+        revere_task <- make_sl3_Task(data,
+          outcome = outcomes, covariates = self$V,
+          folds = tmle_task$folds
+        )
+
+        # Drop censored values:
+        # if(!is.null(tmle_task$npsem$Y$censoring_node)){
         #  delta<-tmle_task$npsem$Y$censoring_node$name
-        #  observed <- tmle_task$get_tmle_node(delta)  
+        #  observed <- tmle_task$get_tmle_node(delta)
         #
         #  data <- data[observed,]
         #  folds <- sl3::subset_folds(tmle_task$folds,which(observed))
-        #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V, 
+        #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V,
         #                               folds = folds)
-        #}else{
-        #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V, 
+        # }else{
+        #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V,
         #                               folds = tmle_task$folds)
-        #}
+        # }
       }
 
       return(revere_task)
@@ -152,56 +156,56 @@ Optimal_Rule_Revere <- R6Class(
       tmle_spec <- self$tmle_spec
       likelihood <- self$likelihood
       V <- self$V
-      
-      type<-tmle_spec$options$type
-      maximize<-tmle_spec$options$maximize
-      complex<-tmle_spec$options$complex
-      realistic<-tmle_spec$options$realistic
-      learner_list<-tmle_spec$options$learners
 
-      #Edit the tmle3 task so it avoids missing values:
-      if(!is.null(tmle_task$npsem$Y$censoring_node)){
-        delta<-tmle_task$npsem$Y$censoring_node$name
-        
-        #Subset data and nodes:
-        observed <- tmle_task$get_tmle_node(delta)  
+      type <- tmle_spec$options$type
+      maximize <- tmle_spec$options$maximize
+      complex <- tmle_spec$options$complex
+      realistic <- tmle_spec$options$realistic
+      learner_list <- tmle_spec$options$learners
+
+      # Edit the tmle3 task so it avoids missing values:
+      if (!is.null(tmle_task$npsem$Y$censoring_node)) {
+        delta <- tmle_task$npsem$Y$censoring_node$name
+
+        # Subset data and nodes:
+        observed <- tmle_task$get_tmle_node(delta)
         data <- tmle_task$get_data()
         data <- data[observed]
-        data <- data[,(ncol(data)) := NULL]
-        folds <- sl3::subset_folds(tmle_task$folds,which(observed))
-        
-        #Create node list:
-        W<-c(tmle_task$.__enclos_env__$private$.npsem$W$variables)
-        A<-tmle_task$.__enclos_env__$private$.npsem$A$variables
-        Y<-tmle_task$.__enclos_env__$private$.npsem$Y$variables
-        
-        node_list<-list(W = W, A = A, Y = Y)
-        
+        data <- data[, (ncol(data)) := NULL]
+        folds <- sl3::subset_folds(tmle_task$folds, which(observed))
+
+        # Create node list:
+        W <- c(tmle_task$.__enclos_env__$private$.npsem$W$variables)
+        A <- tmle_task$.__enclos_env__$private$.npsem$A$variables
+        Y <- tmle_task$.__enclos_env__$private$.npsem$Y$variables
+
+        node_list <- list(W = W, A = A, Y = Y)
+
         tmle_spec_new <- tmle3_mopttx_blip_revere(
           V = V, type = type,
           learners = learner_list, maximize = maximize,
           complex = complex, realistic = realistic
         )
 
-        tmle_task_noC <-tmle_spec_new$make_tmle_task(data, node_list = node_list, folds)
-      }else{
+        tmle_task_noC <- tmle_spec_new$make_tmle_task(data, node_list = node_list, folds)
+      } else {
         tmle_task_noC <- tmle_task
       }
-      
+
       blip_revere_task <- sl3:::sl3_revere_Task$new(self$blip_revere_function, tmle_task_noC)
       blip_fit <- self$blip_library$train(blip_revere_task)
       private$.blip_fit <- blip_fit
     },
-    
+
     rule = function(tmle_task, fold_number = "full") {
       realistic <- private$.realistic
       likelihood <- self$likelihood
 
       # TODO: when applying the rule, we actually only need the covariates
-      ### NOTE: 
+      ### NOTE:
       # If there is missing outcome, this will return rules for ALL values.
       # This is ok- we don't have missing Ws or As, just Ys (hence, we can get a predicted value).
-      # This outputs a warning, but that's ok. 
+      # This outputs a warning, but that's ok.
       blip_task <- self$blip_revere_function(tmle_task, fold_number)
       blip_preds <- self$blip_fit$predict_fold(blip_task, fold_number)
 
@@ -271,7 +275,7 @@ Optimal_Rule_Revere <- R6Class(
     tmle_task = function() {
       return(private$.tmle_task)
     },
-    tmle_spec = function(){
+    tmle_spec = function() {
       return(private$.tmle_spec)
     },
     likelihood = function() {

@@ -1,7 +1,6 @@
 ---
 title: "Mean under the Optimal Individualized Categorical Treatment"
-author: "[Ivana Malenica](https://github.com/podTockom), [Jeremy R.
-  Coyle](https://github.com/jeremyrcoyle)"
+author: "[Ivana Malenica](https://github.com/podTockom)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: vignette-refs.bib

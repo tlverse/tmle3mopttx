@@ -12,11 +12,21 @@ R/`tmle3mopttx`
 Description
 -----------
 
-Suppose one wishes to maximize (or minimize) the population mean of an outcome using a categorical point treatment, where for each individual one has access to measured baseline covariates. We consider estimation of the mean outcome under the optimal rule, where the candidate rules are restricted to depend only on user-supplied subset of the baseline covariates. The estimation problem is addressed in a statistical model for the data distribution that is nonparametric, and at most places restrictions on the probability of a patient receiving treatment given covariates. In addition, suppose one wishes to assess the importance of each observed covariate, in terms of maximizing (or minimizing) the population mean of an outcome under an optimal individualized treatment regime.
+Suppose one wishes to maximize (or minimize) the population mean of an outcome where for each individual one has access to measured baseline covariates. We consider estimation of the mean outcome under the optimal rule, where the candidate rules are restricted to depend only on user-supplied subset of the baseline covariates. The estimation problem is addressed in a statistical model for the data distribution that is nonparametric.
 
-`tmle3mopttx` is an adapter/extension R package in the `tlverse` ecosystem, that addresses the above mentioned problems. The goal of this work is to build upon the `tlverse` framework and the estimation methodology implemented for a single mean counterfactual outcome in order to introduce an end-to-end methodology for variable importance analyses. It relies on the modern implementation of the Super Learner algorithm, [sl3](https://github.com/tlverse/sl3), and [tmle3](https://github.com/tlverse/tmle3) for the targeting step.
+`tmle3mopttx` is an adapter/extension R package in the `tlverse` ecosystem, that estimates the mean outcome under the following regimes:
 
-In order to avoid nested cross-validation, `tmle3mopttx` relies on split-specific estimates of 𝔼(*Y*|*A*, *W*) and *P*(*A*|*W*) in order to estimate the rule, as described by Coyle et al. In addition, the targeted maximum likelihood estimates of the mean performance under the estimated rule are obtained using CV-TMLE. The implementation supports categorical treatments, providing three different versions for the rule estimation, as well as Q-learning.
+1.  **Optimal Individualized Treatment for categorical treatment.**
+2.  **Optimal Individualized Treatment based on possibly sub-optimal rules.**
+3.  **Optimal Individualized Treatment based on realistic rules.**
+
+The `tmle3mopttx` also provides **variable importance** analysis in terms of optimizing the population mean of an outcome under rules 1-3.
+
+In addition, `tmle3mopttx` supports estimating the mean outcome under regimes 1-3 under:
+
+1.  **Missing outcome.**
+
+In order to avoid nested cross-validation, `tmle3mopttx` relies on split-specific estimates of 𝔼<sub>0</sub>(*Y*|*A*, *W*) and *P*<sub>0</sub>(*A*|*W*) in order to estimate the rule. The targeted maximum likelihood estimates of the mean performance under the estimated rule are obtained using CV-TMLE.
 
 For additional background on Targeted Learning and previous work on optimal individualized treatment regimes, please consider consulting van der Laan, Polley, and Hubbard (2007), Zheng and van der Laan (2010), van der Laan and Rose (2011), van der Laan and Luedtke (2015), Luedtke and van der Laan (2016), Coyle (2017) and van der Laan and Rose (2018).
 

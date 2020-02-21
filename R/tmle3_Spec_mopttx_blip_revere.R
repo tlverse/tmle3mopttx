@@ -12,7 +12,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
   lock_objects = FALSE,
   inherit = tmle3_Spec,
   public = list(
-    initialize = function(V = NULL, type, learners, maximize = TRUE, complex = TRUE, 
+    initialize = function(V = NULL, type, learners, maximize = TRUE, complex = TRUE,
                           realistic = FALSE, ...) {
       options <- list(
         V = V, type = type, learners = learners, maximize = maximize, complex = complex,
@@ -166,7 +166,8 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
       # If complex=TRUE, it will return JUST the learned E[Yd]
       if (complex) {
         # Learn the rule
-        opt_rule <- Optimal_Rule_Revere$new(tmle_task, tmle_spec=self, likelihood$initial_likelihood, 
+        opt_rule <- Optimal_Rule_Revere$new(tmle_task,
+          tmle_spec = self, likelihood$initial_likelihood,
           V = V, blip_type = private$.options$type,
           learners = private$.options$learners,
           maximize = private$.options$maximize,
@@ -199,13 +200,15 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
             V_sub <- self$make_rules(V)
 
             tsm_rule <- lapply(V_sub, function(v) {
-              opt_rule <- Optimal_Rule_Revere$new(tmle_task, tmle_spec=self,
-                                                  likelihood$initial_likelihood, 
-                                                  V = v, 
-                                                  blip_type = private$.options$type,
-                                                  learners = private$.options$learners,
-                                                  maximize = private$.options$maximize,
-                                                  realistic = realistic)
+              opt_rule <- Optimal_Rule_Revere$new(tmle_task,
+                tmle_spec = self,
+                likelihood$initial_likelihood,
+                V = v,
+                blip_type = private$.options$type,
+                learners = private$.options$learners,
+                maximize = private$.options$maximize,
+                realistic = realistic
+              )
 
               opt_rule$fit_blip()
               self$set_opt(opt_rule)
