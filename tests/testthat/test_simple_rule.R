@@ -49,5 +49,5 @@ test_that("Categorical rule, simple rule", {
   # fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, updater)
 
   fit <- tmle3(tmle_spec, data, node_list, learner_list)
-  expect_equal(fit$summary$tmle_est, 0.6411194, tolerance = 0.2)
+  expect_equal(fit$summary$tmle_est, 0.6411194, tolerance = 0.3)
 })

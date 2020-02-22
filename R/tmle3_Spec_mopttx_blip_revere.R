@@ -182,7 +182,12 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 
         # Define a dynamic Likelihood factor:
         lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
-        intervens <- Param_TSM$new(likelihood, lf_rule)
+
+        if (is.null(V)) {
+          intervens <- Param_TSM$new(likelihood, lf_rule)
+        } else {
+          intervens <- Param_TSM_name$new(likelihood, v = V, lf_rule)
+        }
       } else if (!complex) {
         # TO DO: Order covarates in order of importance
         # Right now naively respects the order
@@ -218,7 +223,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 
               # Define a dynamic Likelihood factor:
               lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
-              Param_TSM2$new(targ_likelihood, v = v, lf_rule)
+              Param_TSM_name$new(targ_likelihood, v = v, lf_rule)
             })
 
             # Define a static intervention for each level of A:
@@ -226,7 +231,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 
             interventions <- lapply(A_vals, function(A_val) {
               intervention <- define_lf(LF_static, "A", value = A_val)
-              tsm <- define_param(Param_TSM, targ_likelihood, intervention)
+              tsm <- define_param(Param_TSM_name, targ_likelihood, v = A_val, intervention)
             })
 
             intervens <- c(tsm_rule, interventions)
@@ -240,7 +245,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
             V_sub_all <- c(V_sub, lev)
             V_sub_all[[self$make_est_fin(fit, max = max)]]
 
-            intervens <- define_param(Param_TSM2, likelihood,
+            intervens <- define_param(Param_TSM_name, likelihood,
               intervention_list = best_interven$intervention_list,
               v = V_sub_all[[ind]]
             )

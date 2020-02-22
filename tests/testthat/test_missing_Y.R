@@ -1,7 +1,5 @@
 context("Test missingness in Y")
 
-library(R6)
-library(uuid)
 library(sl3)
 library(data.table)
 library(tmle3mopttx)
@@ -45,7 +43,7 @@ learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner, delta_Y = Q_le
 # Define nodes:
 node_list <- list(W = c("W1", "W2", "W3", "W4"), A = "A", Y = "Y")
 
-test_that("Outcome missigness, categorical, simple rule", {
+test_that("Outcome missigness, categorical, complex rule", {
   tmle_spec <- tmle3_mopttx_blip_revere(
     V = c("W4", "W3", "W2", "W1"), type = "blip2",
     learners = learner_list, maximize = TRUE,

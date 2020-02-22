@@ -1,7 +1,6 @@
-#' Treatment Specific Mean with names specifying the covariates the rule depends on.
+#' Treatment Specific Mean with covariate names
 #'
-#' Parameter definition for the Treatment Specific Mean (TSM).
-#' Currently supports multiple static intervention nodes.
+#' Parameter definition for the Treatment Specific Mean (TSM): $E_W[E_{Y|A}(Y|A=a|W)|$. Currently supports multiple static intervention nodes.
 #' Does yet not support dynamic rule or stochastic interventions.
 #'
 #' @section Current Issues:
@@ -24,9 +23,9 @@
 #'   \code{define_param(Param_TSM, observed_likelihood, intervention_list, ..., outcome_node)}
 #'
 #'   \describe{
-#'     \item{\code{observed_likelihood}}{A \code{Likelihood} corresponding to the observed likelihood
+#'     \item{\code{observed_likelihood}}{A \code{\link{Likelihood}} corresponding to the observed likelihood
 #'     }
-#'     \item{\code{intervention_list}}{A list of objects inheriting from \code{LF_base}, representing the intervention.
+#'     \item{\code{intervention_list}}{A list of objects inheriting from \code{\link{LF_base}}, representing the intervention.
 #'     }
 #'     \item{\code{...}}{Not currently used.
 #'     }
@@ -39,15 +38,15 @@
 #' \describe{
 #'     \item{\code{cf_likelihood}}{the counterfactual likelihood for this treatment
 #'     }
-#'     \item{\code{intervention_list}}{A list of objects inheriting from \code{LF_base}, representing the intervention
+#'     \item{\code{intervention_list}}{A list of objects inheriting from \code{\link{LF_base}}, representing the intervention
 #'     }
 #' }
 #' @export
-
-Param_TSM2 <- R6Class(
-  classname = "Param_TSM2",
+Param_TSM_name <- R6Class(
+  classname = "Param_TSM_name",
   portable = TRUE,
   class = TRUE,
+  lock_objects = FALSE,
   inherit = Param_base,
   public = list(
     initialize = function(observed_likelihood, intervention_list, v, ..., outcome_node = "Y") {
@@ -90,6 +89,8 @@ Param_TSM2 <- R6Class(
       # todo: extend for stochastic
       cf_task <- self$cf_likelihood$enumerate_cf_tasks(tmle_task)[[1]]
 
+      # cf_task <- self$cf_likelihood$cf_tasks[[1]]
+
 
       Y <- tmle_task$get_tmle_node(self$outcome_node, impute_censoring = TRUE)
 
@@ -116,7 +117,7 @@ Param_TSM2 <- R6Class(
     name = function() {
       param_form <- sprintf(
         "E[%s_{%s}]", self$outcome_node,
-        paste0("A=", paste(private$.v, collapse = ","))
+        paste0("d(V=", paste(private$.v, collapse = ","), ")")
       )
       return(param_form)
     },
@@ -133,6 +134,6 @@ Param_TSM2 <- R6Class(
   private = list(
     .type = "TSM",
     .cf_likelihood = NULL,
-    .v = NULL
+    .supports_outcome_censoring = TRUE
   )
 )
