@@ -52,8 +52,8 @@ Remotes:
     github::tlverse/delayed,
     github::tlverse/origami,
     github::tlverse/sl3,
-    github::tlverse/tmle3@missing-outcome,
-    github::tlverse/tmle3shift
+    github::tlverse/tmle3shift,
+    url::https://github.com/tlverse/tmle3/tree/missing-outcome/
 URL: https://tlverse.org/tmle3mopttx
 BugReports: https://github.com/tlverse/tmle3mopttx/issues
 VignetteBuilder: knitr
