@@ -77,7 +77,7 @@ Optimal_Rule_Revere <- R6Class(
   lock_objects = FALSE,
   public = list(
     initialize = function(tmle_task, tmle_spec, likelihood, V = NULL,
-                          blip_type = "blip2", learners, maximize = TRUE, 
+                          blip_type = "blip2", learners, maximize = TRUE,
                           shift_grid = seq(-1, 1, by = 0.5)) {
       private$.tmle_task <- tmle_task
       private$.tmle_spec <- tmle_spec

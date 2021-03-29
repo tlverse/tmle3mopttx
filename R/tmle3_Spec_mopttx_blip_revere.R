@@ -272,8 +272,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
                 V = v,
                 blip_type = private$.options$type,
                 learners = private$.options$learners,
-                maximize = private$.options$maximize,
-                realistic = realistic
+                maximize = private$.options$maximize
               )
 
               opt_rule$fit_blip()
