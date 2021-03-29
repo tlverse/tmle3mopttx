@@ -3,7 +3,7 @@
 export(LF_rule)
 export(Optimal_Rule_Q_learning)
 export(Optimal_Rule_Revere)
-export(Param_TSM2)
+export(Param_TSM_name)
 export(Q_learning)
 export(create_mv_learners)
 export(normalize_rows)

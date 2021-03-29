@@ -73,7 +73,8 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
   lock_objects = FALSE,
   inherit = tmle3_Spec,
   public = list(
-    initialize = function(V = NULL, type, learners, maximize = TRUE, complex = TRUE, realistic = FALSE, ...) {
+    initialize = function(V = NULL, type, learners, maximize = TRUE, complex = TRUE,
+                          realistic = FALSE, ...) {
       options <- list(
         V = V, type = type, learners = learners, maximize = maximize, complex = complex,
         realistic = realistic, ...
@@ -226,7 +227,8 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
       # If complex=TRUE, it will return JUST the learned E[Yd]
       if (complex) {
         # Learn the rule
-        opt_rule <- Optimal_Rule_Revere$new(tmle_task, likelihood$initial_likelihood, "split-specific",
+        opt_rule <- Optimal_Rule_Revere$new(tmle_task,
+          tmle_spec = self, likelihood$initial_likelihood,
           V = V, blip_type = private$.options$type,
           learners = private$.options$learners,
           maximize = private$.options$maximize,
@@ -241,7 +243,13 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 
         # Define a dynamic Likelihood factor:
         lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
-        intervens <- Param_TSM$new(likelihood, lf_rule)
+
+        if (is.null(V)) {
+          intervens <- Param_TSM$new(likelihood, lf_rule)
+        } else {
+          #intervens <- Param_TSM_name$new(likelihood, v = V, lf_rule)
+          intervens <- Param_TSM$new(likelihood, lf_rule)
+        }
       } else if (!complex) {
         # TO DO: Order covarates in order of importance
         # Right now naively respects the order
@@ -259,8 +267,11 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
             V_sub <- self$make_rules(V)
 
             tsm_rule <- lapply(V_sub, function(v) {
-              opt_rule <- Optimal_Rule_Revere$new(tmle_task, likelihood$initial_likelihood, "split-specific",
-                V = v, blip_type = private$.options$type,
+              opt_rule <- Optimal_Rule_Revere$new(tmle_task,
+                tmle_spec = self,
+                likelihood$initial_likelihood,
+                V = v,
+                blip_type = private$.options$type,
                 learners = private$.options$learners,
                 maximize = private$.options$maximize,
                 realistic = realistic
@@ -274,7 +285,8 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 
               # Define a dynamic Likelihood factor:
               lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
-              Param_TSM2$new(targ_likelihood, v = v, lf_rule)
+              #Param_TSM_name$new(targ_likelihood, v = v, lf_rule)
+              Param_TSM$new(targ_likelihood, lf_rule)
             })
 
             # Define a static intervention for each level of A:
@@ -282,6 +294,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 
             interventions <- lapply(A_vals, function(A_val) {
               intervention <- define_lf(LF_static, "A", value = A_val)
+              #tsm <- define_param(Param_TSM_name, targ_likelihood, v = A_val, intervention)
               tsm <- define_param(Param_TSM, targ_likelihood, intervention)
             })
 
@@ -296,10 +309,11 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
             V_sub_all <- c(V_sub, lev)
             V_sub_all[[self$make_est_fin(fit, max = max)]]
 
-            intervens <- define_param(Param_TSM2, likelihood,
-              intervention_list = best_interven$intervention_list,
-              v = V_sub_all[[ind]]
-            )
+            #intervens <- define_param(Param_TSM_name, likelihood,
+            #  intervention_list = best_interven$intervention_list,
+            #  v = V_sub_all[[ind]])
+            intervens <- define_param(Param_TSM, likelihood,
+                                      intervention_list = best_interven$intervention_list)
           }
         }
       }

@@ -4,12 +4,12 @@ library(sl3)
 library(data.table)
 library(tmle3mopttx)
 library(tmle3)
+library(foreach)
 
 set.seed(1234)
 
 data("data_cat_vim")
 data <- data_cat_vim
-
 xgboost_100 <- Lrnr_xgboost$new(nrounds = 100)
 xgboost_500 <- Lrnr_xgboost$new(nrounds = 500)
 lrn1 <- Lrnr_mean$new()
@@ -34,6 +34,7 @@ learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
 
 # Define nodes:
 node_list <- list(W = c("W2", "W3", "W4"), A = c("A", "W1"), Y = "Y")
+data$A <- as.integer(data$A)
 
 test_that("Categorical rule, Variable Importance", {
   tmle_spec <- tmle3_mopttx_vim(
@@ -48,7 +49,7 @@ test_that("Categorical rule, Variable Importance", {
     adjust_for_other_A = TRUE
   )
 
-  expect_equal(vim_results$tmle_est[1], -0.2397367, tolerance = 0.2)
+  expect_equal(vim_results$tmle_est[1], -0.2979848, tolerance = 0.2)
 })
 
 # tmle_task <- tmle_spec_opttx$make_tmle_task(data, node_list)
