@@ -56,10 +56,10 @@ The above composes our observed data structure $O = (W, A, Y)$. Note that the
 mean under the true optimal rule is $\psi=0.578$.
 
 To formally
-express this fact using the `tlverse` grammar introduced by the `tmle3` package,
-we create a single data object and specify the functional relationships between
+express this fact using the `tlverse` grammar introduced by the `tmle3` package.
+We create a single data object and specify the functional relationships between
 the nodes in the _directed acyclic graph_ (DAG) via _nonparametric structural
-equation models_ (NPSEMs), reflected in the node list that we set up:
+equation models_ (NPSEMs), reflected in the node list that we set up as:
 
 ```{r data_nodes}
 # organize data and nodes for tmle3
@@ -78,15 +78,16 @@ that each variable in the data set plays as the nodes in a DAG.
 
 ## Methodology
 
-Many methods for learning an optimal rule from data have been developed. Here, we focus on the methods developed in @luedtke2016super and @vanderLaanLuedtke15; however `tmle3mopttx` also supports the widely used Q-learning approach, based on generating an estimate of $\bar{Q}_{Y,0}(A,W)$ @Sutton1998. We cover how to use the Q-learning approach in the later implementation of the vignette. 
-However, we focus on the methodology outlined in @luedtke2016super and @vanderLaanLuedtke15, where we learn the optimal ITR using Super Learner @vdl2007super, and estimate its value using the cross-validated Targeted Minimum Loss-based Estimation (CV-TMLE) @cvtmle2010. Luedtke and van der Laan present three different approaches for learning the optimal rule, but `tmle3mopttx` relies on using the Super Learner to estimate the blip function (or "pseudo-blip" for categorical treatment). 
+Many methods for learning the optimal rule from data have been developed. Here, we focus on the methods developed in @luedtke2016super and @vanderLaanLuedtke15; however `tmle3mopttx` also supports the widely used Q-learning approach
+(for a single time point, aka G-comp), based on generating an estimate of $\bar{Q}_{Y,0}(A,W)$ @Sutton1998. We cover how to use the Q-learning approach in the later implementation of the vignette. 
+Here, we focus on the methodology outlined in @luedtke2016super and @vanderLaanLuedtke15, where we learn the optimal ITR using Super Learner @vdl2007super, and estimate its value using the cross-validated Targeted Minimum Loss-based Estimation (CV-TMLE) @cvtmle2010. Luedtke and van der Laan present three different approaches for learning the optimal rule, but `tmle3mopttx` relies on using the Super Learner to estimate the blip function (or "pseudo-blip" for categorical treatment). 
 
-In great generality, we first need to estimate an individual treatment regime which corresponds to dynamic treatment rule ($d(V)$) that takes a subset of covariates $V \in W$ and assigns treatment. As specified in the introduction, we are also interested in the value of such a dynamic rule: $$E_0[Y_{d(V)}] = E_{0,W}[\bar{Q}_{Y,0}(A=d(V),W)]$$ which, under causal assumptions, can be interpreted as the mean outcome if (possibly contrary to fact), treatment was assigned according to the rule. The optimal rule is the rule with the maximal value: $$d_0 \equiv \text{argmax}_{d \in \mathcal{D}} E_0[Y_{d(V)}] $$
-where $\mathcal{D}$ represents the set of possible rules, $d$. We note that minimization is completely ok as well, depending on the problem in hand. 
+In great generality, we first need to estimate an individual treatment regime which corresponds to dynamic treatment rule ($d(V)$) that takes a subset of covariates $V \in W$ and assigns treatment. As specified in the introduction, we are also interested in the value of such a dynamic rule: $$E_0[Y_{d(V)}] = E_{0,W}[\bar{Q}_{Y,0}(A=d(V),W)]$$ which, under causal assumptions, can be interpreted as the mean outcome if (possibly contrary to fact), treatment was assigned according to the rule. The optimal rule is the rule with the maximal value: $$d_0 \equiv \text{argmax}_{d \in \mathcal{D}} E_0[Y_{d(V)}], $$
+where $\mathcal{D}$ represents the set of possible rules, $d$. 
 
 ### Binary treatment
 
-In the case of a binary treatment, a key quantity for optimal ITR is the blip function. In particular, one can show that any optimal ITR assigns treatment to individuals falling in strata in which the stratum specific average treatment effect, the blip function, is positive and does not assign treatment to individuals for which this quantity is negative. Therefore for a binary treatment, we define a blip function as $$E_0[Y_1-Y_0|V] \equiv E_0[\bar{Q}_{Y,0}(1,W) - \bar{Q}_{Y,0}(0,W) | V] $$
+In the case of a binary treatment, a key quantity for optimal ITR is the blip function. In particular, one can show that any optimal ITR assigns treatment to individuals falling in strata in which the stratum specific average treatment effect, the blip function, is positive and does not assign treatment to individuals for which this quantity is negative. Therefore for a binary treatment, we define a blip function as $$E_0[Y_1-Y_0|V] \equiv E_0[\bar{Q}_{Y,0}(1,W) - \bar{Q}_{Y,0}(0,W) | V]. $$
 The note that the rule can now be derived as $d_0(V) = I(\bar{Q}_0(V) > 0)$.
 
 In particular, we will:
@@ -96,9 +97,12 @@ In particular, we will:
 2. Apply the doubly robust A-IPW transform to our outcome, where we define:
 
 $$D_{\bar{Q},g,a}(O) \equiv \frac{I(A=a)}{g(A|W)} (Y-\bar{Q}_Y(A,W)) + \bar{Q}_Y(A=a,W),$$
+where
+
 $$E(D_{\bar{Q},g,a}(O) | V) = E(Y^a|V).$$
+
 Using this transform, we can define the following contrast:
-$D_{\bar{Q},g}(O) = D_{\bar{Q},g,a=1}(O) - D_{\bar{Q},g,a=0}(O)$
+$D_{\bar{Q},g}(O) = D_{\bar{Q},g,a=1}(O) - D_{\bar{Q},g,a=0}(O).$
 
 We estimate the blip function (\bar{Q}_{0,a}(V)) by regressing $D_{\bar{Q},g}(O)$ on $V$ using `sl3`.
 
@@ -108,7 +112,7 @@ We estimate the blip function (\bar{Q}_{0,a}(V)) by regressing $D_{\bar{Q},g}(O)
 
 ### Computational Considerations
 
-We use the estimation approach outlined in @luedtke2016super and @vanderLaanLuedtke15, which makes frequent use of cross-validation for both model selection and CV-TMLE based parameter estimation @cvtmle2010. In order to avoid nesting cross-validation, `tmle3mopptx` relies on Split-Specific Super Learner in order to estimate the rule, as described by Coyle et al [@jeremythesis].
+We use the estimation approach outlined in @luedtke2016super and @vanderLaanLuedtke15, which makes frequent use of cross-validation for both model selection and CV-TMLE based parameter estimation @cvtmle2010. In order to avoid nested cross-validation, `tmle3mopptx` relies on Split-Specific Super Learner in order to estimate the rule, as described by Coyle et al [@jeremythesis].
 
 ### _Interlude:_ Constructing Optimal Stacked Regressions with `sl3`
 

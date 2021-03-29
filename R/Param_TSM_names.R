@@ -1,8 +1,4 @@
-<<<<<<< HEAD:R/Param_TSM_name.R
 #' Treatment Specific Mean with names specifying the covariates the rule depends on.
-=======
-#' Treatment Specific Mean with covariate names
->>>>>>> 22babd54efc1b54617c602b496f60ba7519e591f:R/Param_TSM_names.R
 #'
 #' Parameter definition for the Treatment Specific Mean (TSM): $E_W[E_{Y|A}(Y|A=a|W)|$. Currently supports multiple static intervention nodes.
 #' Does yet not support dynamic rule or stochastic interventions.

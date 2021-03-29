@@ -19,13 +19,15 @@
 #' @format An \code{\link[R6]{R6Class}} object inheriting from
 #'  \code{\link{tmle3_Spec}}.
 #'
+#'
 #' @section Parameters:
 #'   - \code{tmle_task}: Task object of \code{\link[keras]{tmle3}} specifying the data and
 #'   node structure.
+#'   - \code{tmle_spec}: Spec object of \code{\link[keras]{tmle3}}. Allows for different
+#'   Specs to use the current class for learning the Optimal Rule.
 #'   - \code{likelihood}: Likelihood object of \code{\link[keras]{tmle3}}, corresponding
 #'   to the current estimate of the required parts of the likelihood necessary for the target
 #'   parameter.
-#'   - \code{fold_number}: split-specific.
 #'   - \code{V}: User-specified list of covariates used to define the rule.
 #'   - \code{blip_type}: Blip type, corresponding to different ways of defining the
 #'   reference category in learning the blip; mostly applies to categorical treatment.

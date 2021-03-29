@@ -2,7 +2,7 @@
 % Please edit documentation in R/Param_TSM_names.R
 \name{Param_TSM_name}
 \alias{Param_TSM_name}
-\title{Treatment Specific Mean with covariate names}
+\title{Treatment Specific Mean with names specifying the covariates the rule depends on.}
 \format{
 \code{\link{R6Class}} object.
 }
