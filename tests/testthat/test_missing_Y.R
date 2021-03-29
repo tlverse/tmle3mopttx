@@ -56,6 +56,6 @@ test_that("Outcome missigness, categorical, complex rule", {
   # tmle_params <- tmle_spec$make_params(tmle_task, likelihood=targeted_likelihood)
   # fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, updater)
 
-#  fit <- tmle3(tmle_spec, data, node_list, learner_list)
-#  expect_equal(fit$summary$tmle_est, 0.808, tolerance = 0.2)
+  fit <- tmle3(tmle_spec, data, node_list, learner_list)
+  expect_equal(fit$summary$tmle_est, 0.8566109, tolerance = 0.2)
 })

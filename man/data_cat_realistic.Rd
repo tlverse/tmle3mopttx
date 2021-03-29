@@ -4,7 +4,8 @@
 \name{data_cat_realistic}
 \alias{data_cat_realistic}
 \title{Mock data set with Categorical Treatment and rare treatment}
-\format{A \code{data.frame} with 6 columns.
+\format{
+A \code{data.frame} with 6 columns.
 \describe{
   \item{Y}{A binary variable representing an outcome of interest.}
   \item{A}{A binary variable representing an intervention of interest.}
@@ -12,7 +13,8 @@
   \item{W2}{A categorical variable representing a covariate of interest.}
   \item{W3}{A categorical variable representing a covariate of interest.}
   \item{W4}{A categorical variable representing a covariate of interest.}
-}}
+}
+}
 \usage{
 data_cat_realistic
 }
