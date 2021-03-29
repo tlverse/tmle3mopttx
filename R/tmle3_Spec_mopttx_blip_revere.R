@@ -36,6 +36,9 @@
 #'   Rule is then a potentially more parsimonious rule, if the mean performance is similar.
 #'   - \code{realistic}: If TRUE, the optimal rule returned takes into account the
 #'   probability of treatment given covariates.
+#'   - \code{resource}: Indicates the percent of initially estimated individuals who should be given 
+#'   treatment that get treatment, based on their blip estimate. If resource = 1 all estimated 
+#'   individuals to benefit from treatment get treatment, if resource = 0 none get treatment. 
 #'
 #' @examples
 #' library(sl3)
@@ -74,10 +77,10 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
   inherit = tmle3_Spec,
   public = list(
     initialize = function(V = NULL, type, learners, maximize = TRUE, complex = TRUE,
-                          realistic = FALSE, ...) {
+                          realistic = FALSE, resource = 1, ...) {
       options <- list(
         V = V, type = type, learners = learners, maximize = maximize, complex = complex,
-        realistic = realistic, ...
+        realistic = realistic, resource = resource, ...
       )
       do.call(super$initialize, options)
     },
@@ -85,10 +88,6 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
     vals_from_factor = function(x) {
       sort(unique(x))
     },
-
-    # make_updater = function() {
-    #   updater <- tmle3_cv_Update$new()
-    # },
 
     ### Function for predicting the rule for a new dataset
     ### (blip function learned previously with an old dataset)
@@ -223,6 +222,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
       complex <- private$.options$complex
       max <- private$.options$maximize
       realistic <- private$.options$realistic
+      resource <- private$.options$resource
 
       # If complex=TRUE, it will return JUST the learned E[Yd]
       if (complex) {
@@ -231,8 +231,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
           tmle_spec = self, likelihood$initial_likelihood,
           V = V, blip_type = private$.options$type,
           learners = private$.options$learners,
-          maximize = private$.options$maximize,
-          realistic = realistic
+          maximize = private$.options$maximize
         )
 
         opt_rule$fit_blip()
@@ -352,14 +351,16 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 #' @param complex If \code{TRUE}, learn the rule using the specified covariates \code{V}. If
 #' \code{FALSE}, check if a less complex rule is better.
 #' @param realistic If \code{TRUE}, it will return a rule what is possible due to practical positivity constraints.
-#'
+#' @param resource Indicates the percent of initially estimated individuals who should be given treatment that
+#' get treatment, based on their blip estimate. If resource = 1 all estimated individuals to benefit from
+#' treatment get treatment, if resource = 0 none get treatment. 
 #' @export
 #'
 
 tmle3_mopttx_blip_revere <- function(V = NULL, type = "blip1", learners, maximize = TRUE,
-                                     complex = TRUE, realistic = FALSE) {
+                                     complex = TRUE, realistic = FALSE, resource = 1) {
   tmle3_Spec_mopttx_blip_revere$new(
     V = V, type = type, learners = learners,
-    maximize = maximize, complex = complex, realistic = realistic
+    maximize = maximize, complex = complex, realistic = realistic, resource = resource
   )
 }

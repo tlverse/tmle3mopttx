@@ -36,6 +36,9 @@ under Revere CV-TMLE. For learning the Optimal Rule, see 'Optimal_Rule_Revere' c
   Rule is then a potentially more parsimonious rule, if the mean performance is similar.
   - \code{realistic}: If TRUE, the optimal rule returned takes into account the
   probability of treatment given covariates.
+  - \code{resource}: Indicates the percent of initially estimated individuals who should be given 
+  treatment that get treatment, based on their blip estimate. If resource = 1 all estimated 
+  individuals to benefit from treatment get treatment, if resource = 0 none get treatment.
 }
 
 \examples{
@@ -109,6 +112,7 @@ fit$summary
   maximize = TRUE,
   complex = TRUE,
   realistic = FALSE,
+  resource = 1,
   ...
 )}\if{html}{\out{</div>}}
 }

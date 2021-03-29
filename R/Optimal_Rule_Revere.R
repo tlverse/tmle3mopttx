@@ -37,8 +37,6 @@
 #'   likelihood.
 #'   - \code{maximize}: Should the average outcome be maximized of minimized? Default is
 #'   maximize=TRUE.
-#'   - \code{realistic}: If TRUE, the optimal rule returned takes into account the
-#'   probability of treatment given covariates.
 #'   - \code{shift_grid}: Grid of possible values for the stochastic optimal rule.
 #'   Work in progress.
 #'
@@ -79,7 +77,7 @@ Optimal_Rule_Revere <- R6Class(
   lock_objects = FALSE,
   public = list(
     initialize = function(tmle_task, tmle_spec, likelihood, V = NULL,
-                          blip_type = "blip2", learners, maximize = TRUE, realistic = FALSE,
+                          blip_type = "blip2", learners, maximize = TRUE, 
                           shift_grid = seq(-1, 1, by = 0.5)) {
       private$.tmle_task <- tmle_task
       private$.tmle_spec <- tmle_spec
@@ -87,7 +85,8 @@ Optimal_Rule_Revere <- R6Class(
       private$.blip_type <- blip_type
       private$.learners <- learners
       private$.maximize <- maximize
-      private$.realistic <- realistic
+      private$.realistic <- tmle_spec$options$realistic
+      private$.resource <- tmle_spec$options$resource
       private$.shift_grid <- shift_grid
 
       if (missing(V)) {
@@ -225,8 +224,9 @@ Optimal_Rule_Revere <- R6Class(
       maximize <- tmle_spec$options$maximize
       complex <- tmle_spec$options$complex
       realistic <- tmle_spec$options$realistic
+      resource <- tmle_spec$options$resource
       learner_list <- tmle_spec$options$learners
-
+      
       # Edit the tmle3 task so it avoids missing values:
       if (!is.null(tmle_task$npsem$Y$censoring_node)) {
         delta <- tmle_task$npsem$Y$censoring_node$name
@@ -248,7 +248,7 @@ Optimal_Rule_Revere <- R6Class(
         tmle_spec_new <- tmle3_mopttx_blip_revere(
           V = V, type = type,
           learners = learner_list, maximize = maximize,
-          complex = complex, realistic = realistic
+          complex = complex, realistic = realistic, resource = resource
         )
 
         tmle_task_noC <- tmle_spec_new$make_tmle_task(data, node_list = node_list, folds)
@@ -263,6 +263,7 @@ Optimal_Rule_Revere <- R6Class(
 
     rule = function(tmle_task, fold_number = "full") {
       realistic <- private$.realistic
+      resource <- private$.resource
       likelihood <- self$likelihood
 
       # TODO: when applying the rule, we actually only need the covariates
@@ -304,10 +305,29 @@ Optimal_Rule_Revere <- R6Class(
       }
 
       rule_preds <- max.col(blip_preds)
-
       A_vals <- tmle_task$npsem$A$variable_type$levels
       rule_preds <- A_vals[rule_preds]
-      return(rule_preds)
+      
+      #TO DO: Note that this doesn't really allow us to rank blip < 0
+      max_preds <-apply(blip_preds, 1, max) 
+      rank_df <- data.table("id" = c(1:length(max_preds)), 
+                            "blip_preds" = max_preds)
+      rank_df <- rank_df[order(rank_df[,2],decreasing=TRUE),]
+      self$.rank <- rank_df
+      
+      #Total to get treatment:
+      A1 <- sum(rank_df$blip_preds>0)
+      A1_constrain <- floor(A1 * resource)
+      
+      get_A_id <- rank_df[1:A1_constrain, "id"]
+      get_A_id <- get_A_id$id
+      
+      rank_df <- rank_df[order(rank_df[,1],decreasing=FALSE),]
+      
+      rule_preds_resource <- rule_preds
+      rule_preds_resource[!(rank_df$id %in% get_A_id)] <- 0
+
+      return(rule_preds_resource)
     },
 
     # TO DO: Think carefully as to how this should be done with folds.
@@ -362,6 +382,9 @@ Optimal_Rule_Revere <- R6Class(
     },
     shift_grid = function() {
       return(private$.shift_grid)
+    },
+    return_rank = function() {
+      return(private$.rank)
     }
   ),
   private = list(
@@ -374,9 +397,11 @@ Optimal_Rule_Revere <- R6Class(
     .learners = NULL,
     .maximize = NULL,
     .realistic = NULL,
+    .resource = NULL,
     .shift_grid = NULL,
     .opt_delta = NULL,
     .opt_A = NULL,
-    .Q_vals = NULL
+    .Q_vals = NULL,
+    .rank = NULL
   )
 )

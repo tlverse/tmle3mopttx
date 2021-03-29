@@ -35,8 +35,6 @@ using the Revere framework. Complements 'tmle3_Spec_mopttx_blip_revere' class.
   likelihood.
   - \code{maximize}: Should the average outcome be maximized of minimized? Default is
   maximize=TRUE.
-  - \code{realistic}: If TRUE, the optimal rule returned takes into account the
-  probability of treatment given covariates.
   - \code{shift_grid}: Grid of possible values for the stochastic optimal rule.
   Work in progress.
 }
@@ -114,7 +112,6 @@ fit$summary
   blip_type = "blip2",
   learners,
   maximize = TRUE,
-  realistic = FALSE,
   shift_grid = seq(-1, 1, by = 0.5)
 )}\if{html}{\out{</div>}}
 }
