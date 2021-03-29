@@ -36,11 +36,11 @@ learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
 node_list <- list(W = c("W1", "W2", "W3", "W4"), A = "A", Y = "Y")
 
 test_that("Categorical rule, Q learning", {
-  #Initialize a tmle specification
+  # Initialize a tmle specification
   tmle_spec_Q <- tmle3_mopttx_Q(maximize = TRUE)
 
-  #Estimate the parameter:
-  fit <- Q_learning(tmle_spec_Q, learner_list, B=1, data, node_list)
+  # Estimate the parameter:
+  fit <- Q_learning(tmle_spec_Q, learner_list, B = 1, data, node_list)
 
   expect_equal(fit$psi, 0.4660131, tolerance = 0.5)
 })

@@ -1,4 +1,4 @@
-#' Treatment Specific Mean with names specifying the covariates the rule depends on
+#' Treatment Specific Mean with names specifying the covariates the rule depends on.
 #'
 #' Parameter definition for the Treatment Specific Mean (TSM).
 #' Currently supports multiple static intervention nodes.
@@ -34,7 +34,6 @@
 #'     }
 #'     }
 #'
-
 #' @section Fields:
 #' \describe{
 #'     \item{\code{cf_likelihood}}{the counterfactual likelihood for this treatment

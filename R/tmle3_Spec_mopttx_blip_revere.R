@@ -1,10 +1,71 @@
-#' Defines a TMLE for the Mean Under the Optimal Individualized Rule with
-#' Categorical Treatment under Revere CV-TMLE.
+#' TMLE for the Mean Under the Optimal Individualized Rule
+#'
+#' The functions contained in the class define a TMLE for the Mean Under
+#' the Optimal Individualized Rule with Categorical Treatment, learned and estimated
+#' under Revere CV-TMLE. For learning the Optimal Rule, see 'Optimal_Rule_Revere' class.
+#'
+#' @docType class
 #'
 #' @importFrom R6 R6Class
 #'
 #' @export
-#
+#'
+#' @keywords data
+#'
+#' @return A tmle3 object inheriting from \code{\link{tmle3_Spec}} with
+#' methods for obtaining the TMLE for the Mean Under the Optimal Individualized Rule.
+#' For a full list of the available  functionality, see the complete documentation of
+#' \code{\link{tmle3_Spec}}.
+#'
+#' @format An \code{\link[R6]{R6Class}} object inheriting from
+#'  \code{\link{tmle3_Spec}}.
+#'
+#' @section Parameters:
+#'   - \code{V}: User-specified list of covariates used to define the rule.
+#'   - \code{type}: Blip type, corresponding to different ways of defining the
+#'   reference category in learning the blip; mostly applies to categorical treatment.
+#'   Available categories include "blip1" (reference level of treatment), "blip2"
+#'   (average level of treatment) and "blip3" (weighted average level of treatment).
+#'   - \code{learners}: List of user-defined learners for relevant parts of the
+#'   likelihood.
+#'   - \code{maximize}: Should the average outcome be maximized of minimized? Default is
+#'   maximize=TRUE.
+#'   - \code{complex}: If TRUE, the returned mean under the Optimal Rule is based on the
+#'   full set of covariates provided by the user (parameter "V"). If FALSE, simpler rules
+#'   (including the static rules), are evaluated as well; the returned mean under the Optimal
+#'   Rule is then a potentially more parsimonious rule, if the mean performance is similar.
+#'   - \code{realistic}: If TRUE, the optimal rule returned takes into account the
+#'   probability of treatment given covariates.
+#'
+#' @examples
+#' library(sl3)
+#' library(tmle3)
+#' library(data.table)
+#'
+#' data("data_bin")
+#' data <- data_bin
+#'
+#' Q_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast")
+#' g_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast")
+#' B_lib <- make_learner_stack("Lrnr_glm_fast", "Lrnr_xgboost")
+#'
+#' metalearner <- make_learner(Lrnr_nnls)
+#' Q_learner <- make_learner(Lrnr_sl, Q_lib, metalearner)
+#' g_learner <- make_learner(Lrnr_sl, g_lib, metalearner)
+#' B_learner <- make_learner(Lrnr_sl, B_lib, metalearner)
+#'
+#' learner_list <- list(Y = Q_learner, A = g_learner, B = B_learner)
+#'
+#' node_list <- list(W = c("W1", "W2", "W3"), A = "A", Y = "Y")
+#'
+#' tmle_spec <- tmle3_mopttx_blip_revere(
+#'   V = c("W1", "W2", "W3"),
+#'   type = "blip1", learners = learner_list, maximize = TRUE,
+#'   complex = TRUE, realistic = TRUE
+#' )
+#'
+#' fit <- tmle3(tmle_spec, data, node_list, learner_list)
+#' fit$summary
 tmle3_Spec_mopttx_blip_revere <- R6Class(
   classname = "tmle3_Spec_mopttx_blip_revere",
   portable = TRUE,

@@ -1,12 +1,74 @@
-#' Learns the Optimal Rule given a tmle_task and likelihood, using the Revere framework.
-#' Complements 'tmle3_Spec_mopttx_blip_revere'.
+#' Learning the Optimal Rule using the Revere framework
 #'
+#' Functions used to learn the Optimal Rule given a tmle_task and likelihood,
+#' using the Revere framework. Complements 'tmle3_Spec_mopttx_blip_revere' class.
+#'
+#' @docType class
 #'
 #' @importFrom R6 R6Class
 #' @importFrom data.table data.table
 #'
 #' @export
-#
+#'
+#' @keywords data
+#'
+#' @return A optimal rule object inheriting from \code{\link{tmle3_Spec}} with
+#' methods for learning the optimal rule. For a full list of the available
+#' functionality, see the complete documentation of \code{\link{tmle3_Spec}}.
+#'
+#' @format An \code{\link[R6]{R6Class}} object inheriting from
+#'  \code{\link{tmle3_Spec}}.
+#'
+#' @section Parameters:
+#'   - \code{tmle_task}: Task object of \code{\link[keras]{tmle3}} specifying the data and
+#'   node structure.
+#'   - \code{likelihood}: Likelihood object of \code{\link[keras]{tmle3}}, corresponding
+#'   to the current estimate of the required parts of the likelihood necessary for the target
+#'   parameter.
+#'   - \code{fold_number}: split-specific.
+#'   - \code{V}: User-specified list of covariates used to define the rule.
+#'   - \code{blip_type}: Blip type, corresponding to different ways of defining the
+#'   reference category in learning the blip; mostly applies to categorical treatment.
+#'   Available categories include "blip1" (reference level of treatment), "blip2"
+#'   (average level of treatment) and "blip3" (weighted average level of treatment).
+#'   - \code{learners}: List of user-defined learners for relevant parts of the
+#'   likelihood.
+#'   - \code{maximize}: Should the average outcome be maximized of minimized? Default is
+#'   maximize=TRUE.
+#'   - \code{realistic}: If TRUE, the optimal rule returned takes into account the
+#'   probability of treatment given covariates.
+#'   - \code{shift_grid}: Grid of possible values for the stochastic optimal rule.
+#'   Work in progress.
+#'
+#' @examples
+#' library(sl3)
+#' library(tmle3)
+#' library(data.table)
+#'
+#' data("data_bin")
+#' data <- data_bin
+#'
+#' Q_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast")
+#' g_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast")
+#' B_lib <- make_learner_stack("Lrnr_glm_fast", "Lrnr_xgboost")
+#'
+#' metalearner <- make_learner(Lrnr_nnls)
+#' Q_learner <- make_learner(Lrnr_sl, Q_lib, metalearner)
+#' g_learner <- make_learner(Lrnr_sl, g_lib, metalearner)
+#' B_learner <- make_learner(Lrnr_sl, B_lib, metalearner)
+#'
+#' learner_list <- list(Y = Q_learner, A = g_learner, B = B_learner)
+#'
+#' node_list <- list(W = c("W1", "W2", "W3"), A = "A", Y = "Y")
+#'
+#' tmle_spec <- tmle3_mopttx_blip_revere(
+#'   V = c("W1", "W2", "W3"),
+#'   type = "blip1", learners = learner_list, maximize = TRUE,
+#'   complex = TRUE, realistic = TRUE
+#' )
+#'
+#' fit <- tmle3(tmle_spec, data, node_list, learner_list)
+#' fit$summary
 Optimal_Rule_Revere <- R6Class(
   classname = "Optimal_Rule_Revere",
   portable = TRUE,
