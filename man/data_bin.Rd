@@ -4,14 +4,16 @@
 \name{data_bin}
 \alias{data_bin}
 \title{Mock data set with Binary Treatment}
-\format{A \code{data.frame} with 5 columns.
+\format{
+A \code{data.frame} with 5 columns.
 \describe{
   \item{Y}{A binary variable representing an outcome of interest.}
   \item{A}{A binary variable representing an intervention of interest.}
   \item{W1}{A continuous variable representing a covariate of interest.}
   \item{W2}{A continuous variable representing a covariate of interest.}
   \item{W3}{A continuous variable representing a covariate of interest.}
-}}
+}
+}
 \usage{
 data_bin
 }

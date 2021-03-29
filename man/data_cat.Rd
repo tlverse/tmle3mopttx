@@ -4,7 +4,8 @@
 \name{data_cat}
 \alias{data_cat}
 \title{Mock data set with Categorical Treatment}
-\format{A \code{data.frame} with 6 columns.
+\format{
+A \code{data.frame} with 6 columns.
 \describe{
   \item{Y}{A binary variable representing an outcome of interest.}
   \item{A}{A binary variable representing an intervention of interest.}
@@ -12,7 +13,8 @@
   \item{W2}{A continuous variable representing a covariate of interest.}
   \item{W3}{A continuous variable representing a covariate of interest.}
   \item{W4}{A continuous variable representing a covariate of interest.}
-}}
+}
+}
 \usage{
 data_cat
 }

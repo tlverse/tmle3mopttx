@@ -4,8 +4,14 @@
 \alias{tmle3_mopttx_blip_revere}
 \title{Mean under the Optimal Individualized Treatment Rule}
 \usage{
-tmle3_mopttx_blip_revere(V = NULL, type = "blip1", learners,
-  maximize = TRUE, complex = TRUE, realistic = FALSE)
+tmle3_mopttx_blip_revere(
+  V = NULL,
+  type = "blip1",
+  learners,
+  maximize = TRUE,
+  complex = TRUE,
+  realistic = FALSE
+)
 }
 \arguments{
 \item{V}{Covariates the rule depends on.}
