@@ -30,11 +30,11 @@
 #'   likelihood.
 #'   - \code{maximize}: Should the average outcome be maximized of minimized? Default is
 #'   maximize=TRUE.
-#'   - \code{complex}: If TRUE, the returned mean under the Optimal Rule is based on the
-#'   full set of covariates provided by the user (parameter "V"). If FALSE, simpler rules
+#'   - \code{complex}: If \code{TRUE}, the returned mean under the Optimal Rule is based on the
+#'   full set of covariates provided by the user (parameter "V"). If \code{FALSE}, simpler rules
 #'   (including the static rules), are evaluated as well; the returned mean under the Optimal
 #'   Rule is then a potentially more parsimonious rule, if the mean performance is similar.
-#'   - \code{realistic}: If TRUE, the optimal rule returned takes into account the
+#'   - \code{realistic}: If \code{TRUE}, the optimal rule returned takes into account the
 #'   probability of treatment given covariates.
 #'   - \code{resource}: Indicates the percent of initially estimated individuals who should be given 
 #'   treatment that get treatment, based on their blip estimate. If resource = 1 all estimated 

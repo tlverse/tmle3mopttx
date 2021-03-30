@@ -1,10 +1,82 @@
-#' Defines a TMLE for the Mean Under the Optimal Individualized Rule with
-#' Categorical Treatment and contrast with the Mean under Observed Treatment.
+#' Variable Importance with the Mean Under the Optimal Individualized Rule
+#'
+#' The functions contained in the class define a Variable Importance
+#' metric for the TMLE of the Mean Under the Optimal Individualized Rule with 
+#' Categorical Treatment, learned and estimated under Revere CV-TMLE. For learning 
+#' the Optimal Rule, see 'Optimal_Rule_Revere' class.
+#'
+#' @docType class
 #'
 #' @importFrom R6 R6Class
 #'
 #' @export
-#
+#'
+#' @keywords data
+#'
+#' @return A tmle3 object inheriting from \code{\link{tmle3_Spec}} with
+#' methods for obtaining the Variable Importance metric for the TMLE of the 
+#' Mean Under the Optimal Individualized Rule. For a full list of the available 
+#' functionality, see the complete documentation of \code{\link{tmle3_Spec}}.
+#'
+#' @format An \code{\link[R6]{R6Class}} object inheriting from
+#'  \code{\link{tmle3_Spec}}.
+#'  
+#'
+#' @section Parameters:
+#'   - \code{V}: User-specified list of covariates used to define the rule.
+#'   - \code{type}: Blip type, corresponding to different ways of defining the
+#'   reference category in learning the blip; mostly applies to categorical treatment.
+#'   Available categories include "blip1" (reference level of treatment), "blip2"
+#'   (average level of treatment) and "blip3" (weighted average level of treatment).
+#'   - \code{method}: Either "SL" (for the TMLE estimate) or "Q" (for Q-learning).
+#'   - \code{learners}: List of user-defined learners for relevant parts of the
+#'   likelihood.
+#'   - \code{contrast}: Defined either a "linear" or "multiplicative" contrast for the delta method.
+#'   - \code{maximize}: Should the average outcome be maximized of minimized? Default is
+#'   maximize=TRUE.
+#'   - \code{complex}: If \code{TRUE}, the returned mean under the Optimal Rule is based on the
+#'   full set of covariates provided by the user (parameter "V"). If \code{FALSE}, simpler rules
+#'   (including the static rules), are evaluated as well; the returned mean under the Optimal
+#'   Rule is then a potentially more parsimonious rule, if the mean performance is similar.
+#'   - \code{realistic}: If \code{TRUE}, the optimal rule returned takes into account the
+#'   probability of treatment given covariates.
+#'   - \code{resource}: Indicates the percent of initially estimated individuals who should be given 
+#'   treatment that get treatment, based on their blip estimate. If resource = 1 all estimated 
+#'   individuals to benefit from treatment get treatment, if resource = 0 none get treatment. 
+#'
+#' @examples
+#' library(sl3)
+#' library(tmle3)
+#' library(data.table)
+#'
+#' data("data_cat_vim")
+#' data <- data_cat_vim
+#'
+#' Q_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast")
+#' g_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast")
+#' B_lib <- make_learner_stack("Lrnr_glm_fast", "Lrnr_xgboost")
+#'
+#' metalearner <- make_learner(Lrnr_nnls)
+#' Q_learner <- make_learner(Lrnr_sl, Q_lib, metalearner)
+#' g_learner <- make_learner(Lrnr_sl, g_lib, metalearner)
+#' B_learner <- make_learner(Lrnr_sl, B_lib, metalearner)
+#'
+#' learner_list <- list(Y = Q_learner, A = g_learner, B = B_learner)
+#'
+#' node_list <- list(W = c("W2", "W3", "W4"), A = c("A", "W1"), Y = "Y")
+#'
+#' tmle_spec <- tmle3_mopttx_vim(
+#' V = "W3", learners = learner_list, type = "blip2",
+#' contrast = "multiplicative", maximize = FALSE,
+#' method = "SL", complex = TRUE, realistic = FALSE
+#' )
+#'
+#' vim_results <- tmle3_vim(tmle_spec, data,
+#' node_list = node_list, learner_list,
+#' adjust_for_other_A = TRUE)
+#' 
+#' vim_results
+#' 
 
 tmle3_Spec_mopttx_vim <- R6Class(
   classname = "tmle3_Spec_mopttx_vim",
@@ -15,11 +87,11 @@ tmle3_Spec_mopttx_vim <- R6Class(
   public = list(
     initialize = function(V = NULL, type = "blip2", method = "SL", learners = NULL,
                           contrast = "linear", maximize = TRUE, complex = TRUE,
-                          realistic = FALSE, ...) {
+                          realistic = FALSE, resource = 1, ...) {
       options <- list(
         V = V, type = type, method = method, learners = learners,
         contrast = contrast, maximize = maximize, complex = complex,
-        realistic = realistic
+        realistic = realistic, resource = resource
       )
       do.call(super$initialize, options)
     },
@@ -87,6 +159,7 @@ tmle3_Spec_mopttx_vim <- R6Class(
       complex <- private$.options$complex
       max <- private$.options$maximize
       realistic <- private$.options$realistic
+      resource <- private$.options$resource
       method <- private$.options$method
 
       if (method == "Q") {
@@ -96,12 +169,12 @@ tmle3_Spec_mopttx_vim <- R6Class(
         )
       } else if (method == "SL") {
         # Learn the rule
+        
         opt_rule <- Optimal_Rule_Revere$new(tmle_task,
-          tmle_spec = self, likelihood$initial_likelihood,
+          tmle_spec = self, likelihood = likelihood$initial_likelihood,
           V = V, blip_type = private$.options$type,
           learners = private$.options$learners,
-          maximize = private$.options$maximize,
-          realistic = realistic
+          maximize = private$.options$maximize
         )
       }
 
@@ -155,15 +228,20 @@ tmle3_Spec_mopttx_vim <- R6Class(
 #' @param complex If \code{TRUE}, learn the rule using the specified covariates \code{V}. If
 #' \code{FALSE}, check if a less complex rule is better.
 #' @param realistic If \code{TRUE}, it will return a rule what is possible due to practical positivity constraints.
-#' @param contrast Defined either a linear or multiplicative contrast for the delta method.
+#' @param contrast Defined either a "linear" or "multiplicative" contrast for the delta method.
+#' @param resource Indicates the percent of initially estimated individuals who should be given 
+#' treatment that get treatment, based on their blip estimate. If resource = 1 all estimated 
+#' individuals to benefit from treatment get treatment, if resource = 0 none get treatment. 
 #'
 #' @export
 #'
 
 tmle3_mopttx_vim <- function(V = NULL, type = "blip2", method = "SL", learners = NULL,
-                             contrast = "linear", maximize = TRUE, complex = TRUE, realistic = FALSE) {
+                             contrast = "linear", maximize = TRUE, complex = TRUE, realistic = FALSE,
+                             resource = 1) {
   tmle3_Spec_mopttx_vim$new(
     V = V, type = type, method = method, learners = learners,
-    contrast = contrast, maximize = maximize, complex = complex, realistic = realistic
+    contrast = contrast, maximize = maximize, complex = complex, 
+    realistic = realistic, resource = resource
   )
 }

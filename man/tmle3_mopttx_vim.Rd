@@ -12,7 +12,8 @@ tmle3_mopttx_vim(
   contrast = "linear",
   maximize = TRUE,
   complex = TRUE,
-  realistic = FALSE
+  realistic = FALSE,
+  resource = 1
 )
 }
 \arguments{
@@ -29,7 +30,7 @@ specified reference. Note that in the case of binary treatment, "blip1" is just 
 
 \item{learners}{Library for Y (outcome), A (treatment), and B (blip) estimation.}
 
-\item{contrast}{Defined either a linear or multiplicative contrast for the delta method.}
+\item{contrast}{Defined either a "linear" or "multiplicative" contrast for the delta method.}
 
 \item{maximize}{Specify whether we want to maximize or minimize the mean of the final outcome.}
 
@@ -37,6 +38,10 @@ specified reference. Note that in the case of binary treatment, "blip1" is just 
 \code{FALSE}, check if a less complex rule is better.}
 
 \item{realistic}{If \code{TRUE}, it will return a rule what is possible due to practical positivity constraints.}
+
+\item{resource}{Indicates the percent of initially estimated individuals who should be given 
+treatment that get treatment, based on their blip estimate. If resource = 1 all estimated 
+individuals to benefit from treatment get treatment, if resource = 0 none get treatment.}
 }
 \description{
 O=(W,A,Y)

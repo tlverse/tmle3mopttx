@@ -77,6 +77,7 @@ Does yet not support dynamic rule or stochastic interventions.
 \if{html}{\out{<div class="r">}}\preformatted{Param_TSM_name$new(
   observed_likelihood,
   intervention_list,
+  v = NULL,
   ...,
   outcome_node = "Y"
 )}\if{html}{\out{</div>}}
