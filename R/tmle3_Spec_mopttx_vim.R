@@ -51,19 +51,29 @@
 #'
 #' data("data_cat_vim")
 #' data <- data_cat_vim
-#'
-#' Q_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast")
-#' g_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast")
-#' B_lib <- make_learner_stack("Lrnr_glm_fast", "Lrnr_xgboost")
-#'
-#' metalearner <- make_learner(Lrnr_nnls)
-#' Q_learner <- make_learner(Lrnr_sl, Q_lib, metalearner)
-#' g_learner <- make_learner(Lrnr_sl, g_lib, metalearner)
-#' B_learner <- make_learner(Lrnr_sl, B_lib, metalearner)
-#'
-#' learner_list <- list(Y = Q_learner, A = g_learner, B = B_learner)
-#'
-#' node_list <- list(W = c("W2", "W3", "W4"), A = c("A", "W1"), Y = "Y")
+#' data$A <- as.integer(data$A)
+#' 
+#' lrn1 <- Lrnr_mean$new()
+#' lrn2 <- Lrnr_glm_fast$new()
+#' lrn3 <- Lrnr_glmnet$new()
+#' 
+#' Q_learner <- Lrnr_sl$new(learners = list(lrn1, lrn2, lrn3),
+#' metalearner = Lrnr_nnls$new()
+#' )
+#' 
+#' mn_metalearner <- make_learner(Lrnr_solnp,
+#' loss_function = loss_loglik_multinomial,
+#' learner_function = metalearner_linear_multinomial
+#' )
+#' g_learner <- make_learner(Lrnr_sl, list(lrn1, lrn3), 
+#' mn_metalearner)
+#' 
+#' b_learner <- create_mv_learners(learners = list(lrn1, lrn2))
+#' 
+#' learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
+#' 
+#' node_list <- list(W = c("W2", "W3", "W4"), 
+#' A = c("A", "W1"), Y = "Y")
 #'
 #' tmle_spec <- tmle3_mopttx_vim(
 #' V = "W3", learners = learner_list, type = "blip2",
