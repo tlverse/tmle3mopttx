@@ -45,9 +45,10 @@ Param_TSM_name <- R6Class(
   classname = "Param_TSM_name",
   portable = TRUE,
   class = TRUE,
+  lock_objects = FALSE,
   inherit = Param_base,
   public = list(
-    initialize = function(observed_likelihood, intervention_list, ..., outcome_node = "Y") {
+    initialize = function(observed_likelihood, intervention_list, v=NULL, ..., outcome_node = "Y") {
       super$initialize(observed_likelihood, ..., outcome_node = outcome_node)
       private$.v <- v
       

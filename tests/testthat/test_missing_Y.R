@@ -21,7 +21,7 @@ lrn2 <- Lrnr_glm_fast$new()
 
 # Define the Q learner:
 Q_learner <- Lrnr_sl$new(
-  learners = list(xgboost_100, xgboost_500, lrn1, lrn2),
+  learners = list(xgboost_100, lrn1, lrn2),
   metalearner = Lrnr_nnls$new()
 )
 
@@ -31,10 +31,10 @@ mn_metalearner <- make_learner(Lrnr_solnp,
   learner_function = metalearner_linear_multinomial
 )
 
-g_learner <- make_learner(Lrnr_sl, list(xgboost_100, xgboost_500, lrn1), mn_metalearner)
+g_learner <- make_learner(Lrnr_sl, list(xgboost_100, lrn1), mn_metalearner)
 
 # Define the Blip learner, which is a multivariate learner:
-learners <- list(xgboost_100, xgboost_500, lrn1, lrn2)
+learners <- list(xgboost_100, lrn1, lrn2)
 b_learner <- create_mv_learners(learners = learners)
 
 # Combine all learners:
@@ -57,5 +57,5 @@ test_that("Outcome missigness, categorical, complex rule", {
   # fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, updater)
 
   fit <- tmle3(tmle_spec, data, node_list, learner_list)
-  expect_equal(fit$summary$tmle_est, 0.8566109, tolerance = 0.2)
+  expect_equal(fit$summary$tmle_est, 0.7649341, tolerance = 0.5)
 })

@@ -283,8 +283,8 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 
               # Define a dynamic Likelihood factor:
               lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
-              #Param_TSM_name$new(targ_likelihood, v = v, lf_rule)
-              Param_TSM$new(targ_likelihood, lf_rule)
+              Param_TSM_name$new(targ_likelihood, v = v, lf_rule)
+              #Param_TSM$new(targ_likelihood, lf_rule)
             })
 
             # Define a static intervention for each level of A:
@@ -292,8 +292,8 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 
             interventions <- lapply(A_vals, function(A_val) {
               intervention <- define_lf(LF_static, "A", value = A_val)
-              #tsm <- define_param(Param_TSM_name, targ_likelihood, v = A_val, intervention)
-              tsm <- define_param(Param_TSM, targ_likelihood, intervention)
+              tsm <- define_param(Param_TSM_name, targ_likelihood, v = A_val, intervention)
+              #tsm <- define_param(Param_TSM, targ_likelihood, intervention)
             })
 
             intervens <- c(tsm_rule, interventions)
@@ -307,11 +307,11 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
             V_sub_all <- c(V_sub, lev)
             V_sub_all[[self$make_est_fin(fit, max = max)]]
 
-            #intervens <- define_param(Param_TSM_name, likelihood,
-            #  intervention_list = best_interven$intervention_list,
-            #  v = V_sub_all[[ind]])
-            intervens <- define_param(Param_TSM, likelihood,
-                                      intervention_list = best_interven$intervention_list)
+            intervens <- define_param(Param_TSM_name, likelihood,
+              intervention_list = best_interven$intervention_list,
+              v = V_sub_all[[ind]])
+            #intervens <- define_param(Param_TSM, likelihood,
+            #                          intervention_list = best_interven$intervention_list)
           }
         }
       }
