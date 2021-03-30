@@ -308,25 +308,31 @@ Optimal_Rule_Revere <- R6Class(
       A_vals <- tmle_task$npsem$A$variable_type$levels
       rule_preds <- A_vals[rule_preds]
       
-      #TO DO: Note that this doesn't really allow us to rank blip < 0
-      max_preds <-apply(blip_preds, 1, max) 
-      rank_df <- data.table("id" = c(1:length(max_preds)), 
-                            "blip_preds" = max_preds)
-      rank_df <- rank_df[order(rank_df[,2],decreasing=TRUE),]
-      self$.rank <- rank_df
+      #Allow resource constrain only on binary treatment for now
+      if(length(A_vals) == 2){
+        #TO DO: Note that this doesn't really allow us to rank blip < 0
+        max_preds <-apply(blip_preds, 1, max) 
+        rank_df <- data.table("id" = c(1:length(max_preds)), 
+                              "blip_preds" = max_preds)
+        rank_df <- rank_df[order(rank_df[,2],decreasing=TRUE),]
+        self$.rank <- rank_df
+        
+        #Total to get treatment:
+        A1 <- sum(rank_df$blip_preds>0)
+        A1_constrain <- floor(A1 * resource)
+        
+        get_A_id <- rank_df[1:A1_constrain, "id"]
+        get_A_id <- get_A_id$id
+        
+        rank_df <- rank_df[order(rank_df[,1],decreasing=FALSE),]
+        
+        rule_preds_resource <- rule_preds
+        rule_preds_resource[!(rank_df$id %in% get_A_id)] <- min(A_vals[rule_preds])
+      }else{
+        rule_preds_resource <- rule_preds
+      }
       
-      #Total to get treatment:
-      A1 <- sum(rank_df$blip_preds>0)
-      A1_constrain <- floor(A1 * resource)
-      
-      get_A_id <- rank_df[1:A1_constrain, "id"]
-      get_A_id <- get_A_id$id
-      
-      rank_df <- rank_df[order(rank_df[,1],decreasing=FALSE),]
-      
-      rule_preds_resource <- rule_preds
-      rule_preds_resource[!(rank_df$id %in% get_A_id)] <- 0
-
+    
       return(rule_preds_resource)
     },
 
