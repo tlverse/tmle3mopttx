@@ -67,8 +67,7 @@
 #'   complex = TRUE, realistic = TRUE
 #' )
 #'
-#' fit <- tmle3(tmle_spec, data, node_list, learner_list)
-#' fit$summary
+#' 
 tmle3_Spec_mopttx_blip_revere <- R6Class(
   classname = "tmle3_Spec_mopttx_blip_revere",
   portable = TRUE,

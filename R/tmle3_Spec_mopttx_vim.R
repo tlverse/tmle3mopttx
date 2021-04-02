@@ -81,12 +81,6 @@
 #' method = "SL", complex = TRUE, realistic = FALSE
 #' )
 #'
-#' vim_results <- tmle3_vim(tmle_spec, data,
-#' node_list = node_list, learner_list,
-#' adjust_for_other_A = TRUE)
-#' 
-#' vim_results
-#' 
 
 tmle3_Spec_mopttx_vim <- R6Class(
   classname = "tmle3_Spec_mopttx_vim",

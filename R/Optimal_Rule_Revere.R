@@ -67,8 +67,7 @@
 #'   complex = TRUE, realistic = TRUE
 #' )
 #'
-#' fit <- tmle3(tmle_spec, data, node_list, learner_list)
-#' fit$summary
+
 Optimal_Rule_Revere <- R6Class(
   classname = "Optimal_Rule_Revere",
   portable = TRUE,
