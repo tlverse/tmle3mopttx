@@ -69,7 +69,6 @@ artifacts:
 notifications:
  - provider: Email
    to:
-     - jeremyrcoyle@gmail.com
      - imalenica@berkeley.edu
    subject: 'r-appveyor build {{status}}'
    message: "https://ci.appveyor.com/project/tlverse/tmle3mopttx"

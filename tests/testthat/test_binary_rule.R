@@ -52,7 +52,20 @@ test_that("Binary rule, V is not an empty set", {
     learners = learner_list, maximize = TRUE,
     complex = TRUE, realistic = TRUE
   )
+  
+  # tmle_task <- tmle_spec$make_tmle_task(data, node_list)
+  # initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task, learner_list)
+  # updater <- tmle_spec$make_updater()
+  # targeted_likelihood <- tmle_spec$make_targeted_likelihood(initial_likelihood, updater)
+  # tmle_params <- tmle_spec$make_params(tmle_task, likelihood=targeted_likelihood)
+  # fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, updater)
 
   fit <- tmle3(tmle_spec, data, node_list, learner_list)
   expect_equal(fit$summary$tmle_est, 0.5632861, tolerance = 0.2)
+  
+  #Get Blip preds:
+  tmle_task_blip <- tmle_spec$make_tmle_task(data, node_list)
+  blip_pred <- tmle_spec$get_blip_pred(tmle_task = tmle_task_blip)
+  expect_equal(length(blip_pred), nrow(data), tolerance = 1)
 })
+

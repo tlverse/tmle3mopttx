@@ -216,6 +216,21 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 
       return(Edn = Edn)
     },
+    
+    get_blip_fit = function(){
+      blip = private$.opt
+      blip_fit <- blip$blip_fit
+      return(blip_fit)
+    },
+    
+    get_blip_pred = function(tmle_task, fold_number = "full"){
+      blip = private$.opt
+      
+      blip_task <- blip$blip_revere_function(tmle_task, fold_number=fold_number)
+      blip_preds <- blip$blip_fit$predict_fold(blip_task, fold_number)
+
+      return(blip_preds)
+    },
 
     make_params = function(tmle_task, likelihood) {
       V <- private$.options$V
