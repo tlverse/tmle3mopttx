@@ -18,9 +18,10 @@ cache:
   - C:\RLibrary -> appveyor.yml
 
 environment:
+  R_VERSION: release
   NOT_CRAN: true
   global:
-    WARNINGS_ARE_ERRORS:
+    WARNINGS_ARE_ERRORS: false
     R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
     USE_RTOOLS: true
     R_ARCH: x64
@@ -72,7 +73,7 @@ notifications:
      - imalenica@berkeley.edu
    subject: 'r-appveyor build {{status}}'
    message: "https://ci.appveyor.com/project/tlverse/tmle3mopttx"
-   on_build_success: false
+   on_build_success: true
    on_build_failure: true
    on_build_status_changed: true
    
