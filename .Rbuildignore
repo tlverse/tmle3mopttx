@@ -18,6 +18,7 @@ deploy.sh
 ^sandbox$
 ^Simulations$
 ^extra_vignettes$
+^vignette$
 ^sandbox$
 ^docs$
 ^README\.Rmd$

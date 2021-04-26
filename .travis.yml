@@ -19,9 +19,6 @@ r:
   - release
   - devel
 
-before_install:
-  - Rscript -e 'update.packages(ask = FALSE)'
-
 r_packages:
   - devtools
   - sessioninfo
@@ -32,18 +29,14 @@ r_github_packages:
   - r-lib/covr
   - r-lib/sessioninfo
   - Rdatatable/data.table
-  - osofr/simcausal
-  - osofr/condensier
   - tlverse/delayed
   - tlverse/origami
   - tlverse/hal9001
   - tlverse/sl3
   - tlverse/tmle3
-  - nhejazi/haldensify
-  - nhejazi/txshift
 
 after_success:
-  - travis_wait 240 Rscript -e 'covr::codecov()'
+  - travis_wait 100 Rscript -e 'covr::codecov()'
 
 on_failure:
   - "./travis-tool.sh dump_logs"
