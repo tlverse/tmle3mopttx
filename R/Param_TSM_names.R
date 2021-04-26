@@ -1,46 +1,23 @@
 #' Treatment Specific Mean with names specifying the covariates the rule depends on.
 #'
-#' Parameter definition for the Treatment Specific Mean (TSM): $E_W[E_{Y|A}(Y|A=a|W)|$. Currently supports multiple static intervention nodes.
-#' Does yet not support dynamic rule or stochastic interventions.
+#' Treatment Specific Mean with names specifying the covariates the rule depends on.
 #'
-#' @section Current Issues:
-#' \itemize{
-#'   \item clever covariates doesn't support updates; always uses initial (necessary for iterative TMLE, e.g. stochastic intervention)
-#'   \item doesn't integrate over possible counterfactuals (necessary for stochastic intervention)
-#'   \item clever covariate gets recalculated all the time (inefficient)
-#' }
+#' @docType class
+#'
 #' @importFrom R6 R6Class
 #' @importFrom uuid UUIDgenerate
 #' @importFrom methods is
-#' @family Parameters
+#'
+#' @export
+#'
 #' @keywords data
 #'
-#' @return \code{Param_base} object
+#' @return TSP with name of the intervention specified.
 #'
-#' @format \code{\link{R6Class}} object.
+#' @format An \code{\link[R6]{R6Class}} object inheriting from
+#'  \code{\link{Param_base}}.
 #'
-#' @section Constructor:
-#'   \code{define_param(Param_TSM, observed_likelihood, intervention_list, ..., outcome_node)}
 #'
-#'   \describe{
-#'     \item{\code{observed_likelihood}}{A \code{\link{Likelihood}} corresponding to the observed likelihood
-#'     }
-#'     \item{\code{intervention_list}}{A list of objects inheriting from \code{\link{LF_base}}, representing the intervention.
-#'     }
-#'     \item{\code{...}}{Not currently used.
-#'     }
-#'     \item{\code{outcome_node}}{character, the name of the node that should be treated as the outcome
-#'     }
-#'     }
-#'
-#' @section Fields:
-#' \describe{
-#'     \item{\code{cf_likelihood}}{the counterfactual likelihood for this treatment
-#'     }
-#'     \item{\code{intervention_list}}{A list of objects inheriting from \code{\link{LF_base}}, representing the intervention
-#'     }
-#' }
-#' @export
 Param_TSM_name <- R6Class(
   classname = "Param_TSM_name",
   portable = TRUE,

@@ -45,6 +45,7 @@
 #'   individuals to benefit from treatment get treatment, if resource = 0 none get treatment. 
 #'
 #' @examples
+#' \dontrun{
 #' library(sl3)
 #' library(tmle3)
 #' library(data.table)
@@ -80,7 +81,7 @@
 #' contrast = "multiplicative", maximize = FALSE,
 #' method = "SL", complex = TRUE, realistic = FALSE
 #' )
-#'
+#'}
 
 tmle3_Spec_mopttx_vim <- R6Class(
   classname = "tmle3_Spec_mopttx_vim",

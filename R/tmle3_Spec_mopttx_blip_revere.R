@@ -41,6 +41,7 @@
 #'   individuals to benefit from treatment get treatment, if resource = 0 none get treatment. 
 #'
 #' @examples
+#' \dontrun{
 #' library(sl3)
 #' library(tmle3)
 #' library(data.table)
@@ -66,7 +67,7 @@
 #'   type = "blip1", learners = learner_list, maximize = TRUE,
 #'   complex = TRUE, realistic = TRUE
 #' )
-#'
+#'}
 #' 
 tmle3_Spec_mopttx_blip_revere <- R6Class(
   classname = "tmle3_Spec_mopttx_blip_revere",

@@ -4,7 +4,7 @@
 #' using the Revere framework. Complements 'tmle3_Spec_mopttx_blip_revere' class.
 #'
 #' @docType class
-#'
+#' 
 #' @importFrom R6 R6Class
 #' @importFrom data.table data.table
 #'
@@ -21,8 +21,7 @@
 #'
 #'
 #' @section Parameters:
-#'   - \code{tmle_task}: Task object of \code{\link[keras]{tmle3}} specifying the data and
-#'   node structure.
+#'   - \code{tmle_task}: Task object specifying the data and node structure.
 #'   - \code{tmle_spec}: Spec object of \code{\link[keras]{tmle3}}. Allows for different
 #'   Specs to use the current class for learning the Optimal Rule.
 #'   - \code{likelihood}: Likelihood object of \code{\link[keras]{tmle3}}, corresponding
@@ -41,6 +40,7 @@
 #'   Work in progress.
 #'
 #' @examples
+#' \dontrun{
 #' library(sl3)
 #' library(tmle3)
 #' library(data.table)
@@ -66,7 +66,7 @@
 #'   type = "blip1", learners = learner_list, maximize = TRUE,
 #'   complex = TRUE, realistic = TRUE
 #' )
-#'
+#'}
 
 Optimal_Rule_Revere <- R6Class(
   classname = "Optimal_Rule_Revere",

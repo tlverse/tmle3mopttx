@@ -42,6 +42,7 @@ under Revere CV-TMLE. For learning the Optimal Rule, see 'Optimal_Rule_Revere' c
 }
 
 \examples{
+\dontrun{
 library(sl3)
 library(tmle3)
 library(data.table)
@@ -67,9 +68,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
   type = "blip1", learners = learner_list, maximize = TRUE,
   complex = TRUE, realistic = TRUE
 )
+}
 
-fit <- tmle3(tmle_spec, data, node_list, learner_list)
-fit$summary
 }
 \keyword{data}
 \section{Super class}{
@@ -86,6 +86,8 @@ fit$summary
 \item \href{#method-set_opt}{\code{tmle3_Spec_mopttx_blip_revere$set_opt()}}
 \item \href{#method-set_rule}{\code{tmle3_Spec_mopttx_blip_revere$set_rule()}}
 \item \href{#method-data_adapt_psi}{\code{tmle3_Spec_mopttx_blip_revere$data_adapt_psi()}}
+\item \href{#method-get_blip_fit}{\code{tmle3_Spec_mopttx_blip_revere$get_blip_fit()}}
+\item \href{#method-get_blip_pred}{\code{tmle3_Spec_mopttx_blip_revere$get_blip_pred()}}
 \item \href{#method-make_params}{\code{tmle3_Spec_mopttx_blip_revere$make_params()}}
 \item \href{#method-clone}{\code{tmle3_Spec_mopttx_blip_revere$clone()}}
 }
@@ -178,6 +180,24 @@ fit$summary
 \subsection{Method \code{data_adapt_psi()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$data_adapt_psi(data_tda, node_list, Qbar0)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_blip_fit"></a>}}
+\if{latex}{\out{\hypertarget{method-get_blip_fit}{}}}
+\subsection{Method \code{get_blip_fit()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$get_blip_fit()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_blip_pred"></a>}}
+\if{latex}{\out{\hypertarget{method-get_blip_pred}{}}}
+\subsection{Method \code{get_blip_pred()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$get_blip_pred(tmle_task, fold_number = "full")}\if{html}{\out{</div>}}
 }
 
 }

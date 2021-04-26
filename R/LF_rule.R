@@ -1,38 +1,23 @@
 #' Dynamic Likelihood Factor
 #'
+#' Dynamic Likelihood Factor build on top of LF_base.
+#'
+#' @docType class
+#'
 #' @importFrom R6 R6Class
 #' @importFrom uuid UUIDgenerate
 #' @importFrom methods is
-#' @family Likelihood objects
+#' 
+#' @export
+#'
 #' @keywords data
 #'
-#' @return \code{LF_base} object
+#' @return \code{\link{LF_base}} object. 
 #'
-#' @format \code{\link{R6Class}} object.
+#' @format An \code{\link[R6]{R6Class}} object inheriting from
+#'  \code{\link{LF_base}}.
 #'
-#' @section Constructor:
-#'   \code{define_lf(LF_static, name, type, value, ...)}
 #'
-#'   \describe{
-#'     \item{\code{name}}{character, the name of the factor. Should match a node name
-#'     in the nodes specified by tmle3_Task.}
-#'
-#'     \item{\code{type}}{character, either 'density', for conditional density or, 'mean' for conditional mean
-#'     }
-#'     \item{\code{value}}{the static value
-#'     }
-#'     \item{\code{...}}{Not currently used.
-#'     }
-#'     }
-#'
-#' @section Fields:
-#' \describe{
-#'     \item{\code{value}}{the static value.}
-#'     }
-
-#'
-#' @export
-
 LF_rule <- R6Class(
   classname = "LF_rule", portable = TRUE, class = TRUE,
   inherit = LF_base, public = list(

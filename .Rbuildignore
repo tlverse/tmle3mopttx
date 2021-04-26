@@ -17,7 +17,8 @@ xgboost.model
 deploy.sh
 ^sandbox$
 ^Simulations$
-^vignette$
+^extra_vignettes$
+^sandbox$
 ^docs$
 ^README\.Rmd$
 ^README\.utf8.md$

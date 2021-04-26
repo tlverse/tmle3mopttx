@@ -19,8 +19,7 @@ using the Revere framework. Complements 'tmle3_Spec_mopttx_blip_revere' class.
 }
 \section{Parameters}{
 
-  - \code{tmle_task}: Task object of \code{\link[keras]{tmle3}} specifying the data and
-  node structure.
+  - \code{tmle_task}: Task object specifying the data and node structure.
   - \code{tmle_spec}: Spec object of \code{\link[keras]{tmle3}}. Allows for different
   Specs to use the current class for learning the Optimal Rule.
   - \code{likelihood}: Likelihood object of \code{\link[keras]{tmle3}}, corresponding
@@ -40,6 +39,7 @@ using the Revere framework. Complements 'tmle3_Spec_mopttx_blip_revere' class.
 }
 
 \examples{
+\dontrun{
 library(sl3)
 library(tmle3)
 library(data.table)
@@ -65,9 +65,7 @@ tmle_spec <- tmle3_mopttx_blip_revere(
   type = "blip1", learners = learner_list, maximize = TRUE,
   complex = TRUE, realistic = TRUE
 )
-
-fit <- tmle3(tmle_spec, data, node_list, learner_list)
-fit$summary
+}
 }
 \keyword{data}
 \section{Super class}{

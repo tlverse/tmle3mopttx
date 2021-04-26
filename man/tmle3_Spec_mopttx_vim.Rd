@@ -45,6 +45,7 @@ the Optimal Rule, see 'Optimal_Rule_Revere' class.
 }
 
 \examples{
+\dontrun{
 library(sl3)
 library(tmle3)
 library(data.table)
@@ -80,13 +81,7 @@ V = "W3", learners = learner_list, type = "blip2",
 contrast = "multiplicative", maximize = FALSE,
 method = "SL", complex = TRUE, realistic = FALSE
 )
-
-vim_results <- tmle3_vim(tmle_spec, data,
-node_list = node_list, learner_list,
-adjust_for_other_A = TRUE)
-
-vim_results
-
+}
 }
 \keyword{data}
 \section{Super classes}{
@@ -110,6 +105,8 @@ vim_results
 \item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_targeted_likelihood">}\href{../../tmle3/html/tmle3_Spec.html#method-make_targeted_likelihood}{\code{tmle3::tmle3_Spec$make_targeted_likelihood()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_updater">}\href{../../tmle3/html/tmle3_Spec.html#method-make_updater}{\code{tmle3::tmle3_Spec$make_updater()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="data_adapt_psi">}\href{../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-data_adapt_psi}{\code{tmle3mopttx::tmle3_Spec_mopttx_blip_revere$data_adapt_psi()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="get_blip_fit">}\href{../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-get_blip_fit}{\code{tmle3mopttx::tmle3_Spec_mopttx_blip_revere$get_blip_fit()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="get_blip_pred">}\href{../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-get_blip_pred}{\code{tmle3mopttx::tmle3_Spec_mopttx_blip_revere$get_blip_pred()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="make_est_fin">}\href{../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-make_est_fin}{\code{tmle3mopttx::tmle3_Spec_mopttx_blip_revere$make_est_fin()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="make_rules">}\href{../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-make_rules}{\code{tmle3mopttx::tmle3_Spec_mopttx_blip_revere$make_rules()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="predict_rule">}\href{../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-predict_rule}{\code{tmle3mopttx::tmle3_Spec_mopttx_blip_revere$predict_rule()}}\out{</span>}

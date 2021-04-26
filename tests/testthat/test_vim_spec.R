@@ -10,36 +10,35 @@ set.seed(1234)
 
 data("data_cat_vim")
 data <- data_cat_vim
-xgboost_100 <- Lrnr_xgboost$new(nrounds = 100)
-xgboost_500 <- Lrnr_xgboost$new(nrounds = 500)
+xgboost_10 <- Lrnr_xgboost$new(nrounds = 10)
+xgboost_50 <- Lrnr_xgboost$new(nrounds = 50)
 lrn1 <- Lrnr_mean$new()
 lrn2 <- Lrnr_glm_fast$new()
-lrn3 <- Lrnr_glmnet$new()
 
 Q_learner <- Lrnr_sl$new(
-  learners = list(lrn1, lrn2, lrn3),
+  learners = list(lrn1, lrn2),
   metalearner = Lrnr_nnls$new()
 )
 
 mn_metalearner <- make_learner(Lrnr_solnp,
-  loss_function = loss_loglik_multinomial,
-  learner_function = metalearner_linear_multinomial
+                               loss_function = loss_loglik_multinomial,
+                               learner_function = metalearner_linear_multinomial
 )
-g_learner <- make_learner(Lrnr_sl, list(lrn3, xgboost_100, lrn1), mn_metalearner)
+g_learner <- make_learner(Lrnr_sl, list(xgboost_10, xgboost_50, lrn1), mn_metalearner)
 
 # Define the Blip learner, which is a multivariate learner:
-learners <- list(lrn1, lrn2)
+learners <- list(lrn1, xgboost_10, xgboost_50)
 b_learner <- create_mv_learners(learners = learners)
 
 learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
 
 # Define nodes:
-node_list <- list(W = c("W2", "W3", "W4"), A = c("A", "W1"), Y = "Y")
+node_list <- list(W = c("W2"), A = c("A", "W1"), Y = "Y")
 data$A <- as.integer(data$A)
 
 test_that("Categorical rule, Variable Importance", {
   tmle_spec <- tmle3_mopttx_vim(
-    V = "W3", learners = learner_list, type = "blip2",
+    V = "W2", learners = learner_list, type = "blip2",
     contrast = "multiplicative",
     maximize = FALSE,
     method = "SL", complex = TRUE, realistic = FALSE
@@ -50,7 +49,7 @@ test_that("Categorical rule, Variable Importance", {
     adjust_for_other_A = TRUE
   )
 
-  expect_equal(vim_results$tmle_est[1], -0.2955736, tolerance = 0.2)
+  expect_equal(vim_results$tmle_est[1], -0.2955736, tolerance = 0.3)
 })
 
 # tmle_task <- tmle_spec_opttx$make_tmle_task(data, node_list)
