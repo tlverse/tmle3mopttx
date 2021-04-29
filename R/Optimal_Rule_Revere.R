@@ -326,6 +326,9 @@ Optimal_Rule_Revere <- R6Class(
         
         rank_df <- rank_df[order(rank_df[,1],decreasing=FALSE),]
         
+        if(is.factor(A_vals)){
+          A_vals <- factor(A_vals, ordered = TRUE)
+        }
         rule_preds_resource <- rule_preds
         rule_preds_resource[!(rank_df$id %in% get_A_id)] <- min(A_vals[rule_preds])
       }else{
