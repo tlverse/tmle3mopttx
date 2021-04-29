@@ -309,7 +309,7 @@ Optimal_Rule_Revere <- R6Class(
       rule_preds <- A_vals[rule_preds]
       
       #Allow resource constrain only on binary treatment for now
-      if(length(A_vals) == 2){
+      if(length(A_vals) == 2 & resource < 1){
         #TO DO: Note that this doesn't really allow us to rank blip < 0
         max_preds <-apply(blip_preds, 1, max) 
         rank_df <- data.table("id" = c(1:length(max_preds)), 
