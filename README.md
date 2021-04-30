@@ -7,7 +7,7 @@ R/`tmle3mopttx`
 
 > Targeted Learning and Variable Importance with Optimal Individualized Categorical Treatment
 
-**Authors:** [Ivana Malenica](https://github.com/podTockom), [Jeremy R. Coyle](https://github.com/jeremyrcoyle) and [Mark J. van der Laan](https://vanderlaan-lab.org/)
+**Authors:** [Ivana Malenica](https://github.com/imalenica), [Jeremy R. Coyle](https://github.com/jeremyrcoyle) and [Mark J. van der Laan](https://vanderlaan-lab.org/)
 
 Description
 -----------
