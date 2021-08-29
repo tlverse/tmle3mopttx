@@ -2,14 +2,14 @@
 % Please edit documentation in R/tmle3_Spec_mopttx_Q.R
 \name{tmle3_Spec_mopttx_Q}
 \alias{tmle3_Spec_mopttx_Q}
-\title{Defines the Mean Under the Optimal Individualized Rule with Categorical Treatment,
-estimated using Q learning (single step).}
+\title{Defines the Mean Under the Optimal Individualized Rule with Categorical
+Treatment, estimated using Q learning (single step)}
 \description{
-Defines the Mean Under the Optimal Individualized Rule with Categorical Treatment,
-estimated using Q learning (single step).
+Defines the Mean Under the Optimal Individualized Rule with Categorical
+Treatment, estimated using Q learning (single step)
 
-Defines the Mean Under the Optimal Individualized Rule with Categorical Treatment,
-estimated using Q learning (single step).
+Defines the Mean Under the Optimal Individualized Rule with Categorical
+Treatment, estimated using Q learning (single step)
 }
 \section{Super class}{
 \code{\link[tmle3:tmle3_Spec]{tmle3::tmle3_Spec}} -> \code{tmle3_Spec_mopttx_Q}

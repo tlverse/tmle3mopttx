@@ -6,13 +6,13 @@
 \title{TMLE for the Mean Under the Optimal Individualized Rule}
 \format{
 An \code{\link[R6]{R6Class}} object inheriting from
- \code{\link{tmle3_Spec}}.
+ \code{\link[tmle3]{tmle3_Spec}}.
 }
 \value{
-A tmle3 object inheriting from \code{\link{tmle3_Spec}} with
+A \code{tmle3} object inheriting from \code{\link[tmle3]{tmle3_Spec}} with
 methods for obtaining the TMLE for the Mean Under the Optimal Individualized Rule.
 For a full list of the available  functionality, see the complete documentation of
-\code{\link{tmle3_Spec}}.
+\code{\link[tmle3]{tmle3_Spec}}.
 }
 \description{
 The functions contained in the class define a TMLE for the Mean Under
@@ -69,7 +69,6 @@ tmle_spec <- tmle3_mopttx_blip_revere(
   complex = TRUE, realistic = TRUE
 )
 }
-
 }
 \keyword{data}
 \section{Super class}{

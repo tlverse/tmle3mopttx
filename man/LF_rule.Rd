@@ -9,10 +9,10 @@ An \code{\link[R6]{R6Class}} object inheriting from
  \code{\link{LF_base}}.
 }
 \value{
-\code{\link{LF_base}} object.
+\code{\link[tmle3]{LF_base}} object.
 }
 \description{
-Dynamic Likelihood Factor build on top of LF_base.
+Dynamic Likelihood Factor built on top of \code{\link[tmle3]{LF_base}}.
 }
 \keyword{data}
 \section{Super class}{

@@ -1,8 +1,8 @@
 #' Variable Importance with the Mean Under the Optimal Individualized Rule
 #'
 #' The functions contained in the class define a Variable Importance
-#' metric for the TMLE of the Mean Under the Optimal Individualized Rule with 
-#' Categorical Treatment, learned and estimated under Revere CV-TMLE. For learning 
+#' metric for the TMLE of the Mean Under the Optimal Individualized Rule with
+#' Categorical Treatment, learned and estimated under Revere CV-TMLE. For learning
 #' the Optimal Rule, see 'Optimal_Rule_Revere' class.
 #'
 #' @docType class
@@ -13,13 +13,13 @@
 #'
 #' @keywords data
 #'
-#' @return A tmle3 object inheriting from \code{\link{tmle3_Spec}} with
-#' methods for obtaining the Variable Importance metric for the TMLE of the 
-#' Mean Under the Optimal Individualized Rule. For a full list of the available 
-#' functionality, see the complete documentation of \code{\link{tmle3_Spec}}.
+#' @return A tmle3 object inheriting from \code{\link[tmle3]{tmle3_Spec}} with
+#' methods for obtaining the Variable Importance metric for the TMLE of the
+#' Mean Under the Optimal Individualized Rule. For a full list of the available
+#' functionality, see the complete documentation of \code{\link[tmle3]{tmle3_Spec}}.
 #'
 #' @format An \code{\link[R6]{R6Class}} object inheriting from
-#'  \code{\link{tmle3_Spec}}.
+#'  \code{\link[tmle3]{tmle3_Spec}}.
 #'  
 #'
 #' @section Parameters:
@@ -82,7 +82,6 @@
 #' method = "SL", complex = TRUE, realistic = FALSE
 #' )
 #'}
-
 tmle3_Spec_mopttx_vim <- R6Class(
   classname = "tmle3_Spec_mopttx_vim",
   portable = TRUE,
@@ -174,7 +173,6 @@ tmle3_Spec_mopttx_vim <- R6Class(
         )
       } else if (method == "SL") {
         # Learn the rule
-        
         opt_rule <- Optimal_Rule_Revere$new(tmle_task,
           tmle_spec = self, likelihood = likelihood$initial_likelihood,
           V = V, blip_type = private$.options$type,
@@ -239,8 +237,6 @@ tmle3_Spec_mopttx_vim <- R6Class(
 #' individuals to benefit from treatment get treatment, if resource = 0 none get treatment. 
 #'
 #' @export
-#'
-
 tmle3_mopttx_vim <- function(V = NULL, type = "blip2", method = "SL", learners = NULL,
                              contrast = "linear", maximize = TRUE, complex = TRUE, realistic = FALSE,
                              resource = 1) {

@@ -6,12 +6,12 @@
 \title{Learning the Optimal Rule using the Revere framework}
 \format{
 An \code{\link[R6]{R6Class}} object inheriting from
- \code{\link{tmle3_Spec}}.
+ \code{\link[tmle3]{tmle3_Spec}}.
 }
 \value{
-A optimal rule object inheriting from \code{\link{tmle3_Spec}} with
-methods for learning the optimal rule. For a full list of the available
-functionality, see the complete documentation of \code{\link{tmle3_Spec}}.
+A optimal rule object inheriting from \code{\link[tmle3]{tmle3_Spec}}
+ with methods for learning the optimal rule. For a full list of the available
+ functionality, see the complete documentation of \code{\link[tmle3]{tmle3_Spec}}.
 }
 \description{
 Functions used to learn the Optimal Rule given a tmle_task and likelihood,

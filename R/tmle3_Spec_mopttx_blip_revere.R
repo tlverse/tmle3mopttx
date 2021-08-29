@@ -7,18 +7,19 @@
 #' @docType class
 #'
 #' @importFrom R6 R6Class
+#' @importFrom tmle3 tmle3_Spec
 #'
 #' @export
 #'
 #' @keywords data
 #'
-#' @return A tmle3 object inheriting from \code{\link{tmle3_Spec}} with
+#' @return A \code{tmle3} object inheriting from \code{\link[tmle3]{tmle3_Spec}} with
 #' methods for obtaining the TMLE for the Mean Under the Optimal Individualized Rule.
 #' For a full list of the available  functionality, see the complete documentation of
-#' \code{\link{tmle3_Spec}}.
+#' \code{\link[tmle3]{tmle3_Spec}}.
 #'
 #' @format An \code{\link[R6]{R6Class}} object inheriting from
-#'  \code{\link{tmle3_Spec}}.
+#'  \code{\link[tmle3]{tmle3_Spec}}.
 #'
 #' @section Parameters:
 #'   - \code{V}: User-specified list of covariates used to define the rule.
@@ -68,13 +69,12 @@
 #'   complex = TRUE, realistic = TRUE
 #' )
 #'}
-#' 
 tmle3_Spec_mopttx_blip_revere <- R6Class(
   classname = "tmle3_Spec_mopttx_blip_revere",
   portable = TRUE,
   class = TRUE,
   lock_objects = FALSE,
-  inherit = tmle3_Spec,
+  inherit = tmle3::tmle3_Spec,
   public = list(
     initialize = function(V = NULL, type, learners, maximize = TRUE, complex = TRUE,
                           realistic = FALSE, resource = 1, ...) {
@@ -216,19 +216,17 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 
       return(Edn = Edn)
     },
-    
+
     get_blip_fit = function(){
       blip = private$.opt
       blip_fit <- blip$blip_fit
       return(blip_fit)
     },
-    
-    get_blip_pred = function(tmle_task, fold_number = "full"){
+
+    get_blip_pred = function(tmle_task, fold_number = "full") {
       blip = private$.opt
-      
       blip_task <- blip$blip_revere_function(tmle_task, fold_number=fold_number)
       blip_preds <- blip$blip_fit$predict_fold(blip_task, fold_number)
-
       return(blip_preds)
     },
 
@@ -356,21 +354,20 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 #'
 #' @param V Covariates the rule depends on.
 #' @param type One of three psudo-blip versions developed to accommodate categorical treatment. "Blip1"
-#' corresponds to chosing a reference category, and defining the blip for all other categories relative to the
-#' specified reference. Note that in the case of binary treatment, "blip1" is just the usual blip.
-#' "Blip2$ corresponds to defining the blip relative to the average of all categories. Finally,
-#' "Blip3" corresponds to defining the blip relative to the weighted average of all categories.
+#'  corresponds to chosing a reference category, and defining the blip for all other categories relative to the
+#'  specified reference. Note that in the case of binary treatment, "blip1" is just the usual blip.
+#'  "Blip2$ corresponds to defining the blip relative to the average of all categories. Finally,
+#'  "Blip3" corresponds to defining the blip relative to the weighted average of all categories.
 #' @param learners Library for Y (outcome), A (treatment), and B (blip) estimation.
 #' @param maximize Specify whether we want to maximize or minimize the mean of the final outcome.
 #' @param complex If \code{TRUE}, learn the rule using the specified covariates \code{V}. If
-#' \code{FALSE}, check if a less complex rule is better.
+#'  \code{FALSE}, check if a less complex rule is better.
 #' @param realistic If \code{TRUE}, it will return a rule what is possible due to practical positivity constraints.
 #' @param resource Indicates the percent of initially estimated individuals who should be given treatment that
-#' get treatment, based on their blip estimate. If resource = 1 all estimated individuals to benefit from
-#' treatment get treatment, if resource = 0 none get treatment. 
-#' @export
+#'  get treatment, based on their blip estimate. If resource = 1 all estimated individuals to benefit from
+#'  treatment get treatment, if resource = 0 none get treatment.
 #'
-
+#' @export
 tmle3_mopttx_blip_revere <- function(V = NULL, type = "blip1", learners, maximize = TRUE,
                                      complex = TRUE, realistic = FALSE, resource = 1) {
   tmle3_Spec_mopttx_blip_revere$new(
