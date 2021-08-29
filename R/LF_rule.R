@@ -1,26 +1,25 @@
 #' Dynamic Likelihood Factor
 #'
-#' Dynamic Likelihood Factor build on top of LF_base.
+#' Dynamic Likelihood Factor built on top of \code{\link[tmle3]{LF_base}}.
 #'
 #' @docType class
 #'
 #' @importFrom R6 R6Class
 #' @importFrom uuid UUIDgenerate
 #' @importFrom methods is
-#' 
+#' @importFrom tmle3 LF_base
+#'
 #' @export
 #'
 #' @keywords data
 #'
-#' @return \code{\link{LF_base}} object. 
+#' @return \code{\link[tmle3]{LF_base}} object.
 #'
 #' @format An \code{\link[R6]{R6Class}} object inheriting from
 #'  \code{\link{LF_base}}.
-#'
-#'
 LF_rule <- R6Class(
   classname = "LF_rule", portable = TRUE, class = TRUE,
-  inherit = LF_base, public = list(
+  inherit = tmle3::LF_base, public = list(
     initialize = function(name,
                           type = "density", rule_fun, ...) {
       super$initialize(name, ..., type = type)
@@ -33,7 +32,8 @@ LF_rule <- R6Class(
 
     get_density = function(tmle_task, fold_number) {
       observed <- tmle_task$get_tmle_node(self$name)
-      likelihood <- as.numeric(self$rule_fun(tmle_task, fold_number) == observed)
+      likelihood <- as.numeric(self$rule_fun(tmle_task,
+                                             fold_number) == observed)
 
       return(likelihood)
     },
