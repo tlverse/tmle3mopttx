@@ -6,7 +6,7 @@
 \title{Treatment Specific Mean with names specifying the covariates the rule depends on.}
 \format{
 An \code{\link[R6]{R6Class}} object inheriting from
- \code{\link{Param_base}}.
+ \code{\link[tmle3]{Param_base}}.
 }
 \value{
 TSP with name of the intervention specified.

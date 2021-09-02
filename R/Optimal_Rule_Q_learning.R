@@ -2,15 +2,14 @@
 #'
 #' @importFrom R6 R6Class
 #' @importFrom data.table data.table
+#' @importFrom tmle3 tmle3_Spec
 #'
 #' @export
-#
-
 Optimal_Rule_Q_learning <- R6Class(
   classname = "Optimal_Rule_Q_learning",
   portable = TRUE,
   class = TRUE,
-  inherit = tmle3_Spec,
+  inherit = tmle3::tmle3_Spec,
   public = list(
     initialize = function(tmle_task, likelihood, maximize = TRUE) {
       private$.tmle_task <- tmle_task
@@ -33,7 +32,8 @@ Optimal_Rule_Q_learning <- R6Class(
         # }
         A_val <- as.numeric(A_val)
         newdata <- data.table(A = A_val)
-        cf_task <- tmle_task$generate_counterfactual_task(UUIDgenerate(), new_data = newdata)
+        cf_task <- tmle_task$generate_counterfactual_task(UUIDgenerate(),
+                                                          new_data = newdata)
         return(cf_task)
       })
 
@@ -42,7 +42,8 @@ Optimal_Rule_Q_learning <- R6Class(
 
     rule = function(tmle_task, fold_number = "full") {
       # Get Q(a,W) for each level of A, all folds
-      blip_fin <- sapply(private$.cf_tasks, private$.likelihood$get_likelihood, "Y", fold_number)
+      blip_fin <- sapply(private$.cf_tasks, private$.likelihood$get_likelihood,
+                         "Y", fold_number)
 
       if (private$.maximize) {
         rule_index <- max.col(blip_fin)

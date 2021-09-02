@@ -1,16 +1,15 @@
-#' Defines the Mean Under the Optimal Individualized Rule with Categorical Treatment,
-#' estimated using Q learning (single step).
+#' Defines the Mean Under the Optimal Individualized Rule with Categorical
+#' Treatment, estimated using Q learning (single step)
 #'
 #' @importFrom R6 R6Class
+#' @importFrom tmle3 tmle3_Spec
 #'
 #' @export
-#
-
 tmle3_Spec_mopttx_Q <- R6Class(
   classname = "tmle3_Spec_mopttx_Q",
   portable = TRUE,
   class = TRUE,
-  inherit = tmle3_Spec,
+  inherit = tmle3::tmle3_Spec,
   public = list(
     initialize = function(maximize = TRUE, ...) {
       options <- list(maximize = maximize, ...)
@@ -43,7 +42,8 @@ tmle3_Spec_mopttx_Q <- R6Class(
 
     estimate = function(tmle_params, tmle_task) {
       est <- lapply(tmle_params, function(tmle_param) {
-        mean(tmle_param$cf_likelihood$get_likelihood(tmle_task = tmle_task, node = "Y"))
+        mean(tmle_param$cf_likelihood$get_likelihood(tmle_task = tmle_task,
+                                                     node = "Y"))
       })
       return(est)
     }
@@ -59,11 +59,10 @@ tmle3_Spec_mopttx_Q <- R6Class(
 #' A=Treatment (binary or categorical)
 #' Y=Outcome (binary or bounded continuous)
 #'
-#' @param maximize Specify whether we want to maximize or minimize the mean of the final outcome.
+#' @param maximize Specify whether we want to maximize or minimize the mean of
+#'  the final outcome.
 #'
 #' @export
-#'
-
 tmle3_mopttx_Q <- function(maximize) {
   tmle3_Spec_mopttx_Q$new(maximize = maximize)
 }

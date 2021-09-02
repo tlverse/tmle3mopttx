@@ -4,20 +4,21 @@
 #' using the Revere framework. Complements 'tmle3_Spec_mopttx_blip_revere' class.
 #'
 #' @docType class
-#' 
+#'
 #' @importFrom R6 R6Class
 #' @importFrom data.table data.table
+#' @importFrom tmle3 tmle3_Spec
 #'
 #' @export
 #'
 #' @keywords data
 #'
-#' @return A optimal rule object inheriting from \code{\link{tmle3_Spec}} with
-#' methods for learning the optimal rule. For a full list of the available
-#' functionality, see the complete documentation of \code{\link{tmle3_Spec}}.
+#' @return A optimal rule object inheriting from \code{\link[tmle3]{tmle3_Spec}}
+#'  with methods for learning the optimal rule. For a full list of the available
+#'  functionality, see the complete documentation of \code{\link[tmle3]{tmle3_Spec}}.
 #'
 #' @format An \code{\link[R6]{R6Class}} object inheriting from
-#'  \code{\link{tmle3_Spec}}.
+#'  \code{\link[tmle3]{tmle3_Spec}}.
 #'
 #'
 #' @section Parameters:
@@ -72,7 +73,7 @@ Optimal_Rule_Revere <- R6Class(
   classname = "Optimal_Rule_Revere",
   portable = TRUE,
   class = TRUE,
-  inherit = tmle3_Spec,
+  inherit = tmle3::tmle3_Spec,
   lock_objects = FALSE,
   public = list(
     initialize = function(tmle_task, tmle_spec, likelihood, V = NULL,
@@ -203,7 +204,6 @@ Optimal_Rule_Revere <- R6Class(
         #                               folds = tmle_task$folds)
         # }
       }
-
       return(revere_task)
     },
 
@@ -225,7 +225,7 @@ Optimal_Rule_Revere <- R6Class(
       realistic <- tmle_spec$options$realistic
       resource <- tmle_spec$options$resource
       learner_list <- tmle_spec$options$learners
-      
+
       # Edit the tmle3 task so it avoids missing values:
       if (!is.null(tmle_task$npsem$Y$censoring_node)) {
         delta <- tmle_task$npsem$Y$censoring_node$name
@@ -307,25 +307,25 @@ Optimal_Rule_Revere <- R6Class(
       rule_preds <- max.col(blip_preds)
       A_vals <- tmle_task$npsem$A$variable_type$levels
       rule_preds <- A_vals[rule_preds]
-      
+
       #Allow resource constrain only on binary treatment for now
       if(length(A_vals) == 2 & resource < 1){
         #TO DO: Note that this doesn't really allow us to rank blip < 0
-        max_preds <-apply(blip_preds, 1, max) 
-        rank_df <- data.table("id" = c(1:length(max_preds)), 
+        max_preds <-apply(blip_preds, 1, max)
+        rank_df <- data.table("id" = c(1:length(max_preds)),
                               "blip_preds" = max_preds)
         rank_df <- rank_df[order(rank_df[,2],decreasing=TRUE),]
         self$.rank <- rank_df
-        
+
         #Total to get treatment:
         A1 <- sum(rank_df$blip_preds>0)
         A1_constrain <- floor(A1 * resource)
-        
+
         get_A_id <- rank_df[1:A1_constrain, "id"]
         get_A_id <- get_A_id$id
-        
+
         rank_df <- rank_df[order(rank_df[,1],decreasing=FALSE),]
-        
+
         if(is.factor(A_vals)){
           A_vals <- factor(A_vals, ordered = TRUE)
         }
@@ -334,8 +334,6 @@ Optimal_Rule_Revere <- R6Class(
       }else{
         rule_preds_resource <- rule_preds
       }
-      
-    
       return(rule_preds_resource)
     },
 

@@ -15,10 +15,10 @@ knitr::opts_chunk$set(
 
 # R/`tmle3mopttx`
 
-[![Travis-CI Build Status](https://travis-ci.org/tlverse/tmle3mopttx.svg?branch=master)](https://travis-ci.org/tlverse/tmle3mopttx)
-[![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/tlverse/tmle3mopttx?branch=master&svg=true)](https://ci.appveyor.com/project/tlverse/tmle3mopttx)
+[![R-CMD-check](https://github.com/tlverse/tmle3mopttx/workflows/R-CMD-check/badge.svg)](https://github.com/tlverse/tmle3mopttx/actions)
 [![Coverage Status](https://codecov.io/gh/tlverse/tmle3mopttx/branch/master/graph/badge.svg)](https://codecov.io/gh/tlverse/tmle3mopttx)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
 > Targeted Learning and Variable Importance with Optimal Individualized
 > Categorical Treatment
@@ -49,8 +49,9 @@ For additional background on Targeted Learning and previous work on optimal indi
 
 ## Installation
 
-You can install the most recent _stable release_ from GitHub via [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) with:
-                                                                                              
+You can install the most recent _stable release_ from GitHub via
+[`devtools`](https://www.rstudio.com/products/rpackages/devtools/) with:
+
 ```{r tmle3mopttx-installation, eval = FALSE}
 devtools::install_github("tlverse/tmle3mopttx")
 ```

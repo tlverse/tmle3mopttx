@@ -7,7 +7,8 @@
 tmle3_mopttx_Q(maximize)
 }
 \arguments{
-\item{maximize}{Specify whether we want to maximize or minimize the mean of the final outcome.}
+\item{maximize}{Specify whether we want to maximize or minimize the mean of
+the final outcome.}
 }
 \description{
 O=(W,A,Y)
