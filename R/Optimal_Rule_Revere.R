@@ -39,6 +39,7 @@
 #'   maximize=TRUE.
 #'   - \code{shift_grid}: Grid of possible values for the stochastic optimal rule.
 #'   Work in progress.
+#'   - \code{interpret}: If \code{TRUE}, returns a HAL fit of the blip, explaining the rule.
 #'
 #' @examples
 #' \dontrun{
@@ -78,6 +79,7 @@ Optimal_Rule_Revere <- R6Class(
   public = list(
     initialize = function(tmle_task, tmle_spec, likelihood, V = NULL,
                           blip_type = "blip2", learners, maximize = TRUE,
+                          interpret = FALSE,
                           shift_grid = seq(-1, 1, by = 0.5)) {
       private$.tmle_task <- tmle_task
       private$.tmle_spec <- tmle_spec
@@ -88,6 +90,7 @@ Optimal_Rule_Revere <- R6Class(
       private$.realistic <- tmle_spec$options$realistic
       private$.resource <- tmle_spec$options$resource
       private$.shift_grid <- shift_grid
+      private$.interpret <- interpret
 
       if (missing(V)) {
         V <- tmle_task$npsem$W$variables
@@ -224,6 +227,7 @@ Optimal_Rule_Revere <- R6Class(
       complex <- tmle_spec$options$complex
       realistic <- tmle_spec$options$realistic
       resource <- tmle_spec$options$resource
+      interpret <- tmle_spec$options$interpret
       learner_list <- tmle_spec$options$learners
 
       # Edit the tmle3 task so it avoids missing values:
@@ -255,10 +259,25 @@ Optimal_Rule_Revere <- R6Class(
         tmle_task_noC <- tmle_task
       }
 
-      #HERE
       blip_revere_task <- sl3:::sl3_revere_Task$new(self$blip_revere_function, tmle_task_noC)
       blip_fit <- self$blip_library$train(blip_revere_task)
+      
+      if(interpret){
+        blip_task <- self$blip_revere_function(tmle_task, fold_number="full")
+        
+        blip_fit_interpret <- hal9001::fit_hal(
+          X = blip_task$X,
+          Y = blip_task$Y,
+          yolo = FALSE,
+          return_x_basis=TRUE, 
+          return_lasso = TRUE,
+          reduce_basis = 1/nrow(blip_task$data)
+          )
+      }else{
+        blip_fit_interpret <- NULL
+      }
       private$.blip_fit <- blip_fit
+      private$.blip_fit_interpret <- blip_fit_interpret
     },
 
     rule = function(tmle_task, fold_number = "full") {
@@ -381,6 +400,9 @@ Optimal_Rule_Revere <- R6Class(
     blip_fit = function() {
       return(private$.blip_fit)
     },
+    blip_fit_interpret = function() {
+      return(private$.blip_fit_interpret)
+    },
     blip_library = function() {
       return(private$.learners$B)
     },
@@ -401,6 +423,7 @@ Optimal_Rule_Revere <- R6Class(
     .V = NULL,
     .blip_type = NULL,
     .blip_fit = NULL,
+    .blip_fit_interpret = NULL,
     .learners = NULL,
     .maximize = NULL,
     .realistic = NULL,
@@ -409,6 +432,7 @@ Optimal_Rule_Revere <- R6Class(
     .opt_delta = NULL,
     .opt_A = NULL,
     .Q_vals = NULL,
-    .rank = NULL
+    .rank = NULL,
+    .interpret = NULL
   )
 )

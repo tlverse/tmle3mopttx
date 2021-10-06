@@ -11,7 +11,8 @@ tmle3_mopttx_blip_revere(
   maximize = TRUE,
   complex = TRUE,
   realistic = FALSE,
-  resource = 1
+  resource = 1,
+  interpret = FALSE
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ specified reference. Note that in the case of binary treatment, "blip1" is just 
 \item{resource}{Indicates the percent of initially estimated individuals who should be given treatment that
 get treatment, based on their blip estimate. If resource = 1 all estimated individuals to benefit from
 treatment get treatment, if resource = 0 none get treatment.}
+
+\item{interpret}{If \code{TRUE}, returns a HAL fit of the blip, explaining the rule.}
 }
 \description{
 O=(W,A,Y)

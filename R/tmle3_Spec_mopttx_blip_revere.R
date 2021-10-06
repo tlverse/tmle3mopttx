@@ -40,7 +40,8 @@
 #'   - \code{resource}: Indicates the percent of initially estimated individuals who should be given 
 #'   treatment that get treatment, based on their blip estimate. If resource = 1 all estimated 
 #'   individuals to benefit from treatment get treatment, if resource = 0 none get treatment. 
-#'
+#'   - \code{interpret}: If \code{TRUE}, returns a HAL fit of the blip, explaining the rule.
+#'   
 #' @examples
 #' \dontrun{
 #' library(sl3)
@@ -77,10 +78,10 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
   inherit = tmle3::tmle3_Spec,
   public = list(
     initialize = function(V = NULL, type, learners, maximize = TRUE, complex = TRUE,
-                          realistic = FALSE, resource = 1, ...) {
+                          realistic = FALSE, resource = 1, interpret = FALSE, ...) {
       options <- list(
         V = V, type = type, learners = learners, maximize = maximize, complex = complex,
-        realistic = realistic, resource = resource, ...
+        realistic = realistic, resource = resource, interpret=interpret, ...
       )
       do.call(super$initialize, options)
     },
@@ -236,6 +237,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
       max <- private$.options$maximize
       realistic <- private$.options$realistic
       resource <- private$.options$resource
+      interpret <- private$.options$interpret
 
       # If complex=TRUE, it will return JUST the learned E[Yd]
       if (complex) {
@@ -244,11 +246,15 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
           tmle_spec = self, likelihood$initial_likelihood,
           V = V, blip_type = private$.options$type,
           learners = private$.options$learners,
-          maximize = private$.options$maximize
+          maximize = private$.options$maximize,
+          interpret = private$.options$interpret
         )
 
         opt_rule$fit_blip()
         self$set_opt(opt_rule)
+        
+        # Save interpretable rule, if fit
+        private$.blip_fit_interpret <- opt_rule$blip_fit_interpret
 
         # Save the rule for each individual:
         self$set_rule(opt_rule$rule(tmle_task, "validation"))
@@ -337,11 +343,15 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
     },
     return_rule = function() {
       return(private$.rule)
+    },
+    blip_fit_interpret = function() {
+      return(summary(private$.blip_fit_interpret)$table)
     }
   ),
   private = list(
     .opt = list(),
-    .rule = NULL
+    .rule = NULL,
+    .blip_fit_interpret = NULL
   )
 )
 
@@ -366,12 +376,15 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 #' @param resource Indicates the percent of initially estimated individuals who should be given treatment that
 #'  get treatment, based on their blip estimate. If resource = 1 all estimated individuals to benefit from
 #'  treatment get treatment, if resource = 0 none get treatment.
+#' @param interpret If \code{TRUE}, returns a HAL fit of the blip, explaining the rule.  
 #'
 #' @export
 tmle3_mopttx_blip_revere <- function(V = NULL, type = "blip1", learners, maximize = TRUE,
-                                     complex = TRUE, realistic = FALSE, resource = 1) {
+                                     complex = TRUE, realistic = FALSE, resource = 1, 
+                                     interpret = FALSE) {
   tmle3_Spec_mopttx_blip_revere$new(
     V = V, type = type, learners = learners,
-    maximize = maximize, complex = complex, realistic = realistic, resource = resource
+    maximize = maximize, complex = complex, realistic = realistic, 
+    resource = resource, interpret = interpret
   )
 }

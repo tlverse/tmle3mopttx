@@ -36,6 +36,7 @@ using the Revere framework. Complements 'tmle3_Spec_mopttx_blip_revere' class.
   maximize=TRUE.
   - \code{shift_grid}: Grid of possible values for the stochastic optimal rule.
   Work in progress.
+  - \code{interpret}: If \code{TRUE}, returns a HAL fit of the blip, explaining the rule.
 }
 
 \examples{
@@ -110,6 +111,7 @@ tmle_spec <- tmle3_mopttx_blip_revere(
   blip_type = "blip2",
   learners,
   maximize = TRUE,
+  interpret = FALSE,
   shift_grid = seq(-1, 1, by = 0.5)
 )}\if{html}{\out{</div>}}
 }

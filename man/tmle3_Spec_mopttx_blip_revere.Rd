@@ -38,7 +38,8 @@ under Revere CV-TMLE. For learning the Optimal Rule, see 'Optimal_Rule_Revere' c
   probability of treatment given covariates.
   - \code{resource}: Indicates the percent of initially estimated individuals who should be given 
   treatment that get treatment, based on their blip estimate. If resource = 1 all estimated 
-  individuals to benefit from treatment get treatment, if resource = 0 none get treatment.
+  individuals to benefit from treatment get treatment, if resource = 0 none get treatment. 
+  - \code{interpret}: If \code{TRUE}, returns a HAL fit of the blip, explaining the rule.
 }
 
 \examples{
@@ -114,6 +115,7 @@ tmle_spec <- tmle3_mopttx_blip_revere(
   complex = TRUE,
   realistic = FALSE,
   resource = 1,
+  interpret = FALSE,
   ...
 )}\if{html}{\out{</div>}}
 }
