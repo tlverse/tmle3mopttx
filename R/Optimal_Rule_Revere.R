@@ -259,7 +259,8 @@ Optimal_Rule_Revere <- R6Class(
         tmle_task_noC <- tmle_task
       }
 
-      blip_revere_task <- sl3:::sl3_revere_Task$new(self$blip_revere_function, tmle_task_noC)
+      blip_revere_task <- sl3:::sl3_revere_Task$new(self$blip_revere_function, 
+                                                    tmle_task_noC)
       blip_fit <- self$blip_library$train(blip_revere_task)
       
       if(interpret){

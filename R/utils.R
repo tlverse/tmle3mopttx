@@ -31,9 +31,9 @@ create_mv_learners <- function(learners) {
   mv_learners <- lapply(learners, function(learner) sl3::make_learner(sl3::Lrnr_multivariate, learner))
   mv_stack <- sl3::make_learner(sl3::Stack, mv_learners)
 
-  mv_metalearner <- sl3::make_learner(sl3::Lrnr_solnp,
-    loss_function = sl3::loss_squared_error_multivariate,
-    learner_function = sl3::metalearner_linear_multivariate
+  mv_metalearner <- sl3::make_learner(sl3::Lrnr_solnp, tol=1e-5,
+                                      eval_function = sl3::loss_squared_error_multivariate,
+                                      learner_function = sl3::metalearner_linear_multivariate
   )
   b_learner <- sl3::make_learner(sl3::Lrnr_sl, mv_stack, mv_metalearner)
   return(mv_learner = b_learner)
