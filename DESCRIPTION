@@ -1,7 +1,7 @@
 Package: tmle3mopttx
 Title: Targeted Maximum Likelihood Estimation of the Mean under Optimal
     Individualized Treatment
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: c(
     person("Ivana", "Malenica", email = "imalenica@berkeley.edu",
            role = c("aut", "cre"),
