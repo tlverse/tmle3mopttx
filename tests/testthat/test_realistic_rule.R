@@ -21,8 +21,8 @@ Q_learner <- Lrnr_sl$new(
 )
 
 mn_metalearner <- make_learner(Lrnr_solnp,
-  loss_function = loss_loglik_multinomial,
-  learner_function = metalearner_linear_multinomial
+                               eval_function = loss_loglik_multinomial,
+                               learner_function = metalearner_linear_multinomial
 )
 g_learner <- make_learner(Lrnr_sl, list(xgboost_10, xgboost_50, lrn1), mn_metalearner)
 
