@@ -6,6 +6,7 @@ library(tmle3mopttx)
 library(tmle3)
 library(R6)
 library(uuid)
+library(hal9001)
 
 set.seed(1234)
 

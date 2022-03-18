@@ -37,7 +37,8 @@ Imports:
     future,
     dplyr,
     foreach,
-    stats
+    stats,
+    hal9001
 Suggests:
     testthat,
     knitr,
