@@ -12,7 +12,8 @@ tmle3_mopttx_blip_revere(
   complex = TRUE,
   realistic = FALSE,
   resource = 1,
-  interpret = FALSE
+  interpret = FALSE,
+  likelihood_override = NULL
 )
 }
 \arguments{
@@ -38,6 +39,8 @@ get treatment, based on their blip estimate. If resource = 1 all estimated indiv
 treatment get treatment, if resource = 0 none get treatment.}
 
 \item{interpret}{If \code{TRUE}, returns a HAL fit of the blip, explaining the rule.}
+
+\item{likelihood_override}{if estimates of the likelihood are known, override learners.}
 }
 \description{
 O=(W,A,Y)

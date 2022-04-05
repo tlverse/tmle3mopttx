@@ -80,6 +80,7 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 \itemize{
 \item \href{#method-new}{\code{tmle3_Spec_mopttx_blip_revere$new()}}
 \item \href{#method-vals_from_factor}{\code{tmle3_Spec_mopttx_blip_revere$vals_from_factor()}}
+\item \href{#method-make_initial_likelihood}{\code{tmle3_Spec_mopttx_blip_revere$make_initial_likelihood()}}
 \item \href{#method-predict_rule}{\code{tmle3_Spec_mopttx_blip_revere$predict_rule()}}
 \item \href{#method-make_rules}{\code{tmle3_Spec_mopttx_blip_revere$make_rules()}}
 \item \href{#method-make_est_fin}{\code{tmle3_Spec_mopttx_blip_revere$make_est_fin()}}
@@ -95,7 +96,6 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_initial_likelihood">}\href{../../tmle3/html/tmle3_Spec.html#method-make_initial_likelihood}{\code{tmle3::tmle3_Spec$make_initial_likelihood()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_targeted_likelihood">}\href{../../tmle3/html/tmle3_Spec.html#method-make_targeted_likelihood}{\code{tmle3::tmle3_Spec$make_targeted_likelihood()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_tmle_task">}\href{../../tmle3/html/tmle3_Spec.html#method-make_tmle_task}{\code{tmle3::tmle3_Spec$make_tmle_task()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_updater">}\href{../../tmle3/html/tmle3_Spec.html#method-make_updater}{\code{tmle3::tmle3_Spec$make_updater()}}\out{</span>}
@@ -116,6 +116,7 @@ tmle_spec <- tmle3_mopttx_blip_revere(
   realistic = FALSE,
   resource = 1,
   interpret = FALSE,
+  likelihood_override = NULL,
   ...
 )}\if{html}{\out{</div>}}
 }
@@ -127,6 +128,18 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 \subsection{Method \code{vals_from_factor()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$vals_from_factor(x)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-make_initial_likelihood"></a>}}
+\if{latex}{\out{\hypertarget{method-make_initial_likelihood}{}}}
+\subsection{Method \code{make_initial_likelihood()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$make_initial_likelihood(
+  tmle_task,
+  learner_list = NULL
+)}\if{html}{\out{</div>}}
 }
 
 }

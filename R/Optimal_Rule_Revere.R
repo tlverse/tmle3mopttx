@@ -79,7 +79,7 @@ Optimal_Rule_Revere <- R6Class(
   public = list(
     initialize = function(tmle_task, tmle_spec, likelihood, V = NULL,
                           blip_type = "blip2", learners, maximize = TRUE,
-                          interpret = FALSE,
+                          interpret = FALSE, likelihood_override=NULL,
                           shift_grid = seq(-1, 1, by = 0.5)) {
       private$.tmle_task <- tmle_task
       private$.tmle_spec <- tmle_spec
@@ -91,6 +91,7 @@ Optimal_Rule_Revere <- R6Class(
       private$.resource <- tmle_spec$options$resource
       private$.shift_grid <- shift_grid
       private$.interpret <- interpret
+      private$.likelihood_override <- likelihood_override
 
       if (missing(V)) {
         V <- tmle_task$npsem$W$variables
@@ -285,6 +286,7 @@ Optimal_Rule_Revere <- R6Class(
       realistic <- private$.realistic
       resource <- private$.resource
       likelihood <- self$likelihood
+      likelihood_override <- private$.likelihood_override
 
       # TODO: when applying the rule, we actually only need the covariates
       ### NOTE:
@@ -314,9 +316,16 @@ Optimal_Rule_Revere <- R6Class(
       if (realistic) {
 
         # Need to grab the propensity score:
-        g_learner <- likelihood$factor_list[["A"]]$learner
         g_task <- tmle_task$get_regression_task("A")
-        g_preds <- unpack_predictions(g_learner$predict(g_task))
+        
+        if(!is.null(likelihood_override)){
+          g_preds <- likelihood_override$get_likelihood(tmle_task, node="A")
+          g_preds <- unpack_predictions(g_preds)
+        }else{
+          g_learner <- likelihood$factor_list[["A"]]$learner
+          g_preds <- unpack_predictions(g_learner$predict(g_task))
+        }
+        
         min_g <- 0.05
 
         # make unrealistic rules not optimal

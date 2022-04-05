@@ -78,16 +78,31 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
   inherit = tmle3::tmle3_Spec,
   public = list(
     initialize = function(V = NULL, type, learners, maximize = TRUE, complex = TRUE,
-                          realistic = FALSE, resource = 1, interpret = FALSE, ...) {
+                          realistic = FALSE, resource = 1, interpret = FALSE, 
+                          likelihood_override=NULL, ...) {
       options <- list(
         V = V, type = type, learners = learners, maximize = maximize, complex = complex,
-        realistic = realistic, resource = resource, interpret=interpret, ...
+        realistic = realistic, resource = resource, interpret=interpret, 
+        likelihood_override=likelihood_override, ...
       )
       do.call(super$initialize, options)
     },
 
     vals_from_factor = function(x) {
       sort(unique(x))
+    },
+    
+    #Edited to support known likelihoods
+    make_initial_likelihood = function(tmle_task, learner_list = NULL) {
+      # produce trained likelihood when likelihood_def provided
+      
+      if (!is.null(self$options$likelihood_override)) {
+        likelihood <- self$options$likelihood_override$train(tmle_task)
+      } else {
+        likelihood <- point_tx_likelihood(tmle_task, learner_list)
+      }
+      
+      return(likelihood)
     },
 
     ### Function for predicting the rule for a new dataset
@@ -238,6 +253,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
       realistic <- private$.options$realistic
       resource <- private$.options$resource
       interpret <- private$.options$interpret
+      likelihood_override <- private$.options$likelihood_override
 
       # If complex=TRUE, it will return JUST the learned E[Yd]
       if (complex) {
@@ -247,7 +263,8 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
           V = V, blip_type = private$.options$type,
           learners = private$.options$learners,
           maximize = private$.options$maximize,
-          interpret = private$.options$interpret
+          interpret = private$.options$interpret, 
+          likelihood_override = private$.options$likelihood_override
         )
 
         opt_rule$fit_blip()
@@ -377,14 +394,16 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 #'  get treatment, based on their blip estimate. If resource = 1 all estimated individuals to benefit from
 #'  treatment get treatment, if resource = 0 none get treatment.
 #' @param interpret If \code{TRUE}, returns a HAL fit of the blip, explaining the rule.  
+#' @param likelihood_override if estimates of the likelihood are known, override learners.
 #'
 #' @export
 tmle3_mopttx_blip_revere <- function(V = NULL, type = "blip1", learners, maximize = TRUE,
                                      complex = TRUE, realistic = FALSE, resource = 1, 
-                                     interpret = FALSE) {
+                                     interpret = FALSE, likelihood_override=NULL) {
   tmle3_Spec_mopttx_blip_revere$new(
     V = V, type = type, learners = learners,
     maximize = maximize, complex = complex, realistic = realistic, 
-    resource = resource, interpret = interpret
+    resource = resource, interpret = interpret, 
+    likelihood_override=likelihood_override
   )
 }

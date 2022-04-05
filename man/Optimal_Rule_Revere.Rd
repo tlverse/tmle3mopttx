@@ -112,6 +112,7 @@ tmle_spec <- tmle3_mopttx_blip_revere(
   learners,
   maximize = TRUE,
   interpret = FALSE,
+  likelihood_override = NULL,
   shift_grid = seq(-1, 1, by = 0.5)
 )}\if{html}{\out{</div>}}
 }
