@@ -266,10 +266,11 @@ Optimal_Rule_Revere <- R6Class(
       
       if(interpret){
         blip_task <- self$blip_revere_function(tmle_task, fold_number="full")
+        preds <- blip_fit$predict(blip_task)
         
         blip_fit_interpret <- hal9001::fit_hal(
           X = blip_task$X,
-          Y = blip_task$Y,
+          Y = preds,
           yolo = FALSE,
           return_x_basis=TRUE, 
           return_lasso = TRUE,
@@ -278,6 +279,7 @@ Optimal_Rule_Revere <- R6Class(
       }else{
         blip_fit_interpret <- NULL
       }
+      
       private$.blip_fit <- blip_fit
       private$.blip_fit_interpret <- blip_fit_interpret
     },

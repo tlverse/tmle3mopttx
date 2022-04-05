@@ -26,9 +26,11 @@ glib <- make_learner_stack(
   "Lrnr_xgboost"
 )
 
-blib <- make_learner_stack(
-  list("Lrnr_hal9001",
-       reduce_basis = 1/sqrt(nrow(data))))
+blib <- qlib
+
+#blib <- make_learner_stack(
+#  list("Lrnr_hal9001",
+#       reduce_basis = 1/sqrt(nrow(data))))
 
 metalearner <- make_learner(Lrnr_nnls)
 Q_learner <- make_learner(Lrnr_sl, qlib, metalearner)
