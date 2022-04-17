@@ -275,18 +275,25 @@ Optimal_Rule_Revere <- R6Class(
     },
     
     rule = function(tmle_task, fold_number = "full") {
+      
+      #Get paramaters
       realistic <- private$.realistic
       resource <- private$.resource
       likelihood <- self$likelihood
       likelihood_override <- private$.likelihood_override
       
-      # TODO: when applying the rule, we actually only need the covariates
+      #Get A values
+      A_vals <- tmle_task$npsem$A$variable_type$levels
+      
       ### NOTE:
       # If there is missing outcome, this will return rules for ALL values.
       # This is ok- we don't have missing Ws or As, just Ys (hence, we can get a predicted value).
       # This outputs a warning, but that's ok.
       blip_task <- self$blip_revere_function(tmle_task, fold_number)
       blip_preds <- self$blip_fit$predict_fold(blip_task, fold_number)
+      
+      #Get dimensions
+      n <- nrow(tmle_task$data)
       
       # Type of pseudo-blip:
       blip_type <- self$blip_type
@@ -301,7 +308,7 @@ Optimal_Rule_Revere <- R6Class(
       }
       
       # add an extra 0 column for blip1 so that there's always one column per A level
-      if (blip_type == "blip1") {
+      if ((blip_type == "blip1") & length(A_vals)==2) {
         blip_preds <- cbind(0, blip_preds)
       }
       
@@ -326,55 +333,89 @@ Optimal_Rule_Revere <- R6Class(
       }
       
       rule_preds <- max.col(blip_preds)
-      A_vals <- tmle_task$npsem$A$variable_type$levels
       rule_preds <- A_vals[rule_preds]
+      
+      #User can put resource=1 for binary rule
+      if( (length(resource)<length(A_vals)) ){
+        resource <- c( rep(1,length(A_vals)-length(resource)) ,resource)
+      }
       
       #General resource constraint:
       if(sum(resource)<length(A_vals)){
         
-        #User can put resource=1 for binary rule
-        if(length(resource)<length(A_vals)){
-          resource <- rep(resource,length(A_vals))
-        }
-        
         #Start with the constraint:
+        resource_inter <- cbind.data.frame(A_vals=seq(A_vals),
+                                           resource=resource,
+                                           n=resource*n)
+        resource_inter <- resource_inter[order(resource_inter$resource,
+                                               decreasing = FALSE),]
         
+        #Add ids and rules to blips:
+        blip_preds_inter <- cbind.data.frame(id=seq(n),
+                                             blip_preds)
         
-        max_preds <-apply(blip_preds, 1, max)
-        
-        
-      }
-      
-      #Allow resource constrain only on binary treatment for now
-      if(length(A_vals) == 2 & resource < 1){
-        #TO DO: Note that this doesn't really allow us to rank blip < 0
-        max_preds <-apply(blip_preds, 1, max)
-        rank_df <- data.table("id" = c(1:length(max_preds)),
-                              "blip_preds" = max_preds)
-        rank_df <- rank_df[order(rank_df[,2],decreasing=TRUE),]
-        self$.rank <- rank_df
-        
-        #Total to get treatment:
-        A1 <- sum(rank_df$blip_preds>0)
-        A1_constrain <- floor(A1 * resource)
-        
-        get_A_id <- rank_df[1:A1_constrain, "id"]
-        get_A_id <- get_A_id$id
-        
-        rank_df <- rank_df[order(rank_df[,1],decreasing=FALSE),]
-        
-        if(is.factor(A_vals)){
-          A_vals <- factor(A_vals, ordered = TRUE)
+        for(i in 1:nrow(resource_inter)){
+          inter <- blip_preds_inter
+          
+          #Start with A that has the most constraints
+          A_val <- resource_inter[i,"A_vals"]
+          
+          #Order blips of current A_val
+          inter <- inter[order(inter[,(A_val+1)],decreasing = TRUE),]
+          
+          #Get the current rule
+          rule_preds_inter <- max.col(inter[,-1]) #without id
+          rule_preds_inter <- cbind.data.frame(id=inter$id,
+                                               rule=(rule_preds_inter==A_val))
+          rule_preds_inter     <- rule_preds_inter[rule_preds_inter$rule==TRUE,]
+          rule_preds_inter$seq <- seq(1:nrow(rule_preds_inter)) 
+          
+          inter$seq <- rule_preds_inter[match(inter$id, rule_preds_inter$id),"seq"]
+          
+          max_num_A <- max(rule_preds_inter$seq)
+          if(max_num_A>resource_inter[i,"n"]){
+            inter[(inter$seq>resource_inter[i,"n"] & !is.na(inter$seq)),(A_val+1)] <- -Inf
+          }
+          blip_preds_inter <- inter[,-ncol(inter)]
         }
-        rule_preds_resource <- rule_preds
-        rule_preds_resource[!(rank_df$id %in% get_A_id)] <- min(A_vals[rule_preds])
+        
+        blip_preds_inter <- blip_preds_inter[order(blip_preds_inter$id,decreasing = FALSE),]
+        blip_preds_fin <- blip_preds_inter[,-1]
+        
+        rule_preds_resource <- max.col(blip_preds_fin)
+        rule_preds_resource <- A_vals[rule_preds_resource]
+        
       }else{
         rule_preds_resource <- rule_preds
       }
-      
-      
-      
-      
+    
+    
+      #Allow resource constrain only on binary treatment for now
+      #if(length(A_vals) == 2 & resource < 1){
+      #  #TO DO: Note that this doesn't really allow us to rank blip < 0
+      #  max_preds <-apply(blip_preds, 1, max)
+      #  rank_df <- data.table("id" = c(1:length(max_preds)),
+      #                        "blip_preds" = max_preds)
+      #  rank_df <- rank_df[order(rank_df[,2],decreasing=TRUE),]
+      #  self$.rank <- rank_df
+        
+        #Total to get treatment:
+      #  A1 <- sum(rank_df$blip_preds>0)
+      #  A1_constrain <- floor(A1 * resource)
+        
+      #  get_A_id <- rank_df[1:A1_constrain, "id"]
+      #  get_A_id <- get_A_id$id
+        
+      #  rank_df <- rank_df[order(rank_df[,1],decreasing=FALSE),]
+        
+      #  if(is.factor(A_vals)){
+      #    A_vals <- factor(A_vals, ordered = TRUE)
+      #  }
+      #  rule_preds_resource <- rule_preds
+      #  rule_preds_resource[!(rank_df$id %in% get_A_id)] <- min(A_vals[rule_preds])
+      #  rule_preds <- rule_preds_resource
+      #}
+    
       return(rule_preds_resource)
     },
     
