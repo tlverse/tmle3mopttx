@@ -24,7 +24,8 @@ glib <- make_learner_stack(
 
 blib <- make_learner_stack(
   "Lrnr_glm_fast",
-  "Lrnr_xgboost"
+  "Lrnr_xgboost",
+  "Lrnr_mean"
 )
 
 metalearner <- make_learner(Lrnr_nnls)
@@ -36,24 +37,17 @@ learner_list <- list(Y = Q_learner, A = g_learner, B = b_learner)
 # Define nodes:
 node_list <- list(W = c("W1", "W2", "W3"), A = "A", Y = "Y")
 
-# Initialize a tmle specification
-#tmle_spec <- tmle3_mopttx_blip_revere(
-#  V = c("W1", "W2", "W3"), type = "blip1",
-#  learners = learner_list,
-#  maximize = TRUE, complex = TRUE, realistic = FALSE, resource=1
-#)
-
 tmle_spec_resource <- tmle3_mopttx_blip_revere(
   V = c("W1", "W2", "W3"), type = "blip1",
   learners = learner_list,
   maximize = TRUE, complex = TRUE, realistic = FALSE, resource=0.9
 )
 
-# tmle_task <- tmle_spec$make_tmle_task(data, node_list)
-# initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task, learner_list)
-# updater <- tmle_spec$make_updater()
-# targeted_likelihood <- tmle_spec$make_targeted_likelihood(initial_likelihood, updater)
-# tmle_params <- tmle_spec$make_params(tmle_task, likelihood=targeted_likelihood)
+# tmle_task <- tmle_spec_resource$make_tmle_task(data, node_list)
+# initial_likelihood <- tmle_spec_resource$make_initial_likelihood(tmle_task, learner_list)
+# updater <- tmle_spec_resource$make_updater()
+# targeted_likelihood <- tmle_spec_resource$make_targeted_likelihood(initial_likelihood, updater)
+# tmle_params <- tmle_spec_resource$make_params(tmle_task, likelihood=targeted_likelihood)
 # fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, updater)
 
 # Fit the estimator

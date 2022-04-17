@@ -26,17 +26,7 @@ using the Revere framework. Complements 'tmle3_Spec_mopttx_blip_revere' class.
   to the current estimate of the required parts of the likelihood necessary for the target
   parameter.
   - \code{V}: User-specified list of covariates used to define the rule.
-  - \code{blip_type}: Blip type, corresponding to different ways of defining the
-  reference category in learning the blip; mostly applies to categorical treatment.
-  Available categories include "blip1" (reference level of treatment), "blip2"
-  (average level of treatment) and "blip3" (weighted average level of treatment).
-  - \code{learners}: List of user-defined learners for relevant parts of the
-  likelihood.
-  - \code{maximize}: Should the average outcome be maximized of minimized? Default is
-  maximize=TRUE.
-  - \code{shift_grid}: Grid of possible values for the stochastic optimal rule.
-  Work in progress.
-  - \code{interpret}: If \code{TRUE}, returns a HAL fit of the blip, explaining the rule.
+  - \code{options}: Information on all the variables passed to the original Spec.
 }
 
 \examples{
@@ -107,12 +97,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
   tmle_task,
   tmle_spec,
   likelihood,
-  V = NULL,
-  blip_type = "blip2",
-  learners,
-  maximize = TRUE,
-  interpret = FALSE,
-  likelihood_override = NULL,
+  V,
+  options,
   shift_grid = seq(-1, 1, by = 0.5)
 )}\if{html}{\out{</div>}}
 }

@@ -29,17 +29,7 @@
 #'   to the current estimate of the required parts of the likelihood necessary for the target
 #'   parameter.
 #'   - \code{V}: User-specified list of covariates used to define the rule.
-#'   - \code{blip_type}: Blip type, corresponding to different ways of defining the
-#'   reference category in learning the blip; mostly applies to categorical treatment.
-#'   Available categories include "blip1" (reference level of treatment), "blip2"
-#'   (average level of treatment) and "blip3" (weighted average level of treatment).
-#'   - \code{learners}: List of user-defined learners for relevant parts of the
-#'   likelihood.
-#'   - \code{maximize}: Should the average outcome be maximized of minimized? Default is
-#'   maximize=TRUE.
-#'   - \code{shift_grid}: Grid of possible values for the stochastic optimal rule.
-#'   Work in progress.
-#'   - \code{interpret}: If \code{TRUE}, returns a HAL fit of the blip, explaining the rule.
+#'   - \code{options}: Information on all the variables passed to the original Spec. 
 #'
 #' @examples
 #' \dontrun{
@@ -77,22 +67,36 @@ Optimal_Rule_Revere <- R6Class(
   inherit = tmle3::tmle3_Spec,
   lock_objects = FALSE,
   public = list(
-    initialize = function(tmle_task, tmle_spec, likelihood, V = NULL,
-                          blip_type = "blip2", learners, maximize = TRUE,
-                          interpret = FALSE, likelihood_override=NULL,
+    initialize = function(tmle_task, tmle_spec, likelihood, V, options,
                           shift_grid = seq(-1, 1, by = 0.5)) {
       private$.tmle_task <- tmle_task
       private$.tmle_spec <- tmle_spec
       private$.likelihood <- likelihood
-      private$.blip_type <- blip_type
-      private$.learners <- learners
-      private$.maximize <- maximize
-      private$.realistic <- tmle_spec$options$realistic
-      private$.resource <- tmle_spec$options$resource
+      private$.blip_type <- options$type
+      private$.learners <- options$learners
+      private$.maximize <- options$maximize
+      private$.realistic <- options$realistic
+      private$.resource <- options$resource
+      private$.interpret <- options$interpret
+      private$.likelihood_override <- options$likelihood_override
+      private$.reference <- options$reference
       private$.shift_grid <- shift_grid
-      private$.interpret <- interpret
-      private$.likelihood_override <- likelihood_override
-
+      
+      A_vals <- private$.tmle_task$npsem$A$variable_type$levels
+     
+      #If binary A, force blip1
+      if(length(A_vals)==2){
+        private$.blip_type <- "blip1"
+      }
+      
+      #Pick reference as the smallest category, if not assigned
+      if(is.null(private$.reference) & private$.blip_type=="blip1"){
+        if(is.factor(A_vals)){
+          A_vals <- as.numeric(levels(A_vals))[A_vals]
+        }
+        private$.reference <- min(A_vals)
+      }
+      
       if (missing(V)) {
         V <- tmle_task$npsem$W$variables
       }
@@ -117,8 +121,10 @@ Optimal_Rule_Revere <- R6Class(
     },
 
     blip_revere_function = function(tmle_task, fold_number) {
+      #Grab parameters:
       likelihood <- self$likelihood
       A_vals <- tmle_task$npsem$A$variable_type$levels
+      ref <- which(A_vals  %in% private$.reference)
       V <- self$V
 
       # Generate counterfactual tasks for each value of A:
@@ -150,9 +156,18 @@ Optimal_Rule_Revere <- R6Class(
       # If there are missing values in Y,
       # Blip outcomes will have missing values as well
       if (blip_type == "blip1") {
-        blip <- DR[, 2] - DR[, 1]
+        vals <- seq(A_vals)
+        blip <- lapply(vals,function(val){DR[, val] - DR[, ref]})
+        blip <- do.call(cbind,blip)
+        colnames(blip) <- paste(A_vals)
+        
+        #Correct for binary A
+        if(length(vals)==2){
+          blip <- rowSums(blip)
+        }
       } else if (blip_type == "blip2") {
         blip <- DR - rowMeans(DR)
+        colnames(blip) <- paste0("A=",A_vals)
       } else if (blip_type == "blip3") {
         blip <- DR - (rowMeans(DR) * g_vals)
       }
@@ -170,20 +185,6 @@ Optimal_Rule_Revere <- R6Class(
           folds = tmle_task$folds
         )
 
-        # Drop censored values:
-        # if(!is.null(tmle_task$npsem$Y$censoring_node)){
-        #  delta<-tmle_task$npsem$Y$censoring_node$name
-        #  observed <- tmle_task$get_tmle_node(delta)
-        #
-        #  data <- data[observed,]
-        #  folds <- sl3::subset_folds(tmle_task$folds,which(observed))
-        #
-        #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V,
-        #                               folds = folds)
-        # }else{
-        #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = V,
-        #                               folds = tmle_task$folds)
-        # }
       } else {
         V <- tmle_task$data[, self$V, with = FALSE]
         data <- data.table(V, blip = blip)
@@ -194,19 +195,6 @@ Optimal_Rule_Revere <- R6Class(
           folds = tmle_task$folds
         )
 
-        # Drop censored values:
-        # if(!is.null(tmle_task$npsem$Y$censoring_node)){
-        #  delta<-tmle_task$npsem$Y$censoring_node$name
-        #  observed <- tmle_task$get_tmle_node(delta)
-        #
-        #  data <- data[observed,]
-        #  folds <- sl3::subset_folds(tmle_task$folds,which(observed))
-        #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V,
-        #                               folds = folds)
-        # }else{
-        #  revere_task <- make_sl3_Task(data, outcome = outcomes, covariates = self$V,
-        #                               folds = tmle_task$folds)
-        # }
       }
       return(revere_task)
     },
@@ -218,6 +206,8 @@ Optimal_Rule_Revere <- R6Class(
     },
 
     fit_blip = function() {
+      
+      #Grab all parameters:
       tmle_task <- self$tmle_task
       tmle_spec <- self$tmle_spec
       likelihood <- self$likelihood
@@ -338,6 +328,22 @@ Optimal_Rule_Revere <- R6Class(
       rule_preds <- max.col(blip_preds)
       A_vals <- tmle_task$npsem$A$variable_type$levels
       rule_preds <- A_vals[rule_preds]
+      
+      #General resource constraint:
+      if(sum(resource)<length(A_vals)){
+        
+        #User can put resource=1 for binary rule
+        if(length(resource)<length(A_vals)){
+          resource <- rep(resource,length(A_vals))
+        }
+        
+        #Start with the constraint:
+        
+        
+        max_preds <-apply(blip_preds, 1, max)
+        
+        
+      }
 
       #Allow resource constrain only on binary treatment for now
       if(length(A_vals) == 2 & resource < 1){
@@ -365,16 +371,24 @@ Optimal_Rule_Revere <- R6Class(
       }else{
         rule_preds_resource <- rule_preds
       }
+      
+      
+      
+      
       return(rule_preds_resource)
     },
+    
+    
+    
+    
 
-    # TO DO: Think carefully as to how this should be done with folds.
+    # Think carefully as to how this should be done with folds.
     rule_stochastic = function(tmle_task, fold_number = "full") {
       likelihood <- self$likelihood
       shift_grid <- self$shift_grid
       A <- tmle_task$get_tmle_node("A")
 
-      # TO DO: Only supports additive shifts for now.
+      #  Only supports additive shifts for now.
       # Generate counterfactual tasks for each delta shift of A:
       cf_tasks <- lapply(shift_grid, function(shift) {
         newdata <- data.table(A = A + shift)
@@ -445,6 +459,7 @@ Optimal_Rule_Revere <- R6Class(
     .opt_A = NULL,
     .Q_vals = NULL,
     .rank = NULL,
-    .interpret = NULL
+    .interpret = NULL,
+    .reference = NULL
   )
 )

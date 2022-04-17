@@ -129,6 +129,7 @@ method = "SL", complex = TRUE, realistic = FALSE
   complex = TRUE,
   realistic = FALSE,
   resource = 1,
+  reference = NULL,
   ...
 )}\if{html}{\out{</div>}}
 }

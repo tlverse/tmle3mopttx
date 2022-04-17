@@ -13,7 +13,8 @@ tmle3_mopttx_vim(
   maximize = TRUE,
   complex = TRUE,
   realistic = FALSE,
-  resource = 1
+  resource = 1,
+  reference = NULL
 )
 }
 \arguments{
@@ -42,6 +43,8 @@ specified reference. Note that in the case of binary treatment, "blip1" is just 
 \item{resource}{Indicates the percent of initially estimated individuals who should be given 
 treatment that get treatment, based on their blip estimate. If resource = 1 all estimated 
 individuals to benefit from treatment get treatment, if resource = 0 none get treatment.}
+
+\item{reference}{reference category for blip1. Default is the smallest numerical category or factor.}
 }
 \description{
 O=(W,A,Y)

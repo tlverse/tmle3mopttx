@@ -41,6 +41,7 @@
 #'   treatment that get treatment, based on their blip estimate. If resource = 1 all estimated 
 #'   individuals to benefit from treatment get treatment, if resource = 0 none get treatment. 
 #'   - \code{interpret}: If \code{TRUE}, returns a HAL fit of the blip, explaining the rule.
+#'   - \code{reference}: reference category for blip1. Default is the smallest numerical category or factor.
 #'   
 #' @examples
 #' \dontrun{
@@ -79,11 +80,11 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
   public = list(
     initialize = function(V = NULL, type, learners, maximize = TRUE, complex = TRUE,
                           realistic = FALSE, resource = 1, interpret = FALSE, 
-                          likelihood_override=NULL, ...) {
+                          likelihood_override=NULL, reference=NULL, ...) {
       options <- list(
         V = V, type = type, learners = learners, maximize = maximize, complex = complex,
         realistic = realistic, resource = resource, interpret=interpret, 
-        likelihood_override=likelihood_override, ...
+        likelihood_override=likelihood_override, reference=reference, ...
       )
       do.call(super$initialize, options)
     },
@@ -247,6 +248,8 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
     },
 
     make_params = function(tmle_task, likelihood) {
+      
+      #Grab all parameters:
       V <- private$.options$V
       complex <- private$.options$complex
       max <- private$.options$maximize
@@ -260,11 +263,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
         # Learn the rule
         opt_rule <- Optimal_Rule_Revere$new(tmle_task,
           tmle_spec = self, likelihood$initial_likelihood,
-          V = V, blip_type = private$.options$type,
-          learners = private$.options$learners,
-          maximize = private$.options$maximize,
-          interpret = private$.options$interpret, 
-          likelihood_override = private$.options$likelihood_override
+          V =  V, options = private$.options
         )
 
         opt_rule$fit_blip()
@@ -306,11 +305,9 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
                 tmle_spec = self,
                 likelihood$initial_likelihood,
                 V = v,
-                blip_type = private$.options$type,
-                learners = private$.options$learners,
-                maximize = private$.options$maximize
+                options = private$.options
               )
-
+              
               opt_rule$fit_blip()
               self$set_opt(opt_rule)
 
@@ -395,15 +392,16 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
 #'  treatment get treatment, if resource = 0 none get treatment.
 #' @param interpret If \code{TRUE}, returns a HAL fit of the blip, explaining the rule.  
 #' @param likelihood_override if estimates of the likelihood are known, override learners.
+#' @param reference reference category for blip1. Default is the smallest numerical category or factor.
 #'
 #' @export
 tmle3_mopttx_blip_revere <- function(V = NULL, type = "blip1", learners, maximize = TRUE,
                                      complex = TRUE, realistic = FALSE, resource = 1, 
-                                     interpret = FALSE, likelihood_override=NULL) {
+                                     interpret = FALSE, likelihood_override=NULL, reference=NULL) {
   tmle3_Spec_mopttx_blip_revere$new(
     V = V, type = type, learners = learners,
     maximize = maximize, complex = complex, realistic = realistic, 
-    resource = resource, interpret = interpret, 
+    resource = resource, interpret = interpret, reference=reference,
     likelihood_override=likelihood_override
   )
 }

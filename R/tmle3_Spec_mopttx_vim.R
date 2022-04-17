@@ -91,11 +91,11 @@ tmle3_Spec_mopttx_vim <- R6Class(
   public = list(
     initialize = function(V = NULL, type = "blip2", method = "SL", learners = NULL,
                           contrast = "linear", maximize = TRUE, complex = TRUE,
-                          realistic = FALSE, resource = 1, ...) {
+                          realistic = FALSE, resource = 1, reference=NULL, ...) {
       options <- list(
         V = V, type = type, method = method, learners = learners,
         contrast = contrast, maximize = maximize, complex = complex,
-        realistic = realistic, resource = resource
+        realistic = realistic, resource = resource, reference=reference, ...
       )
       do.call(super$initialize, options)
     },
@@ -159,6 +159,8 @@ tmle3_Spec_mopttx_vim <- R6Class(
     },
 
     make_params = function(tmle_task, likelihood) {
+      
+      #Grab all parameters:
       V <- private$.options$V
       complex <- private$.options$complex
       max <- private$.options$maximize
@@ -174,10 +176,8 @@ tmle3_Spec_mopttx_vim <- R6Class(
       } else if (method == "SL") {
         # Learn the rule
         opt_rule <- Optimal_Rule_Revere$new(tmle_task,
-          tmle_spec = self, likelihood = likelihood$initial_likelihood,
-          V = V, blip_type = private$.options$type,
-          learners = private$.options$learners,
-          maximize = private$.options$maximize
+                                            tmle_spec = self, likelihood$initial_likelihood,
+                                            V =  V, options = private$.options
         )
       }
 
@@ -235,14 +235,15 @@ tmle3_Spec_mopttx_vim <- R6Class(
 #' @param resource Indicates the percent of initially estimated individuals who should be given 
 #' treatment that get treatment, based on their blip estimate. If resource = 1 all estimated 
 #' individuals to benefit from treatment get treatment, if resource = 0 none get treatment. 
+#' @param reference reference category for blip1. Default is the smallest numerical category or factor.
 #'
 #' @export
 tmle3_mopttx_vim <- function(V = NULL, type = "blip2", method = "SL", learners = NULL,
                              contrast = "linear", maximize = TRUE, complex = TRUE, realistic = FALSE,
-                             resource = 1) {
+                             resource = 1, reference=NULL) {
   tmle3_Spec_mopttx_vim$new(
     V = V, type = type, method = method, learners = learners,
     contrast = contrast, maximize = maximize, complex = complex, 
-    realistic = realistic, resource = resource
+    realistic = realistic, resource = resource, reference = reference
   )
 }

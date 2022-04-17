@@ -13,7 +13,8 @@ tmle3_mopttx_blip_revere(
   realistic = FALSE,
   resource = 1,
   interpret = FALSE,
-  likelihood_override = NULL
+  likelihood_override = NULL,
+  reference = NULL
 )
 }
 \arguments{
@@ -41,6 +42,8 @@ treatment get treatment, if resource = 0 none get treatment.}
 \item{interpret}{If \code{TRUE}, returns a HAL fit of the blip, explaining the rule.}
 
 \item{likelihood_override}{if estimates of the likelihood are known, override learners.}
+
+\item{reference}{reference category for blip1. Default is the smallest numerical category or factor.}
 }
 \description{
 O=(W,A,Y)

@@ -40,6 +40,7 @@ under Revere CV-TMLE. For learning the Optimal Rule, see 'Optimal_Rule_Revere' c
   treatment that get treatment, based on their blip estimate. If resource = 1 all estimated 
   individuals to benefit from treatment get treatment, if resource = 0 none get treatment. 
   - \code{interpret}: If \code{TRUE}, returns a HAL fit of the blip, explaining the rule.
+  - \code{reference}: reference category for blip1. Default is the smallest numerical category or factor.
 }
 
 \examples{
@@ -117,6 +118,7 @@ tmle_spec <- tmle3_mopttx_blip_revere(
   resource = 1,
   interpret = FALSE,
   likelihood_override = NULL,
+  reference = NULL,
   ...
 )}\if{html}{\out{</div>}}
 }
