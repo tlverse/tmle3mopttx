@@ -343,12 +343,21 @@ Optimal_Rule_Revere <- R6Class(
       #General resource constraint:
       if(sum(resource)<length(A_vals)){
         
+        #Rank based on the current rule allocation and resource
+        oit <- data.frame(percent=table(rule_preds)/n*100)
+        names(oit) <- c("A_vals","Freq")
+        oit <- oit[match(A_vals,oit$A_vals),]
+        row.names(oit) <- NULL
+        oit$A_vals <- A_vals
+        oit[is.na(oit$Freq),"Freq"] <- 0
+
         #Start with the constraint:
         resource_inter <- cbind.data.frame(A_vals=seq(A_vals),
                                            resource=resource,
-                                           n=resource*n)
-        resource_inter <- resource_inter[order(resource_inter$resource,
-                                               decreasing = FALSE),]
+                                           n=resource*n,
+                                           oit=oit$Freq)
+        resource_inter <- resource_inter[order((-resource_inter$resource),resource_inter$oit,
+                                               decreasing = TRUE),]
         
         #Add ids and rules to blips:
         blip_preds_inter <- cbind.data.frame(id=seq(n),
@@ -368,15 +377,20 @@ Optimal_Rule_Revere <- R6Class(
           rule_preds_inter <- cbind.data.frame(id=inter$id,
                                                rule=(rule_preds_inter==A_val))
           rule_preds_inter     <- rule_preds_inter[rule_preds_inter$rule==TRUE,]
-          rule_preds_inter$seq <- seq(1:nrow(rule_preds_inter)) 
           
-          inter$seq <- rule_preds_inter[match(inter$id, rule_preds_inter$id),"seq"]
-          
-          max_num_A <- max(rule_preds_inter$seq)
-          if(max_num_A>resource_inter[i,"n"]){
-            inter[(inter$seq>resource_inter[i,"n"] & !is.na(inter$seq)),(A_val+1)] <- -Inf
+          #If no one benefit from this rule, assign to the unconstrained
+          if(dim(rule_preds_inter)[1]!=0){
+            rule_preds_inter$seq <- seq(1:nrow(rule_preds_inter)) 
+            
+            inter$seq <- rule_preds_inter[match(inter$id, rule_preds_inter$id),"seq"]
+            
+            max_num_A <- max(rule_preds_inter$seq)
+            if(max_num_A>resource_inter[i,"n"]){
+              inter[(inter$seq>resource_inter[i,"n"] & !is.na(inter$seq)),(A_val+1)] <- -Inf
+            }
+            
+            blip_preds_inter <- inter[,-ncol(inter)]
           }
-          blip_preds_inter <- inter[,-ncol(inter)]
         }
         
         blip_preds_inter <- blip_preds_inter[order(blip_preds_inter$id,decreasing = FALSE),]
