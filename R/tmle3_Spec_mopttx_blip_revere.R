@@ -273,7 +273,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
         private$.blip_fit_interpret <- opt_rule$blip_fit_interpret
         
         # Save the rule for each individual:
-        self$set_rule(opt_rule$rule(tmle_task, "validation"))
+        self$set_rule(opt_rule$rule(tmle_task, fold_number = "validation"))
         
         # Define a dynamic Likelihood factor:
         lf_rule <- define_lf(LF_rule, "A", rule_fun = opt_rule$rule)
