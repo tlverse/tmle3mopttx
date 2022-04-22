@@ -4,7 +4,7 @@ library(sl3)
 library(data.table)
 library(tmle3mopttx)
 library(tmle3)
-library(devtools)
+#library(devtools)
 #load_all()
 
 set.seed(1234)
@@ -56,7 +56,7 @@ test_that("Binary resource constraint", {
   #fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, updater)
   
   fit <- tmle3(tmle_spec, data, node_list, learner_list)
-  expect_equal(sum(tmle_spec$return_rule), 400, tolerance = 400)
+  expect_equal(sum(tmle_spec$return_rule), 400, tolerance = 50)
   
 })
 

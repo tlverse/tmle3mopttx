@@ -6,7 +6,7 @@ library(sl3)
 library(data.table)
 library(tmle3mopttx)
 library(tmle3)
-library(devtools)
+#library(devtools)
 #load_all()
 
 set.seed(1234)
