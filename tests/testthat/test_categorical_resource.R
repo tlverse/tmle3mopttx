@@ -57,6 +57,6 @@ test_that("Categoical resource constraint", {
   #fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params, updater)
   
   fit <- tmle3(tmle_spec, data, node_list, learner_list)
-  expect_equal(sum(tmle_spec$return_rule), 2076, tolerance = 100)
+  expect_equal(sum(tmle_spec$return_rule), 2076, tolerance = 1000)
 
 })
