@@ -267,6 +267,7 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
         )
         
         opt_rule$fit_blip()
+        private$.blip_fit <- opt_rule$.__enclos_env__$private$.blip_fit
         self$set_opt(opt_rule)
         
         # Save interpretable rule, if fit
@@ -360,12 +361,16 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
     },
     blip_fit_interpret = function() {
       return(summary(private$.blip_fit_interpret)$table)
+    },
+    blip_fit = function() {
+      return(private$.blip_fit)
     }
   ),
   private = list(
     .opt = list(),
     .rule = NULL,
-    .blip_fit_interpret = NULL
+    .blip_fit_interpret = NULL,
+    .blip_fit=NULL
   )
 )
 
