@@ -93,6 +93,21 @@ tmle3_Spec_mopttx_blip_revere <- R6Class(
       sort(unique(x))
     },
     
+    make_tmle_task = function(data, node_list, ...) {
+      variable_types <- self$options$variable_types
+      
+      setDT(data)
+      npsem <- point_tx_npsem(node_list, variable_types)
+      
+      if (!is.null(node_list$id)) {
+        tmle_task <- tmle3_Task$new(data, npsem = npsem, id = node_list$id, ...)
+      } else {
+        tmle_task <- tmle3_Task$new(data, npsem = npsem, ...)
+      }
+      
+      return(tmle_task)
+    },
+    
     #Edited to support known likelihoods
     make_initial_likelihood = function(tmle_task, learner_list = NULL) {
       # produce trained likelihood when likelihood_def provided
