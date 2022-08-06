@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 > Targeted Learning and Variable Importance with Optimal Individualized
 > Categorical Treatment
 
-__Authors:__ [Ivana Malenica](https://github.com/podTockom), [Jeremy R. Coyle](https://github.com/jeremyrcoyle) and [Mark J. van der Laan](https://vanderlaan-lab.org/)
+__Authors:__ [Ivana Malenica](https://github.com/imalenica), [Jeremy R. Coyle](https://github.com/jeremyrcoyle) and [Mark J. van der Laan](https://vanderlaan-lab.org/)
 
 ## Description
 
@@ -61,7 +61,7 @@ devtools::install_github("tlverse/tmle3mopttx")
 
 ## Citation 
 
-After using the tstmle3 R package, please cite the following:
+After using the tmle3mopttx R package, please cite the following:
 
 ```{r citation, eval=FALSE}
 

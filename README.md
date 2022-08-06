@@ -15,7 +15,7 @@ v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/
 > Targeted Learning and Variable Importance with Optimal Individualized
 > Categorical Treatment
 
-**Authors:** [Ivana Malenica](https://github.com/podTockom), [Jeremy R.
+**Authors:** [Ivana Malenica](https://github.com/imalenica), [Jeremy R.
 Coyle](https://github.com/jeremyrcoyle) and [Mark J. van der
 Laan](https://vanderlaan-lab.org/)
 
@@ -80,7 +80,7 @@ devtools::install_github("tlverse/tmle3mopttx")
 
 ## Citation
 
-After using the tstmle3 R package, please cite the following:
+After using the tmle3mopttx R package, please cite the following:
 
 ``` r
 @software{malenica2022tmle3mopttx,
