@@ -59,6 +59,23 @@ devtools::install_github("tlverse/tmle3mopttx")
 
 ---
 
+## Citation 
+
+After using the tstmle3 R package, please cite the following:
+
+```{r citation, eval=FALSE}
+
+@software{malenica2022tmle3mopttx,
+      author = {Malenica, Ivana and Coyle, Jeremy and {van der Laan}, Mark J},
+      title = {{tmle3mopttx}: Targeted Learning and Variable Importance with Optimal Individualized Categorical Treatment},
+      year  = {2022},
+      doi = {},
+      url = {https://github.com/tlverse/tmle3mopttx},
+      note = {R package version 1.0.0}
+    }
+```
+
+
 ## Issues
 
 If you encounter any bugs or have any specific feature requests, please [file an

@@ -21,27 +21,27 @@ Dynamic Likelihood Factor built on top of \code{\link[tmle3]{LF_base}}.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{LF_rule$new()}}
-\item \href{#method-get_mean}{\code{LF_rule$get_mean()}}
-\item \href{#method-get_density}{\code{LF_rule$get_density()}}
-\item \href{#method-cf_values}{\code{LF_rule$cf_values()}}
-\item \href{#method-clone}{\code{LF_rule$clone()}}
+\item \href{#method-LF_rule-new}{\code{LF_rule$new()}}
+\item \href{#method-LF_rule-get_mean}{\code{LF_rule$get_mean()}}
+\item \href{#method-LF_rule-get_density}{\code{LF_rule$get_density()}}
+\item \href{#method-LF_rule-cf_values}{\code{LF_rule$cf_values()}}
+\item \href{#method-LF_rule-clone}{\code{LF_rule$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="LF_base" data-id="delayed_train">}\href{../../tmle3/html/LF_base.html#method-delayed_train}{\code{tmle3::LF_base$delayed_train()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="LF_base" data-id="get_likelihood">}\href{../../tmle3/html/LF_base.html#method-get_likelihood}{\code{tmle3::LF_base$get_likelihood()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="LF_base" data-id="print">}\href{../../tmle3/html/LF_base.html#method-print}{\code{tmle3::LF_base$print()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="LF_base" data-id="sample">}\href{../../tmle3/html/LF_base.html#method-sample}{\code{tmle3::LF_base$sample()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="LF_base" data-id="train">}\href{../../tmle3/html/LF_base.html#method-train}{\code{tmle3::LF_base$train()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="LF_base" data-id="delayed_train"><a href='../../tmle3/html/LF_base.html#method-LF_base-delayed_train'><code>tmle3::LF_base$delayed_train()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="LF_base" data-id="get_likelihood"><a href='../../tmle3/html/LF_base.html#method-LF_base-get_likelihood'><code>tmle3::LF_base$get_likelihood()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="LF_base" data-id="print"><a href='../../tmle3/html/LF_base.html#method-LF_base-print'><code>tmle3::LF_base$print()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="LF_base" data-id="sample"><a href='../../tmle3/html/LF_base.html#method-LF_base-sample'><code>tmle3::LF_base$sample()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="LF_base" data-id="train"><a href='../../tmle3/html/LF_base.html#method-LF_base-train'><code>tmle3::LF_base$train()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-LF_rule-new"></a>}}
+\if{latex}{\out{\hypertarget{method-LF_rule-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LF_rule$new(name, type = "density", rule_fun, ...)}\if{html}{\out{</div>}}
@@ -49,8 +49,8 @@ Dynamic Likelihood Factor built on top of \code{\link[tmle3]{LF_base}}.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_mean"></a>}}
-\if{latex}{\out{\hypertarget{method-get_mean}{}}}
+\if{html}{\out{<a id="method-LF_rule-get_mean"></a>}}
+\if{latex}{\out{\hypertarget{method-LF_rule-get_mean}{}}}
 \subsection{Method \code{get_mean()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LF_rule$get_mean(tmle_task, fold_number)}\if{html}{\out{</div>}}
@@ -58,8 +58,8 @@ Dynamic Likelihood Factor built on top of \code{\link[tmle3]{LF_base}}.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_density"></a>}}
-\if{latex}{\out{\hypertarget{method-get_density}{}}}
+\if{html}{\out{<a id="method-LF_rule-get_density"></a>}}
+\if{latex}{\out{\hypertarget{method-LF_rule-get_density}{}}}
 \subsection{Method \code{get_density()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LF_rule$get_density(tmle_task, fold_number)}\if{html}{\out{</div>}}
@@ -67,8 +67,8 @@ Dynamic Likelihood Factor built on top of \code{\link[tmle3]{LF_base}}.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-cf_values"></a>}}
-\if{latex}{\out{\hypertarget{method-cf_values}{}}}
+\if{html}{\out{<a id="method-LF_rule-cf_values"></a>}}
+\if{latex}{\out{\hypertarget{method-LF_rule-cf_values}{}}}
 \subsection{Method \code{cf_values()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LF_rule$cf_values(tmle_task)}\if{html}{\out{</div>}}
@@ -76,8 +76,8 @@ Dynamic Likelihood Factor built on top of \code{\link[tmle3]{LF_base}}.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-LF_rule-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-LF_rule-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

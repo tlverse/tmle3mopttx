@@ -79,33 +79,33 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{tmle3_Spec_mopttx_blip_revere$new()}}
-\item \href{#method-vals_from_factor}{\code{tmle3_Spec_mopttx_blip_revere$vals_from_factor()}}
-\item \href{#method-make_initial_likelihood}{\code{tmle3_Spec_mopttx_blip_revere$make_initial_likelihood()}}
-\item \href{#method-predict_rule}{\code{tmle3_Spec_mopttx_blip_revere$predict_rule()}}
-\item \href{#method-make_rules}{\code{tmle3_Spec_mopttx_blip_revere$make_rules()}}
-\item \href{#method-make_est_fin}{\code{tmle3_Spec_mopttx_blip_revere$make_est_fin()}}
-\item \href{#method-set_opt}{\code{tmle3_Spec_mopttx_blip_revere$set_opt()}}
-\item \href{#method-set_rule}{\code{tmle3_Spec_mopttx_blip_revere$set_rule()}}
-\item \href{#method-data_adapt_psi}{\code{tmle3_Spec_mopttx_blip_revere$data_adapt_psi()}}
-\item \href{#method-get_blip_fit}{\code{tmle3_Spec_mopttx_blip_revere$get_blip_fit()}}
-\item \href{#method-get_blip_pred}{\code{tmle3_Spec_mopttx_blip_revere$get_blip_pred()}}
-\item \href{#method-make_params}{\code{tmle3_Spec_mopttx_blip_revere$make_params()}}
-\item \href{#method-clone}{\code{tmle3_Spec_mopttx_blip_revere$clone()}}
+\item \href{#method-tmle3_Spec_mopttx_blip_revere-new}{\code{tmle3_Spec_mopttx_blip_revere$new()}}
+\item \href{#method-tmle3_Spec_mopttx_blip_revere-vals_from_factor}{\code{tmle3_Spec_mopttx_blip_revere$vals_from_factor()}}
+\item \href{#method-tmle3_Spec_mopttx_blip_revere-make_tmle_task}{\code{tmle3_Spec_mopttx_blip_revere$make_tmle_task()}}
+\item \href{#method-tmle3_Spec_mopttx_blip_revere-make_initial_likelihood}{\code{tmle3_Spec_mopttx_blip_revere$make_initial_likelihood()}}
+\item \href{#method-tmle3_Spec_mopttx_blip_revere-predict_rule}{\code{tmle3_Spec_mopttx_blip_revere$predict_rule()}}
+\item \href{#method-tmle3_Spec_mopttx_blip_revere-make_rules}{\code{tmle3_Spec_mopttx_blip_revere$make_rules()}}
+\item \href{#method-tmle3_Spec_mopttx_blip_revere-make_est_fin}{\code{tmle3_Spec_mopttx_blip_revere$make_est_fin()}}
+\item \href{#method-tmle3_Spec_mopttx_blip_revere-set_opt}{\code{tmle3_Spec_mopttx_blip_revere$set_opt()}}
+\item \href{#method-tmle3_Spec_mopttx_blip_revere-set_rule}{\code{tmle3_Spec_mopttx_blip_revere$set_rule()}}
+\item \href{#method-tmle3_Spec_mopttx_blip_revere-data_adapt_psi}{\code{tmle3_Spec_mopttx_blip_revere$data_adapt_psi()}}
+\item \href{#method-tmle3_Spec_mopttx_blip_revere-get_blip_fit}{\code{tmle3_Spec_mopttx_blip_revere$get_blip_fit()}}
+\item \href{#method-tmle3_Spec_mopttx_blip_revere-get_blip_pred}{\code{tmle3_Spec_mopttx_blip_revere$get_blip_pred()}}
+\item \href{#method-tmle3_Spec_mopttx_blip_revere-make_params}{\code{tmle3_Spec_mopttx_blip_revere$make_params()}}
+\item \href{#method-tmle3_Spec_mopttx_blip_revere-clone}{\code{tmle3_Spec_mopttx_blip_revere$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_targeted_likelihood">}\href{../../tmle3/html/tmle3_Spec.html#method-make_targeted_likelihood}{\code{tmle3::tmle3_Spec$make_targeted_likelihood()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_tmle_task">}\href{../../tmle3/html/tmle3_Spec.html#method-make_tmle_task}{\code{tmle3::tmle3_Spec$make_tmle_task()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_updater">}\href{../../tmle3/html/tmle3_Spec.html#method-make_updater}{\code{tmle3::tmle3_Spec$make_updater()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_targeted_likelihood"><a href='../../tmle3/html/tmle3_Spec.html#method-tmle3_Spec-make_targeted_likelihood'><code>tmle3::tmle3_Spec$make_targeted_likelihood()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_updater"><a href='../../tmle3/html/tmle3_Spec.html#method-tmle3_Spec-make_updater'><code>tmle3::tmle3_Spec$make_updater()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_blip_revere-new"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_blip_revere-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$new(
@@ -125,8 +125,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-vals_from_factor"></a>}}
-\if{latex}{\out{\hypertarget{method-vals_from_factor}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_blip_revere-vals_from_factor"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_blip_revere-vals_from_factor}{}}}
 \subsection{Method \code{vals_from_factor()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$vals_from_factor(x)}\if{html}{\out{</div>}}
@@ -134,8 +134,17 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-make_initial_likelihood"></a>}}
-\if{latex}{\out{\hypertarget{method-make_initial_likelihood}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_blip_revere-make_tmle_task"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_blip_revere-make_tmle_task}{}}}
+\subsection{Method \code{make_tmle_task()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$make_tmle_task(data, node_list, ...)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_blip_revere-make_initial_likelihood"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_blip_revere-make_initial_likelihood}{}}}
 \subsection{Method \code{make_initial_likelihood()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$make_initial_likelihood(
@@ -146,8 +155,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-predict_rule"></a>}}
-\if{latex}{\out{\hypertarget{method-predict_rule}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_blip_revere-predict_rule"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_blip_revere-predict_rule}{}}}
 \subsection{Method \code{predict_rule()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$predict_rule(tmle_task_new)}\if{html}{\out{</div>}}
@@ -155,8 +164,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-make_rules"></a>}}
-\if{latex}{\out{\hypertarget{method-make_rules}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_blip_revere-make_rules"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_blip_revere-make_rules}{}}}
 \subsection{Method \code{make_rules()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$make_rules(V)}\if{html}{\out{</div>}}
@@ -164,8 +173,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-make_est_fin"></a>}}
-\if{latex}{\out{\hypertarget{method-make_est_fin}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_blip_revere-make_est_fin"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_blip_revere-make_est_fin}{}}}
 \subsection{Method \code{make_est_fin()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$make_est_fin(fit, max, p.value = 0.35)}\if{html}{\out{</div>}}
@@ -173,8 +182,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set_opt"></a>}}
-\if{latex}{\out{\hypertarget{method-set_opt}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_blip_revere-set_opt"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_blip_revere-set_opt}{}}}
 \subsection{Method \code{set_opt()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$set_opt(opt)}\if{html}{\out{</div>}}
@@ -182,8 +191,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set_rule"></a>}}
-\if{latex}{\out{\hypertarget{method-set_rule}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_blip_revere-set_rule"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_blip_revere-set_rule}{}}}
 \subsection{Method \code{set_rule()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$set_rule(rule)}\if{html}{\out{</div>}}
@@ -191,8 +200,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-data_adapt_psi"></a>}}
-\if{latex}{\out{\hypertarget{method-data_adapt_psi}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_blip_revere-data_adapt_psi"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_blip_revere-data_adapt_psi}{}}}
 \subsection{Method \code{data_adapt_psi()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$data_adapt_psi(data_tda, node_list, Qbar0)}\if{html}{\out{</div>}}
@@ -200,8 +209,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_blip_fit"></a>}}
-\if{latex}{\out{\hypertarget{method-get_blip_fit}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_blip_revere-get_blip_fit"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_blip_revere-get_blip_fit}{}}}
 \subsection{Method \code{get_blip_fit()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$get_blip_fit()}\if{html}{\out{</div>}}
@@ -209,8 +218,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_blip_pred"></a>}}
-\if{latex}{\out{\hypertarget{method-get_blip_pred}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_blip_revere-get_blip_pred"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_blip_revere-get_blip_pred}{}}}
 \subsection{Method \code{get_blip_pred()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$get_blip_pred(tmle_task, fold_number = "full")}\if{html}{\out{</div>}}
@@ -218,8 +227,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-make_params"></a>}}
-\if{latex}{\out{\hypertarget{method-make_params}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_blip_revere-make_params"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_blip_revere-make_params}{}}}
 \subsection{Method \code{make_params()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_blip_revere$make_params(tmle_task, likelihood)}\if{html}{\out{</div>}}
@@ -227,8 +236,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_blip_revere-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_blip_revere-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

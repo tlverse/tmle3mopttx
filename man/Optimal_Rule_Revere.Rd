@@ -65,32 +65,32 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Optimal_Rule_Revere$new()}}
-\item \href{#method-factor_to_indicators}{\code{Optimal_Rule_Revere$factor_to_indicators()}}
-\item \href{#method-V_data}{\code{Optimal_Rule_Revere$V_data()}}
-\item \href{#method-DR_full}{\code{Optimal_Rule_Revere$DR_full()}}
-\item \href{#method-blip_revere_function}{\code{Optimal_Rule_Revere$blip_revere_function()}}
-\item \href{#method-bound}{\code{Optimal_Rule_Revere$bound()}}
-\item \href{#method-fit_blip}{\code{Optimal_Rule_Revere$fit_blip()}}
-\item \href{#method-rule}{\code{Optimal_Rule_Revere$rule()}}
-\item \href{#method-rule_stochastic}{\code{Optimal_Rule_Revere$rule_stochastic()}}
-\item \href{#method-clone}{\code{Optimal_Rule_Revere$clone()}}
+\item \href{#method-Optimal_Rule_Revere-new}{\code{Optimal_Rule_Revere$new()}}
+\item \href{#method-Optimal_Rule_Revere-factor_to_indicators}{\code{Optimal_Rule_Revere$factor_to_indicators()}}
+\item \href{#method-Optimal_Rule_Revere-V_data}{\code{Optimal_Rule_Revere$V_data()}}
+\item \href{#method-Optimal_Rule_Revere-DR_full}{\code{Optimal_Rule_Revere$DR_full()}}
+\item \href{#method-Optimal_Rule_Revere-blip_revere_function}{\code{Optimal_Rule_Revere$blip_revere_function()}}
+\item \href{#method-Optimal_Rule_Revere-bound}{\code{Optimal_Rule_Revere$bound()}}
+\item \href{#method-Optimal_Rule_Revere-fit_blip}{\code{Optimal_Rule_Revere$fit_blip()}}
+\item \href{#method-Optimal_Rule_Revere-rule}{\code{Optimal_Rule_Revere$rule()}}
+\item \href{#method-Optimal_Rule_Revere-rule_stochastic}{\code{Optimal_Rule_Revere$rule_stochastic()}}
+\item \href{#method-Optimal_Rule_Revere-clone}{\code{Optimal_Rule_Revere$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_initial_likelihood">}\href{../../tmle3/html/tmle3_Spec.html#method-make_initial_likelihood}{\code{tmle3::tmle3_Spec$make_initial_likelihood()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_params">}\href{../../tmle3/html/tmle3_Spec.html#method-make_params}{\code{tmle3::tmle3_Spec$make_params()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_targeted_likelihood">}\href{../../tmle3/html/tmle3_Spec.html#method-make_targeted_likelihood}{\code{tmle3::tmle3_Spec$make_targeted_likelihood()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_tmle_task">}\href{../../tmle3/html/tmle3_Spec.html#method-make_tmle_task}{\code{tmle3::tmle3_Spec$make_tmle_task()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_updater">}\href{../../tmle3/html/tmle3_Spec.html#method-make_updater}{\code{tmle3::tmle3_Spec$make_updater()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_initial_likelihood"><a href='../../tmle3/html/tmle3_Spec.html#method-tmle3_Spec-make_initial_likelihood'><code>tmle3::tmle3_Spec$make_initial_likelihood()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_params"><a href='../../tmle3/html/tmle3_Spec.html#method-tmle3_Spec-make_params'><code>tmle3::tmle3_Spec$make_params()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_targeted_likelihood"><a href='../../tmle3/html/tmle3_Spec.html#method-tmle3_Spec-make_targeted_likelihood'><code>tmle3::tmle3_Spec$make_targeted_likelihood()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_tmle_task"><a href='../../tmle3/html/tmle3_Spec.html#method-tmle3_Spec-make_tmle_task'><code>tmle3::tmle3_Spec$make_tmle_task()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_updater"><a href='../../tmle3/html/tmle3_Spec.html#method-tmle3_Spec-make_updater'><code>tmle3::tmle3_Spec$make_updater()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Optimal_Rule_Revere-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Optimal_Rule_Revere-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimal_Rule_Revere$new(
@@ -105,8 +105,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-factor_to_indicators"></a>}}
-\if{latex}{\out{\hypertarget{method-factor_to_indicators}{}}}
+\if{html}{\out{<a id="method-Optimal_Rule_Revere-factor_to_indicators"></a>}}
+\if{latex}{\out{\hypertarget{method-Optimal_Rule_Revere-factor_to_indicators}{}}}
 \subsection{Method \code{factor_to_indicators()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimal_Rule_Revere$factor_to_indicators(x, x_vals)}\if{html}{\out{</div>}}
@@ -114,8 +114,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-V_data"></a>}}
-\if{latex}{\out{\hypertarget{method-V_data}{}}}
+\if{html}{\out{<a id="method-Optimal_Rule_Revere-V_data"></a>}}
+\if{latex}{\out{\hypertarget{method-Optimal_Rule_Revere-V_data}{}}}
 \subsection{Method \code{V_data()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimal_Rule_Revere$V_data(tmle_task, fold = NULL)}\if{html}{\out{</div>}}
@@ -123,8 +123,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DR_full"></a>}}
-\if{latex}{\out{\hypertarget{method-DR_full}{}}}
+\if{html}{\out{<a id="method-Optimal_Rule_Revere-DR_full"></a>}}
+\if{latex}{\out{\hypertarget{method-Optimal_Rule_Revere-DR_full}{}}}
 \subsection{Method \code{DR_full()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimal_Rule_Revere$DR_full(v, indx)}\if{html}{\out{</div>}}
@@ -132,8 +132,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-blip_revere_function"></a>}}
-\if{latex}{\out{\hypertarget{method-blip_revere_function}{}}}
+\if{html}{\out{<a id="method-Optimal_Rule_Revere-blip_revere_function"></a>}}
+\if{latex}{\out{\hypertarget{method-Optimal_Rule_Revere-blip_revere_function}{}}}
 \subsection{Method \code{blip_revere_function()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimal_Rule_Revere$blip_revere_function(tmle_task, fold_number)}\if{html}{\out{</div>}}
@@ -141,8 +141,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-bound"></a>}}
-\if{latex}{\out{\hypertarget{method-bound}{}}}
+\if{html}{\out{<a id="method-Optimal_Rule_Revere-bound"></a>}}
+\if{latex}{\out{\hypertarget{method-Optimal_Rule_Revere-bound}{}}}
 \subsection{Method \code{bound()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimal_Rule_Revere$bound(cv_g)}\if{html}{\out{</div>}}
@@ -150,8 +150,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-fit_blip"></a>}}
-\if{latex}{\out{\hypertarget{method-fit_blip}{}}}
+\if{html}{\out{<a id="method-Optimal_Rule_Revere-fit_blip"></a>}}
+\if{latex}{\out{\hypertarget{method-Optimal_Rule_Revere-fit_blip}{}}}
 \subsection{Method \code{fit_blip()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimal_Rule_Revere$fit_blip()}\if{html}{\out{</div>}}
@@ -159,8 +159,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-rule"></a>}}
-\if{latex}{\out{\hypertarget{method-rule}{}}}
+\if{html}{\out{<a id="method-Optimal_Rule_Revere-rule"></a>}}
+\if{latex}{\out{\hypertarget{method-Optimal_Rule_Revere-rule}{}}}
 \subsection{Method \code{rule()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimal_Rule_Revere$rule(tmle_task, fold_number = "full")}\if{html}{\out{</div>}}
@@ -168,8 +168,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-rule_stochastic"></a>}}
-\if{latex}{\out{\hypertarget{method-rule_stochastic}{}}}
+\if{html}{\out{<a id="method-Optimal_Rule_Revere-rule_stochastic"></a>}}
+\if{latex}{\out{\hypertarget{method-Optimal_Rule_Revere-rule_stochastic}{}}}
 \subsection{Method \code{rule_stochastic()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimal_Rule_Revere$rule_stochastic(tmle_task, fold_number = "full")}\if{html}{\out{</div>}}
@@ -177,8 +177,8 @@ tmle_spec <- tmle3_mopttx_blip_revere(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Optimal_Rule_Revere-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Optimal_Rule_Revere-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

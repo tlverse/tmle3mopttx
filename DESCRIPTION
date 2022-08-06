@@ -61,4 +61,4 @@ Remotes:
 URL: https://tlverse.org/tmle3mopttx
 BugReports: https://github.com/tlverse/tmle3mopttx/issues
 VignetteBuilder: knitr
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0

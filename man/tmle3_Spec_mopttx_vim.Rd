@@ -90,33 +90,33 @@ method = "SL", complex = TRUE, realistic = FALSE
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{tmle3_Spec_mopttx_vim$new()}}
-\item \href{#method-vals_from_factor}{\code{tmle3_Spec_mopttx_vim$vals_from_factor()}}
-\item \href{#method-make_tmle_task}{\code{tmle3_Spec_mopttx_vim$make_tmle_task()}}
-\item \href{#method-set_opt}{\code{tmle3_Spec_mopttx_vim$set_opt()}}
-\item \href{#method-make_params}{\code{tmle3_Spec_mopttx_vim$make_params()}}
-\item \href{#method-clone}{\code{tmle3_Spec_mopttx_vim$clone()}}
+\item \href{#method-tmle3_Spec_mopttx_vim-new}{\code{tmle3_Spec_mopttx_vim$new()}}
+\item \href{#method-tmle3_Spec_mopttx_vim-vals_from_factor}{\code{tmle3_Spec_mopttx_vim$vals_from_factor()}}
+\item \href{#method-tmle3_Spec_mopttx_vim-make_tmle_task}{\code{tmle3_Spec_mopttx_vim$make_tmle_task()}}
+\item \href{#method-tmle3_Spec_mopttx_vim-set_opt}{\code{tmle3_Spec_mopttx_vim$set_opt()}}
+\item \href{#method-tmle3_Spec_mopttx_vim-make_params}{\code{tmle3_Spec_mopttx_vim$make_params()}}
+\item \href{#method-tmle3_Spec_mopttx_vim-clone}{\code{tmle3_Spec_mopttx_vim$clone()}}
 }
 }
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_targeted_likelihood">}\href{../../tmle3/html/tmle3_Spec.html#method-make_targeted_likelihood}{\code{tmle3::tmle3_Spec$make_targeted_likelihood()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_updater">}\href{../../tmle3/html/tmle3_Spec.html#method-make_updater}{\code{tmle3::tmle3_Spec$make_updater()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="data_adapt_psi">}\href{../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-data_adapt_psi}{\code{tmle3mopttx::tmle3_Spec_mopttx_blip_revere$data_adapt_psi()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="get_blip_fit">}\href{../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-get_blip_fit}{\code{tmle3mopttx::tmle3_Spec_mopttx_blip_revere$get_blip_fit()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="get_blip_pred">}\href{../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-get_blip_pred}{\code{tmle3mopttx::tmle3_Spec_mopttx_blip_revere$get_blip_pred()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="make_est_fin">}\href{../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-make_est_fin}{\code{tmle3mopttx::tmle3_Spec_mopttx_blip_revere$make_est_fin()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="make_initial_likelihood">}\href{../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-make_initial_likelihood}{\code{tmle3mopttx::tmle3_Spec_mopttx_blip_revere$make_initial_likelihood()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="make_rules">}\href{../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-make_rules}{\code{tmle3mopttx::tmle3_Spec_mopttx_blip_revere$make_rules()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="predict_rule">}\href{../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-predict_rule}{\code{tmle3mopttx::tmle3_Spec_mopttx_blip_revere$predict_rule()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="set_rule">}\href{../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-set_rule}{\code{tmle3mopttx::tmle3_Spec_mopttx_blip_revere$set_rule()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_targeted_likelihood"><a href='../../tmle3/html/tmle3_Spec.html#method-tmle3_Spec-make_targeted_likelihood'><code>tmle3::tmle3_Spec$make_targeted_likelihood()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_updater"><a href='../../tmle3/html/tmle3_Spec.html#method-tmle3_Spec-make_updater'><code>tmle3::tmle3_Spec$make_updater()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="data_adapt_psi"><a href='../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-tmle3_Spec_mopttx_blip_revere-data_adapt_psi'><code>tmle3mopttx::tmle3_Spec_mopttx_blip_revere$data_adapt_psi()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="get_blip_fit"><a href='../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-tmle3_Spec_mopttx_blip_revere-get_blip_fit'><code>tmle3mopttx::tmle3_Spec_mopttx_blip_revere$get_blip_fit()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="get_blip_pred"><a href='../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-tmle3_Spec_mopttx_blip_revere-get_blip_pred'><code>tmle3mopttx::tmle3_Spec_mopttx_blip_revere$get_blip_pred()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="make_est_fin"><a href='../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-tmle3_Spec_mopttx_blip_revere-make_est_fin'><code>tmle3mopttx::tmle3_Spec_mopttx_blip_revere$make_est_fin()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="make_initial_likelihood"><a href='../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-tmle3_Spec_mopttx_blip_revere-make_initial_likelihood'><code>tmle3mopttx::tmle3_Spec_mopttx_blip_revere$make_initial_likelihood()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="make_rules"><a href='../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-tmle3_Spec_mopttx_blip_revere-make_rules'><code>tmle3mopttx::tmle3_Spec_mopttx_blip_revere$make_rules()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="predict_rule"><a href='../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-tmle3_Spec_mopttx_blip_revere-predict_rule'><code>tmle3mopttx::tmle3_Spec_mopttx_blip_revere$predict_rule()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3mopttx" data-topic="tmle3_Spec_mopttx_blip_revere" data-id="set_rule"><a href='../../tmle3mopttx/html/tmle3_Spec_mopttx_blip_revere.html#method-tmle3_Spec_mopttx_blip_revere-set_rule'><code>tmle3mopttx::tmle3_Spec_mopttx_blip_revere$set_rule()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_vim-new"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_vim-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_vim$new(
@@ -136,8 +136,8 @@ method = "SL", complex = TRUE, realistic = FALSE
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-vals_from_factor"></a>}}
-\if{latex}{\out{\hypertarget{method-vals_from_factor}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_vim-vals_from_factor"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_vim-vals_from_factor}{}}}
 \subsection{Method \code{vals_from_factor()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_vim$vals_from_factor(x)}\if{html}{\out{</div>}}
@@ -145,8 +145,8 @@ method = "SL", complex = TRUE, realistic = FALSE
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-make_tmle_task"></a>}}
-\if{latex}{\out{\hypertarget{method-make_tmle_task}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_vim-make_tmle_task"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_vim-make_tmle_task}{}}}
 \subsection{Method \code{make_tmle_task()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_vim$make_tmle_task(data, node_list, ...)}\if{html}{\out{</div>}}
@@ -154,8 +154,8 @@ method = "SL", complex = TRUE, realistic = FALSE
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set_opt"></a>}}
-\if{latex}{\out{\hypertarget{method-set_opt}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_vim-set_opt"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_vim-set_opt}{}}}
 \subsection{Method \code{set_opt()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_vim$set_opt(opt)}\if{html}{\out{</div>}}
@@ -163,8 +163,8 @@ method = "SL", complex = TRUE, realistic = FALSE
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-make_params"></a>}}
-\if{latex}{\out{\hypertarget{method-make_params}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_vim-make_params"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_vim-make_params}{}}}
 \subsection{Method \code{make_params()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_vim$make_params(tmle_task, likelihood)}\if{html}{\out{</div>}}
@@ -172,8 +172,8 @@ method = "SL", complex = TRUE, realistic = FALSE
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_vim-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_vim-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

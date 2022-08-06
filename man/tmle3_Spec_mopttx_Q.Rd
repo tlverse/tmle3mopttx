@@ -17,27 +17,27 @@ Treatment, estimated using Q learning (single step)
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{tmle3_Spec_mopttx_Q$new()}}
-\item \href{#method-vals_from_factor}{\code{tmle3_Spec_mopttx_Q$vals_from_factor()}}
-\item \href{#method-make_initial_likelihood_glm}{\code{tmle3_Spec_mopttx_Q$make_initial_likelihood_glm()}}
-\item \href{#method-make_params}{\code{tmle3_Spec_mopttx_Q$make_params()}}
-\item \href{#method-estimate}{\code{tmle3_Spec_mopttx_Q$estimate()}}
-\item \href{#method-clone}{\code{tmle3_Spec_mopttx_Q$clone()}}
+\item \href{#method-tmle3_Spec_mopttx_Q-new}{\code{tmle3_Spec_mopttx_Q$new()}}
+\item \href{#method-tmle3_Spec_mopttx_Q-vals_from_factor}{\code{tmle3_Spec_mopttx_Q$vals_from_factor()}}
+\item \href{#method-tmle3_Spec_mopttx_Q-make_initial_likelihood_glm}{\code{tmle3_Spec_mopttx_Q$make_initial_likelihood_glm()}}
+\item \href{#method-tmle3_Spec_mopttx_Q-make_params}{\code{tmle3_Spec_mopttx_Q$make_params()}}
+\item \href{#method-tmle3_Spec_mopttx_Q-estimate}{\code{tmle3_Spec_mopttx_Q$estimate()}}
+\item \href{#method-tmle3_Spec_mopttx_Q-clone}{\code{tmle3_Spec_mopttx_Q$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_initial_likelihood">}\href{../../tmle3/html/tmle3_Spec.html#method-make_initial_likelihood}{\code{tmle3::tmle3_Spec$make_initial_likelihood()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_targeted_likelihood">}\href{../../tmle3/html/tmle3_Spec.html#method-make_targeted_likelihood}{\code{tmle3::tmle3_Spec$make_targeted_likelihood()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_tmle_task">}\href{../../tmle3/html/tmle3_Spec.html#method-make_tmle_task}{\code{tmle3::tmle3_Spec$make_tmle_task()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_updater">}\href{../../tmle3/html/tmle3_Spec.html#method-make_updater}{\code{tmle3::tmle3_Spec$make_updater()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_initial_likelihood"><a href='../../tmle3/html/tmle3_Spec.html#method-tmle3_Spec-make_initial_likelihood'><code>tmle3::tmle3_Spec$make_initial_likelihood()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_targeted_likelihood"><a href='../../tmle3/html/tmle3_Spec.html#method-tmle3_Spec-make_targeted_likelihood'><code>tmle3::tmle3_Spec$make_targeted_likelihood()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_tmle_task"><a href='../../tmle3/html/tmle3_Spec.html#method-tmle3_Spec-make_tmle_task'><code>tmle3::tmle3_Spec$make_tmle_task()</code></a></li>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="tmle3_Spec" data-id="make_updater"><a href='../../tmle3/html/tmle3_Spec.html#method-tmle3_Spec-make_updater'><code>tmle3::tmle3_Spec$make_updater()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_Q-new"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_Q-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_Q$new(maximize = TRUE, ...)}\if{html}{\out{</div>}}
@@ -45,8 +45,8 @@ Treatment, estimated using Q learning (single step)
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-vals_from_factor"></a>}}
-\if{latex}{\out{\hypertarget{method-vals_from_factor}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_Q-vals_from_factor"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_Q-vals_from_factor}{}}}
 \subsection{Method \code{vals_from_factor()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_Q$vals_from_factor(x)}\if{html}{\out{</div>}}
@@ -54,8 +54,8 @@ Treatment, estimated using Q learning (single step)
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-make_initial_likelihood_glm"></a>}}
-\if{latex}{\out{\hypertarget{method-make_initial_likelihood_glm}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_Q-make_initial_likelihood_glm"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_Q-make_initial_likelihood_glm}{}}}
 \subsection{Method \code{make_initial_likelihood_glm()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_Q$make_initial_likelihood_glm(tmle_task)}\if{html}{\out{</div>}}
@@ -63,8 +63,8 @@ Treatment, estimated using Q learning (single step)
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-make_params"></a>}}
-\if{latex}{\out{\hypertarget{method-make_params}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_Q-make_params"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_Q-make_params}{}}}
 \subsection{Method \code{make_params()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_Q$make_params(tmle_task, likelihood)}\if{html}{\out{</div>}}
@@ -72,8 +72,8 @@ Treatment, estimated using Q learning (single step)
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-estimate"></a>}}
-\if{latex}{\out{\hypertarget{method-estimate}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_Q-estimate"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_Q-estimate}{}}}
 \subsection{Method \code{estimate()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tmle3_Spec_mopttx_Q$estimate(tmle_params, tmle_task)}\if{html}{\out{</div>}}
@@ -81,8 +81,8 @@ Treatment, estimated using Q learning (single step)
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-tmle3_Spec_mopttx_Q-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-tmle3_Spec_mopttx_Q-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

@@ -21,22 +21,22 @@ Treatment Specific Mean with names specifying the covariates the rule depends on
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Param_TSM_name$new()}}
-\item \href{#method-clever_covariates}{\code{Param_TSM_name$clever_covariates()}}
-\item \href{#method-estimates}{\code{Param_TSM_name$estimates()}}
-\item \href{#method-clone}{\code{Param_TSM_name$clone()}}
+\item \href{#method-Param_TSM_name-new}{\code{Param_TSM_name$new()}}
+\item \href{#method-Param_TSM_name-clever_covariates}{\code{Param_TSM_name$clever_covariates()}}
+\item \href{#method-Param_TSM_name-estimates}{\code{Param_TSM_name$estimates()}}
+\item \href{#method-Param_TSM_name-clone}{\code{Param_TSM_name$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="tmle3" data-topic="Param_base" data-id="print">}\href{../../tmle3/html/Param_base.html#method-print}{\code{tmle3::Param_base$print()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="tmle3" data-topic="Param_base" data-id="print"><a href='../../tmle3/html/Param_base.html#method-Param_base-print'><code>tmle3::Param_base$print()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Param_TSM_name-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Param_TSM_name-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Param_TSM_name$new(
@@ -50,8 +50,8 @@ Treatment Specific Mean with names specifying the covariates the rule depends on
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clever_covariates"></a>}}
-\if{latex}{\out{\hypertarget{method-clever_covariates}{}}}
+\if{html}{\out{<a id="method-Param_TSM_name-clever_covariates"></a>}}
+\if{latex}{\out{\hypertarget{method-Param_TSM_name-clever_covariates}{}}}
 \subsection{Method \code{clever_covariates()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Param_TSM_name$clever_covariates(tmle_task = NULL, fold_number = "full")}\if{html}{\out{</div>}}
@@ -59,8 +59,8 @@ Treatment Specific Mean with names specifying the covariates the rule depends on
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-estimates"></a>}}
-\if{latex}{\out{\hypertarget{method-estimates}{}}}
+\if{html}{\out{<a id="method-Param_TSM_name-estimates"></a>}}
+\if{latex}{\out{\hypertarget{method-Param_TSM_name-estimates}{}}}
 \subsection{Method \code{estimates()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Param_TSM_name$estimates(tmle_task = NULL, fold_number = "full")}\if{html}{\out{</div>}}
@@ -68,8 +68,8 @@ Treatment Specific Mean with names specifying the covariates the rule depends on
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Param_TSM_name-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Param_TSM_name-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
